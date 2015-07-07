@@ -1,12 +1,11 @@
 
 var Logger = require('le_node');
-var log = Logger({
+var log = new Logger({
   token:'69c24d93-3677-47d6-954c-984d58932924'
 });
 
 _ = require('lodash');
 
-log.info(Matrix);
 
 var events = require('events');
 
@@ -31,4 +30,5 @@ Matrix.activeUser = false;
 Matrix.activeDevice = false;
 
 
+console.log(Matrix);
 module.exports = { Matrix: Matrix }
