@@ -1,4 +1,6 @@
-module.exports : {
-  user: 'admin',
-  password: 1234
+module.exports = {
+  client: {
+    id: 'admin',
+    secret: 1234
+  }
 }

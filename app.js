@@ -10,8 +10,8 @@ var events = require('events');
 Matrix = require('./lib/');
 //Event Loop
 Matrix.events = new events.EventEmitter();
-Matrix.activeUser = {};
 
+Matrix.config = require('./config');
 //Deal with users
 
 // Example
@@ -22,5 +22,8 @@ Matrix.events.on('poop', function(data){
 
 Matrix.events.emit('poop', { stinky: true });
 */
+
+Matrix.activeUser = {};
+Matrix.activeDevice = {};
 
 log(Matrix);

@@ -1,0 +1,47 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'node', '/usr/local/bin/npm', 'version', 'patch' ]
+2 info using npm@2.7.4
+3 info using node@v0.12.2
+4 info git [ 'status', '--porcelain' ]
+5 verbose stack Error: Git working directory not clean.
+5 verbose stack M app.js
+5 verbose stack M config/creds.js
+5 verbose stack M config/index.js
+5 verbose stack M lib/api/index.js
+5 verbose stack D lib/bin/cli.js
+5 verbose stack D lib/bin/heartbeat.js
+5 verbose stack M lib/device/index.js
+5 verbose stack M lib/device/updates.js
+5 verbose stack M lib/index.js
+5 verbose stack D lib/service/heartbeat.js
+5 verbose stack M lib/service/index.js
+5 verbose stack M package.json
+5 verbose stack     at /usr/local/lib/node_modules/npm/lib/version.js:138:37
+5 verbose stack     at /usr/local/lib/node_modules/npm/lib/utils/git.js:26:8
+5 verbose stack     at ChildProcess.exithandler (child_process.js:742:7)
+5 verbose stack     at ChildProcess.emit (events.js:110:17)
+5 verbose stack     at maybeClose (child_process.js:1015:16)
+5 verbose stack     at Socket.<anonymous> (child_process.js:1183:11)
+5 verbose stack     at Socket.emit (events.js:107:17)
+5 verbose stack     at Pipe.close (net.js:485:12)
+6 verbose cwd /Volumes/stocks/Projects/_client/r3r/admob/matrix
+7 error Darwin 14.3.0
+8 error argv "node" "/usr/local/bin/npm" "version" "patch"
+9 error node v0.12.2
+10 error npm  v2.7.4
+11 error Git working directory not clean.
+11 error M app.js
+11 error M config/creds.js
+11 error M config/index.js
+11 error M lib/api/index.js
+11 error D lib/bin/cli.js
+11 error D lib/bin/heartbeat.js
+11 error M lib/device/index.js
+11 error M lib/device/updates.js
+11 error M lib/index.js
+11 error D lib/service/heartbeat.js
+11 error M lib/service/index.js
+11 error M package.json
+12 error If you need help, you may report this error at:
+12 error     <https://github.com/npm/npm/issues>
+13 verbose exit [ 1, true ]
