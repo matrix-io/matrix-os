@@ -10,6 +10,9 @@ var events = require('events');
 Matrix = require('./lib/');
 //Event Loop
 Matrix.events = new events.EventEmitter();
+Matrix.activeUser = {};
+
+//Deal with users
 
 // Example
 /*
