@@ -1,7 +1,6 @@
 module.exports = {
   url: {
-    api: 'http://admobilize-api.herokuapp.com',
+    api: 'https://api.admobilize.com',
     update: ''
   },
-
 }
