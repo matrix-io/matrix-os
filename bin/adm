@@ -7,5 +7,14 @@ var Matrix = require('../app').Matrix;
 
 program
 .version( Matrix.config.version )
-  .parse(process.argv);
 
+
+program
+  .command('heartbeat <cmd>')
+  .description('Manages heartbeat')
+  .action(function(cmd){
+    console.log('Start', cmd);
+    Matrix.service.heartbeat.start()
+  })
+
+program.parse(process.argv);

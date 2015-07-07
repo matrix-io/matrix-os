@@ -15,6 +15,7 @@ Matrix = require('./lib');
 Matrix.events = new events.EventEmitter();
 
 Matrix.config = require('./config');
+config = Matrix.config;
 //Deal with users
 
 // Example

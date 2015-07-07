@@ -21,5 +21,6 @@ var fs = require('fs');
 
   f.local = require('./env');
   f.version = JSON.parse(fs.readFileSync(__dirname + '/../package.json')).version;
+  f.heartBeatInterval = 10000;
 
   module.exports = f;
