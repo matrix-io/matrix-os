@@ -1,0 +1,16 @@
+{
+  "name": "admobilize-matrix",
+  "version": "0.0.0",
+  "description": "Core of the device layer for AdMobilize Matrix devices. Includes global component, npm install -g",
+  "main": "app.js",
+  "scripts": {
+    "test": "mocha tests/device.test.js"
+  },
+  "author": "Sean Canton <sean@rokk3rlabs.com>",
+  "license": "ISC",
+  "dependencies": {
+    "form-data": "^1.0.0-rc1",
+    "lodash": "^3.10.0",
+    "request": "^2.58.0"
+  }
+}
