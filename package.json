@@ -9,7 +9,7 @@
   "author": "Sean Canton <sean@rokk3rlabs.com>",
   "license": "ISC",
   "dependencies": {
-    "form-data": "^1.0.0-rc1",
+    "captains-log": "^0.11.11",
     "lodash": "^3.10.0",
     "request": "^2.58.0"
   }
