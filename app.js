@@ -7,7 +7,7 @@ _ = require('lodash');
 var events = require('events');
 
 // Core
-Matrix = require('./lib/');
+Matrix = require('./lib');
 //Event Loop
 Matrix.events = new events.EventEmitter();
 
@@ -27,3 +27,5 @@ Matrix.activeUser = {};
 Matrix.activeDevice = {};
 
 log(Matrix);
+
+module.exports = { Matrix: Matrix }

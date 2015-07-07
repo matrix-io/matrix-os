@@ -1,3 +1,11 @@
 #!/usr/bin/env node
 
 console.log('poop');
+
+var program = require('commander');
+var Matrix = require('../app').Matrix;
+
+program
+.version( Matrix.config.version )
+  .parse(process.argv);
+
