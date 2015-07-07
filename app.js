@@ -1,8 +1,12 @@
-console.log('-= AdM app=-');
-console.error('error test');
 
-log = require('captains-log')();
+var Logger = require('le_node');
+var log = Logger({
+  token:'69c24d93-3677-47d6-954c-984d58932924'
+});
+
 _ = require('lodash');
+
+log.info(Matrix);
 
 var events = require('events');
 
@@ -23,9 +27,8 @@ Matrix.events.on('poop', function(data){
 Matrix.events.emit('poop', { stinky: true });
 */
 
-Matrix.activeUser = {};
-Matrix.activeDevice = {};
+Matrix.activeUser = false;
+Matrix.activeDevice = false;
 
-log(Matrix);
 
 module.exports = { Matrix: Matrix }

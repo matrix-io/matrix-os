@@ -15,7 +15,7 @@ var endpoints = {
     retriveToken: '/v1/device/token',
     register: '/v1/device/register',
     update: '/v1/device/update',
-    registerAnon: '/v1/device/create',
+    registerAnonymous: '/v1/device/create',
     submit: '/v1/device/data/create',
     heartbeat: '/v1/device/heartbeat',
     list: '/v1/device/retrieve',
