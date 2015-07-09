@@ -3,7 +3,9 @@
 console.log('poop');
 
 var program = require('commander');
-var Matrix = require('../app').Matrix;
+var admatrix = require('../app')
+var init = admatrix.init;
+var Matrix = admatrix.Matrix;
 
 program
 .version( Matrix.config.version )
@@ -13,8 +15,23 @@ program
   .command('heartbeat <cmd>')
   .description('Manages heartbeat')
   .action(function(cmd){
-    console.log('Start', cmd);
-    Matrix.service.heartbeat.start()
+    Matrix.service.heartbeat[cmd]()
+  })
+
+program
+  .command('start')
+  .description('Manages Start')
+  //TODO: add params for stuff
+  .action(function(){
+    init();
+  })
+
+program
+  .command('list <cmd>')
+  .description('List Devices / Users / Clients')
+  //TODO: add params for stuff
+  .action(function(cmd){
+
   })
 
 program.parse(process.argv);

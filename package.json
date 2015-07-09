@@ -5,12 +5,15 @@
   "main": "app.js",
   "repository": "https://bitbucket.org/admobilize/admatrix",
   "scripts": {
+    "start": "nodemon app.js",
     "test": "mocha tests/device.test.js",
     "pr": "open https://bitbucket.org/admobilize/admatrix/pull-request/new"
   },
   "author": "Sean Canton <sean@rokk3rlabs.com>",
   "license": "ISC",
   "dependencies": {
+    "admatrix-node-sdk": "https://eighteyes@bitbucket.org/admobilize/admobilize-node-sdk.git",
+    "colors": "^1.1.2",
     "commander": "^2.8.1",
     "le_node": "^1.0.8",
     "lodash": "^3.10.0",
