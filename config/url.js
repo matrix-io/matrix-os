@@ -32,14 +32,5 @@ _.each(endpoints, function(category){
   }
 });
 
-module.exports = _.extend({
-  api : local.url.api,
-  // apiHost: resolveApiHost,'http://admobilize-api.herokuapp.com',
-
-
-
-
-  heartbeatInterval: 10000,
-  admobilizeSDKRootPath: __dirname + '/../'
-}, endpoints)
+module.exports = endpoints;
 

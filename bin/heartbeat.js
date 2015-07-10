@@ -31,7 +31,7 @@ setIntervalAndExecute(function() {
       request.post({url:url, form:params}, function (error, response, body) {
 
         if(error){
-          console.log(JSON.stringify({error: "Server not responding"}));
+          console.log(JSON.stringify({error: "Server not responding:" + error, url: url, params: params }));
           return;
         }
         else

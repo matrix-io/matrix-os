@@ -4,11 +4,13 @@ var log = new Logger({
   token:'69c24d93-3677-47d6-954c-984d58932924'
 });
 
+log = console.log;
+
 require('colors');
 
 _ = require('lodash');
 
-
+var fs = require('fs');
 var events = require('events');
 
 // Core
@@ -31,10 +33,20 @@ Matrix.events.emit('poop', { stinky: true });
 */
 
 
-api = require('admatrix-node-sdk')
+api = require('admatrix-node-sdk');
+
+console.log(__dirname + '/config/_state.json');
+if ( fs.existsSync(__dirname + '/config/_state.json') ){
+  log('Using Old State');
+  Matrix.state = Matrix.service.keepState.get();
+} else {
+  log('No prior state, run init()');
+}
 
 
 var init = function(){
+
+  //TODO: Init All event code
   Matrix.event.api.init();
 
   var options = api.defaultConfig;
@@ -42,6 +54,7 @@ var init = function(){
     if (err) console.trace( err.toString().red);
     console.log('Client Access Token', state);
     Matrix.service.keepState.set(state);
+    Matrix.state = state;
     Matrix.events.emit('api-connect', state);
   });
 }

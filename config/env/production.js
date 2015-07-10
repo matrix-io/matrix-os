@@ -1,6 +1,6 @@
 module.exports = {
   url: {
-    api: 'https://api.admobilize.com',
+    api: 'http://localhost:1337',
     update: ''
   },
 }
