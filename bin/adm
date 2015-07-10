@@ -33,6 +33,20 @@ program
   });
 
 program
+  .command('sensor list')
+  .description('Shows all sensors')
+  .action(function(){
+    console.log(Matrix.sensors);
+  });
+
+program
+  .command('sensor-fake [which]')
+  .description('make some fake data')
+  .action(function(opt){
+    Matrix.sensors[opt].faker();
+  });
+
+program
   .command('start')
   .description('Manage Start')
   //TODO: add params for overridesi
@@ -45,7 +59,6 @@ program
     if (program.deviceDescription) {  options.deviceDescription = program.description; }
     if (program.username) {  options.username = program.username; }
     if (program.password) {  options.password = program.password; }
-    console.log('CMD', options)
     init(options);
   })
 

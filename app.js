@@ -18,6 +18,12 @@ Matrix = require('./lib');
 //Event Loop
 Matrix.events = new events.EventEmitter();
 
+//Initialize Listeners
+Matrix.event.init();
+
+//make sensors available
+Matrix.sensors = require('./sensors');
+
 Matrix.config = require('./config');
 config = Matrix.config;
 Matrix.state = {};
@@ -44,12 +50,13 @@ if ( fs.existsSync(__dirname + '/config/_state.json') ){
 }
 
 
-var init = function(){
+var init = function( options ){
 
   //TODO: Init All event code
   Matrix.event.api.init();
 
-  var options = api.defaultConfig;
+  //override with passed params
+  var options = _.extend(api.defaultConfig, options);
   api.start( options, function(err, state){
     if (err) console.trace( err.toString().red);
     console.log('Client Access Token', state);
