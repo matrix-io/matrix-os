@@ -9,6 +9,13 @@ var Matrix = admatrix.Matrix;
 
 program
 .version( Matrix.config.version )
+.option('--server <x>', 'Start: Api Server Address')
+.option('--client-id <x>', 'Start: Client Id')
+.option('--client-secret <x>', 'Start: Client Secret')
+.option('--device-name <x>', 'Start: Device Name')
+.option('--device-description <x>', 'Start: Device Description')
+.option('--username <x>', 'Start: Username')
+.option('--password <x>', 'Start: Password')
 
 
 program
@@ -19,11 +26,27 @@ program
   })
 
 program
-  .command('start')
-  .description('Manages Start')
-  //TODO: add params for stuff
+  .command('info')
+  .description('Spits out state info')
   .action(function(){
-    init();
+    console.log(Matrix.service.keepState.get());
+  });
+
+program
+  .command('start')
+  .description('Manage Start')
+  //TODO: add params for overridesi
+  .action(function(){
+    var options = {};
+    if (program.server) {  options.apiUrl = program.server; }
+    if (program.clientId) {  options.apiUrl = program.clientId; }
+    if (program.clientSecret) {  options.clientSecret = program.clientSecret; }
+    if (program.deviceName) {  options.deviceName = program.name; }
+    if (program.deviceDescription) {  options.deviceDescription = program.description; }
+    if (program.username) {  options.username = program.username; }
+    if (program.password) {  options.password = program.password; }
+    console.log('CMD', options)
+    init(options);
   })
 
 program

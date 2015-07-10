@@ -41,6 +41,7 @@ var init = function(){
   api.start( options, function(err, state){
     if (err) console.trace( err.toString().red);
     console.log('Client Access Token', state);
+    Matrix.service.keepState.set(state);
     Matrix.events.emit('api-connect', state);
   });
 }
@@ -56,5 +57,7 @@ Matrix.activeDevice = false;
 
 console.log('========== vvv MATRIX vvv =========\n'.yellow, Matrix, "\n======== ^^^ MATRIX ^^^ =======".yellow);
 module.exports =
-{ Matrix: Matrix,
-init: init }
+{
+  Matrix: Matrix,
+  init: init
+}
