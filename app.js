@@ -13,6 +13,7 @@ var events = require('events');
 
 // Core
 Matrix = require('./lib');
+
 //Event Loop
 Matrix.events = new events.EventEmitter();
 
@@ -31,17 +32,21 @@ Matrix.events.emit('poop', { stinky: true });
 */
 
 
-api = require('admatrix-node-sdk')
+api = require('admatrix-node-sdk');
 
+Matrix.api = api;
 
-var init = function(){
+Matrix.event.app.init();
+
+var init = function(cb){
   Matrix.event.api.init();
 
   var options = api.defaultConfig;
   api.start( options, function(err, state){
-    if (err) console.trace( err.toString().red);
+    if (err) return cb(err);
     console.log('Client Access Token', state);
     Matrix.events.emit('api-connect', state);
+    cb(err, state);
   });
 }
 

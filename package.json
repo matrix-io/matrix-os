@@ -12,7 +12,7 @@
   "author": "Sean Canton <sean@rokk3rlabs.com>",
   "license": "ISC",
   "dependencies": {
-    "admatrix-node-sdk": "https://eighteyes@bitbucket.org/admobilize/admobilize-node-sdk.git",
+    "admatrix-node-sdk": "git+ssh://git@bitbucket.org/admobilize/admobilize-node-sdk.git",
     "colors": "^1.1.2",
     "commander": "^2.8.1",
     "le_node": "^1.0.8",

@@ -1,37 +1,64 @@
 #!/usr/bin/env node
 
-console.log('poop');
-
 var program = require('commander');
-var admatrix = require('../app')
+var admatrix = require('../app');
 var init = admatrix.init;
 var Matrix = admatrix.Matrix;
 
 program
-.version( Matrix.config.version )
-
+  .version(Matrix.config.version);
 
 program
   .command('heartbeat <cmd>')
   .description('Manages heartbeat')
-  .action(function(cmd){
-    Matrix.service.heartbeat[cmd]()
-  })
+  .action(function(cmd) {
+    Matrix.service.heartbeat[cmd]();
+  });
 
 program
   .command('start')
   .description('Manages Start')
+
   //TODO: add params for stuff
-  .action(function(){
-    init();
-  })
+  .action(function() {
+    init( function(err, data){
+      console.log('Init Complete');
+    });
+  });
+
+
+program
+  .command('app <cmd> [poop]')
+  .description('manage application lifecycle')
+  .action(function(cmd, name) {
+    if (cmd === 'start') {
+      Matrix.events.emit('app-start', { appName: name, txId: 0 });
+    } else if (cmd === 'stop') {
+      Matrix.events.emit('app-stop', { appName: name, txId: 0 })
+
+    } else if (cmd === 'update') {
+      Matrix.events.emit('app-update', { appName: name, txId: 0 })
+
+    } else if (cmd === 'install') {
+      Matrix.events.emit('app-install', { appName: name, txId: 0 })
+
+    } else if (cmd === 'restart') {
+      Matrix.events.emit('app-restart', { appName: name, txId: 0 })
+
+    } else if (cmd === 'uninstall') {
+      Matrix.events.emit('app-uninstall', { appName: name, txId: 0 })
+    } else if (cmd === 'list'){
+      Matrix.events.emit('app-list');
+    }
+  });
 
 program
   .command('list <cmd>')
   .description('List Devices / Users / Clients')
-  //TODO: add params for stuff
-  .action(function(cmd){
 
-  })
+  //TODO: add params for stuff
+  .action(function(cmd) {
+
+  });
 
 program.parse(process.argv);
