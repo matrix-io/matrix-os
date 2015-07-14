@@ -4,6 +4,8 @@ var log = new Logger({
   token:'69c24d93-3677-47d6-954c-984d58932924'
 });
 
+var fs = require('fs');
+
 require('colors');
 
 _ = require('lodash');
@@ -14,12 +16,19 @@ var events = require('events');
 // Core
 Matrix = require('./lib');
 
+if ( fs.existsSync('./config/_state.js') ){
+  Matrix.bootstrap = true;
+  Matrix.state = fs.readSync('./config/_state.js');
+} else {
+  Matrix.bootstrap = false;
+  Matrix.state = {};
+}
+
 //Event Loop
 Matrix.events = new events.EventEmitter();
 
 Matrix.config = require('./config');
 config = Matrix.config;
-Matrix.state = {};
 //Deal with users
 
 // Example
@@ -36,10 +45,10 @@ api = require('admatrix-node-sdk');
 
 Matrix.api = api;
 
-Matrix.event.app.init();
+Matrix.event.init();
 
 var init = function(cb){
-  Matrix.event.api.init();
+  // Matrix.event.api.init();
 
   var options = api.defaultConfig;
   api.start( options, function(err, state){
