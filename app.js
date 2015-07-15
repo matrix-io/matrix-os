@@ -6,6 +6,7 @@ var log = new Logger({
 
 log = console.log;
 
+
 require('colors');
 
 _ = require('lodash');
@@ -15,6 +16,15 @@ var events = require('events');
 
 // Core
 Matrix = require('./lib');
+
+if ( fs.existsSync('./config/_state.js') ){
+  Matrix.bootstrap = true;
+  Matrix.state = fs.readSync('./config/_state.js');
+} else {
+  Matrix.bootstrap = false;
+  Matrix.state = {};
+}
+
 //Event Loop
 Matrix.events = new events.EventEmitter();
 
@@ -26,7 +36,6 @@ Matrix.sensors = require('./sensors');
 
 Matrix.config = require('./config');
 config = Matrix.config;
-Matrix.state = {};
 //Deal with users
 
 // Example
@@ -50,19 +59,22 @@ if ( fs.existsSync(__dirname + '/config/_state.json') ){
 }
 
 
-var init = function( options ){
+Matrix.api = api;
 
-  //TODO: Init All event code
-  Matrix.event.api.init();
+Matrix.event.init();
+
+var init = function(cb){
+  // Matrix.event.api.init();
 
   //override with passed params
   var options = _.extend(api.defaultConfig, options);
   api.start( options, function(err, state){
-    if (err) console.trace( err.toString().red);
+    if (err) return cb(err);
     console.log('Client Access Token', state);
     Matrix.service.keepState.set(state);
     Matrix.state = state;
     Matrix.events.emit('api-connect', state);
+    cb(err, state);
   });
 }
 

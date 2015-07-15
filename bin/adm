@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 
-console.log('poop');
-
 var program = require('commander');
-var admatrix = require('../app')
+var admatrix = require('../app');
 var init = admatrix.init;
 var Matrix = admatrix.Matrix;
 
@@ -21,9 +19,9 @@ program
 program
   .command('heartbeat <cmd>')
   .description('Manages heartbeat')
-  .action(function(cmd){
-    Matrix.service.heartbeat[cmd]()
-  })
+  .action(function(cmd) {
+    Matrix.service.heartbeat[cmd]();
+  });
 
 program
   .command('info')
@@ -65,9 +63,10 @@ program
 program
   .command('list <cmd>')
   .description('List Devices / Users / Clients')
-  //TODO: add params for stuff
-  .action(function(cmd){
 
-  })
+  //TODO: add params for stuff
+  .action(function(cmd) {
+
+  });
 
 program.parse(process.argv);
