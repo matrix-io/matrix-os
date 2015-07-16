@@ -20,13 +20,14 @@ var events = require('events');
 Matrix = require('./lib');
 
 //db
-Matrix.db = new DataStore({ filename: './config/store.db', autoload: true });
-Matrix.service.state.get(function(err, state){
+Matrix.db = new DataStore({ filename: './db/store.db', autoload: true });
+Matrix.service.token.get(function(err, token){
   if (err) return console.error(err);
-  if (_.isNull(state)) {
-    log('No State Saved');
+  if (_.isNull(token)) {
+    console.error('No Token Saved'.red);
   } else {
-    Matrix.state = state;
+    log('Token Loaded'.green, token);
+    Matrix.token = token;
   }
 });
 
@@ -51,6 +52,8 @@ Matrix.sensors = require('./sensors');
 
 Matrix.config = require('./config');
 config = Matrix.config;
+
+
 //Deal with users
 
 // Example
@@ -62,7 +65,6 @@ Matrix.events.on('poop', function(data){
 Matrix.events.emit('poop', { stinky: true });
 */
 
-Matrix.event.init();
 
 var authenticate = function(cb){
   // Matrix.event.api.init();
@@ -73,8 +75,11 @@ var authenticate = function(cb){
   api.authenticate( options, function(err, state){
     if (err) return cb(err);
     console.log('Client Access Token', state.client.token);
-    Matrix.service.state.set(state);
+    Matrix.service.token.set(state.client.token, function(err, resp){
+      console.log('Token Set', resp, err )
+    });
     Matrix.state = state;
+    Matrix.token = state.client.token;
     Matrix.events.emit('api-connect', state);
     cb(err, state);
   });

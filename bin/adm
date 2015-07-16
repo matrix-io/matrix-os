@@ -22,7 +22,8 @@ program
 //TODO: add params for stuff
 .action(function() {
   auth(function(err, data) {
-    console.log('Init Complete');
+    if (err) log(err);
+    console.log('ADM SDK Init Complete');
   });
 });
 
@@ -31,6 +32,7 @@ program
   .command('app <cmd> [name]')
   .description('manage application lifecycle')
   .action(function(cmd, name) {
+    // sends off the API command
     var cmds = ['list','install','uninstall','restart','start','stop','update'];
     if ( cmds.indexOf(cmd) > -1 ) {
       name = ( cmd === 'list' ) ? '' : name;
