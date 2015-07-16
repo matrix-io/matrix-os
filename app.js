@@ -80,7 +80,6 @@ var authenticate = function(cb){
     });
     Matrix.state = state;
     Matrix.token = state.client.token;
-    Matrix.events.emit('api-connect', state);
     cb(err, state);
   });
 }
