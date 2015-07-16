@@ -11,7 +11,8 @@ var fs = require('fs');
 
   //remove self
   files.splice(files.indexOf(require('path').basename(__filename)), 1);
-  files.splice(files.indexOf('_state.json'), 1);
+  files.splice(files.indexOf('store.db'), 1);
+  files.splice(files.indexOf('api-store.db'), 1);
 
   files.forEach(function(file) {
     // require localized to this file

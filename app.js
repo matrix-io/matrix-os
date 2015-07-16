@@ -6,6 +6,8 @@ var log = new Logger({
 
 log = console.log;
 
+var DataStore = require('nedb');
+
 
 require('colors');
 
@@ -17,19 +19,32 @@ var events = require('events');
 // Core
 Matrix = require('./lib');
 
-if ( fs.existsSync('./config/_state.js') ){
-  Matrix.bootstrap = true;
-  Matrix.state = fs.readSync('./config/_state.js');
-} else {
-  Matrix.bootstrap = false;
-  Matrix.state = {};
-}
+//db
+Matrix.db = new DataStore({ filename: './config/store.db', autoload: true });
+Matrix.service.state.get(function(err, state){
+  if (err) return console.error(err);
+  if (_.isNull(state)) {
+    log('No State Saved');
+  } else {
+    Matrix.state = state;
+  }
+});
+
+// SDK
+api = require('admatrix-node-sdk');
+
+api.makeUrls( process.env['ADMATRIX_API'] || api.defaultConfig.apiUrl );
+
+Matrix.api = api;
 
 //Event Loop
 Matrix.events = new events.EventEmitter();
 
 //Initialize Listeners
 Matrix.event.init();
+
+// Init Services
+Matrix.service = require('./lib/service');
 
 //make sensors available
 Matrix.sensors = require('./sensors');
@@ -47,31 +62,18 @@ Matrix.events.on('poop', function(data){
 Matrix.events.emit('poop', { stinky: true });
 */
 
-
-api = require('admatrix-node-sdk');
-
-console.log(__dirname + '/config/_state.json');
-if ( fs.existsSync(__dirname + '/config/_state.json') ){
-  log('Using Old State');
-  Matrix.state = Matrix.service.keepState.get();
-} else {
-  log('No prior state, run init()');
-}
-
-
-Matrix.api = api;
-
 Matrix.event.init();
 
-var init = function(cb){
+var authenticate = function(cb){
   // Matrix.event.api.init();
 
   //override with passed params
+  //TODO: read env for options
   var options = _.extend(api.defaultConfig, options);
-  api.start( options, function(err, state){
+  api.authenticate( options, function(err, state){
     if (err) return cb(err);
-    console.log('Client Access Token', state);
-    Matrix.service.keepState.set(state);
+    console.log('Client Access Token', state.client.token);
+    Matrix.service.state.set(state);
     Matrix.state = state;
     Matrix.events.emit('api-connect', state);
     cb(err, state);
@@ -91,5 +93,5 @@ console.log('========== vvv MATRIX vvv =========\n'.yellow, Matrix, "\n======== 
 module.exports =
 {
   Matrix: Matrix,
-  init: init
+  auth: authenticate
 }
