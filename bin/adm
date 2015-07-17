@@ -36,16 +36,16 @@ program
     var cmds = ['list','install','uninstall','restart','start','stop','update'];
     if ( cmds.indexOf(cmd) > -1 ) {
       name = ( cmd === 'list' ) ? '' : name;
-      Matrix.api.app[cmd](name, function(err, resp) {
-        console.log(err, resp);
-      });
+      Matrix.events.emit('api-data', { type: 'utility.'+cmd, value: name });
+      // to test SDK
+      // Matrix.api.app[cmd](name, function(err, resp) {
+      //   console.log(err, resp);
+      // });
     } else {
       console.error(cmd, ' : is not a valid app command. Please try', cmds)
     }
   })
-  .action(function(cmd, name){
-    console.log('hihi');
-  });
+
 
 program
   .command('list <cmd>')

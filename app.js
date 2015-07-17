@@ -24,9 +24,9 @@ Matrix.db = new DataStore({ filename: './db/store.db', autoload: true });
 Matrix.service.token.get(function(err, token){
   if (err) return console.error(err);
   if (_.isNull(token)) {
-    console.error('No Token Saved'.red);
+    console.error('Please Login. No Token Available'.red);
   } else {
-    log('Token Loaded'.green, token);
+    // log('Token Loaded'.green, token);
     Matrix.token = token;
   }
 });
@@ -76,24 +76,19 @@ var authenticate = function(cb){
     if (err) return cb(err);
     console.log('Client Access Token', state.client.token);
     Matrix.service.token.set(state.client.token, function(err, resp){
-      console.log('Token Set', resp, err )
+      console.log('Token Set', resp, err );
     });
     Matrix.state = state;
-    Matrix.token = state.client.token;
     cb(err, state);
   });
 }
-
-console.log('========== vvv API vvv =========\n'.blue, api, "\n======== ^^^ API ^^^ =======".blue);
-
-
-
 
 Matrix.activeUser = false;
 Matrix.activeDevice = false;
 
 
-console.log('========== vvv MATRIX vvv =========\n'.yellow, Matrix, "\n======== ^^^ MATRIX ^^^ =======".yellow);
+// console.log('========== vvv API vvv =========\n'.blue, api, "\n======== ^^^ API ^^^ =======".blue);
+// console.log('========== vvv MATRIX vvv =========\n'.yellow, Matrix, "\n======== ^^^ MATRIX ^^^ =======".yellow);
 module.exports =
 {
   Matrix: Matrix,
