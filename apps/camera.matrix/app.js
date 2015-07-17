@@ -8,11 +8,11 @@ process.on('message', function(m) {
 
 
 function doInit() {
-  console.log('TODO: Init Camera Here')
+  console.log('TODO: THIS IS A CAMERA APP = WOOT +!')
 
   //fake camera for now
   setInterval( function() {
     process.send({ type: 'data-point', payload: { cameraData: true } });
-  }, 1000)
+  }, 5000)
 
 }

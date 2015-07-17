@@ -19,6 +19,11 @@ var events = require('events');
 // Core
 Matrix = require('./lib');
 
+// SDK
+api = require('admatrix-node-sdk');
+api.makeUrls( process.env['ADMATRIX_API'] || api.defaultConfig.apiUrl );
+
+
 //db
 Matrix.db = new DataStore({ filename: './db/store.db', autoload: true });
 Matrix.service.token.get(function(err, token){
@@ -28,13 +33,11 @@ Matrix.service.token.get(function(err, token){
   } else {
     // log('Token Loaded'.green, token);
     Matrix.token = token;
+    api.setToken(token);
   }
 });
+Matrix.service.lifecycle.updateLastBootTime();
 
-// SDK
-api = require('admatrix-node-sdk');
-
-api.makeUrls( process.env['ADMATRIX_API'] || api.defaultConfig.apiUrl );
 
 Matrix.api = api;
 
