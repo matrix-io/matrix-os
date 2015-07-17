@@ -97,3 +97,8 @@ module.exports =
   Matrix: Matrix,
   auth: authenticate
 }
+
+process.on('SIGINT', function() {
+  console.log('worker %d cancelled (%s). restarting...');
+  Matrix.service.manager.clearList();
+});
