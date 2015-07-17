@@ -102,3 +102,7 @@ process.on('SIGINT', function() {
   console.log('worker %d cancelled (%s). restarting...');
   Matrix.service.manager.clearList();
 });
+
+process.on('uncaughtException', function(err) {
+  console.log('Caught exception: ' + err);
+});
