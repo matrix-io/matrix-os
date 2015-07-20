@@ -29,7 +29,7 @@ Matrix.db = new DataStore({ filename: './db/store.db', autoload: true });
 Matrix.service.token.get(function(err, token){
   if (err) return console.error(err);
   if (_.isNull(token)) {
-    console.error('Please Login. No Token Available'.red);
+    console.error('Please Login with ./bin/adm start. No Token Available'.red);
   } else {
     // log('Token Loaded'.green, token);
     Matrix.token = token;

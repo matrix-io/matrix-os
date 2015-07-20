@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "admatrix-node-sdk": "https://eighteyes@bitbucket.org/admobilize/admobilize-node-sdk.git",
-    "admobilize-eventfilter-sdk": "git+ssh://git@bitbucket.org:admobilize/admobilize-eventfilter-sdk.git",
+    "admatrix-eventfilter-sdk": "git+ssh://git@bitbucket.org:admobilize/admobilize-eventfilter-sdk.git",
     "colors": "^1.1.2",
     "commander": "^2.8.1",
     "le_node": "^1.0.8",
