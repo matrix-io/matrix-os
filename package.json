@@ -12,13 +12,14 @@
   "author": "Sean Canton <sean@rokk3rlabs.com>",
   "license": "ISC",
   "dependencies": {
-    "admatrix-node-sdk": "git+ssh://git@bitbucket.org:admobilize/admobilize-node-sdk.git",
     "admatrix-eventfilter-sdk": "git+ssh://git@bitbucket.org:admobilize/admobilize-eventfilter-sdk.git",
+    "admatrix-node-sdk": "git+ssh://git@bitbucket.org:admobilize/admobilize-node-sdk.git",
     "colors": "^1.1.2",
     "commander": "^2.8.1",
     "le_node": "^1.0.8",
     "lodash": "^3.10.0",
     "nedb": "^1.1.2",
+    "portfinder": "^0.4.0",
     "request": "^2.58.0"
   },
   "bin": {

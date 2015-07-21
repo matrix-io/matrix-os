@@ -4,14 +4,15 @@ console.log('Welcome to', appName);
 
 module.exports = {
   send : function(message){
-    process.send({ type: 'app-data', appName: appName, payload: message });
+    process.send({ type: 'app-data', name: appName, payload: message });
   },
-  recieve: recieveHandler,
-  initSensor: initSensor
+  receive: receiveHandler,
+  init : initSensor
 }
 
 
-function recieveHandler(cb){
+
+function receiveHandler(cb){
   console.log('util receive');
 
   process.on('message', function(m) {
@@ -34,6 +35,28 @@ function recieveHandler(cb){
 
 
 function initSensor(name, options, cb){
+  process.send({type: 'sensor-socket-request', name: name, options: options });
+
+  process.on('message', function(m){
+    if ( m.type === 'sensor-event' ){
+      console.log(name, ':>ev|sensor-event', m.payload );
+    }
+  })
+
+  return {
+      stream: function(){
+        // var http = require('http');
+        // var server = http.createServer(function (req, res) {
+        //
+        // });
+        // require('portfinder').getPort(function(port){
+        //     server.listen(port);
+        // });
+
+        var EventFilter = require('admobilize-eventfilter-sdk').EventFilter;
+        return new EventFilter(name);
+      }
+  }
+
   // .stream generate a stream
-  // .detect for cameras, also generates stream
 }

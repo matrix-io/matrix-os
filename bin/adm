@@ -27,6 +27,11 @@ program
   });
 });
 
+program.command('fake <sensor>').description('fire off a fake sensor for testing')
+.action(function(sensor){
+  Matrix.events.emit('sensor-event', { type: sensor, value: 100 } );
+});
+
 
 program
   .command('app <cmd> [name]')
@@ -36,7 +41,7 @@ program
     var cmds = ['list','install','uninstall','restart','start','stop','update'];
     if ( cmds.indexOf(cmd) > -1 ) {
       name = ( cmd === 'list' ) ? '' : name;
-      Matrix.events.emit('api-data', { type: 'utility.'+cmd, value: name });
+      Matrix.events.emit('api-data', { type: 'app.'+cmd, value: name });
       // to test SDK
       // Matrix.api.app[cmd](name, function(err, resp) {
       //   console.log(err, resp);
