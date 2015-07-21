@@ -1,18 +1,8 @@
-process.on('message', function(m) {
+var send = matrix.send;
+var receive = matrix.receive;
 
-  if (m.init === true){
-    doInit();
-  }
-
+receive(function(){
+  console.log('happy handling');
 });
 
-
-function doInit() {
-  console.log('TODO: THIS IS A CAMERA APP = WOOT +!')
-
-  //fake camera for now
-  setInterval( function() {
-    process.send({ type: 'data-point', payload: { cameraData: true } });
-  }, 5000)
-
-}
+send('you suck');

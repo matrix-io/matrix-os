@@ -1,7 +1,3 @@
-process.on('message', function(m) {
+matrix = require('./matrix.js');
 
-  if (m.init === true){
-    doInit();
-  }
-
-});
+require('./app.js');
