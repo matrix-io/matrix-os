@@ -37,11 +37,12 @@ function receiveHandler(cb){
 function initSensor(name, options, cb){
   process.send({type: 'sensor-init', name: name, options: options });
 
-  process.on('message', function(m){
-    if ( m.type === 'sensor-event' ){
-      console.log('app:[M]->app t:sensor-event', name, m.payload );
-    }
-  });
+  // process.on('message', function(m){
+  //   console.log('yay!');
+  //   if ( m.type === 'sensor-event' ){
+  //     console.log('app:[M]->app t:sensor-event', name, m.value );
+  //   }
+  // });
 
   return {
       stream: function(){
@@ -55,6 +56,18 @@ function initSensor(name, options, cb){
 
         var EventFilter = require('admobilize-eventfilter-sdk').EventFilter;
         return new EventFilter(name);
+      },
+      then: function(cb){
+        process.on('message', function(m){
+          console.log('yay!');
+          if ( m.type === 'sensor-event' ){
+            console.log('app:[M]->app t:sensor-event', name, m.value );
+            //apply sensor
+            cb(null, m.value);
+          } else {
+            cb(new Error('Invalid Message from Matrix', m));
+          }
+        });
       }
   }
 

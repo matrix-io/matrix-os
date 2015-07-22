@@ -12,16 +12,16 @@ var endpoints = {
     registerUser: '/v1/oauth2/user/register/',
   },
   device:{
-    retriveToken: '/v1/device/token',
+    retrieveToken: '/v1/device/token',
     register: '/v1/device/register',
     update: '/v1/device/update',
     registerAnonymous: '/v1/device/create',
     submit: '/v1/device/data/create',
     heartbeat: '/v1/device/heartbeat',
     list: '/v1/device/retrieve',
-    // retriveUserDeviceList: '/v1/device/retrieve',
-    // retriveUserDevices: '/v1/device/retrieve',
-    // retriveDeviceData: '/v1/device/data/paginate',
+    // retrieveUserDeviceList: '/v1/device/retrieve',
+    // retrieveUserDevices: '/v1/device/retrieve',
+    // retrieveDeviceData: '/v1/device/data/paginate',
     // requestDeviceDetails: '/admin/device/get'
   }
 }
