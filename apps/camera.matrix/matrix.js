@@ -2,6 +2,10 @@
 var appName = require('path').basename(__dirname).split('.')[0];
 console.log('Welcome to', appName);
 
+var EventFilter = require('admobilize-eventfilter-sdk').EventFilter;
+var apply = require('admobilize-eventfilter-sdk').apply;
+var _ = require('lodash');
+
 module.exports = {
   send : function(message){
     process.send({ type: 'app-data', name: appName, payload: message });
@@ -44,32 +48,21 @@ function initSensor(name, options, cb){
   //   }
   // });
 
-  return {
-      stream: function(){
-        // var http = require('http');
-        // var server = http.createServer(function (req, res) {
-        //
-        // });
-        // require('portfinder').getPort(function(port){
-        //     server.listen(port);
-        // });
+  var filter = new EventFilter(name);
 
-        var EventFilter = require('admobilize-eventfilter-sdk').EventFilter;
-        return new EventFilter(name);
-      },
-      then: function(cb){
-        process.on('message', function(m){
-          console.log('yay!');
-          if ( m.type === 'sensor-event' ){
-            console.log('app:[M]->app t:sensor-event', name, m.value );
-            //apply sensor
-            cb(null, m.value);
-          } else {
-            cb(new Error('Invalid Message from Matrix', m));
-          }
-        });
+  var then = function(cb){
+    process.on('message', function(m){
+      if ( m.type === 'sensor-event' ){
+        console.log('app:[M]->app t:sensor-event', name, m.value );
+        //apply sensor
+        cb(null, m.value);
+      } else {
+        cb(new Error('Invalid Message from Matrix', m));
       }
+    });
   }
 
-  // .stream generate a stream
+  _.extend(filter, { then: then });
+
+  return filter;
 }
