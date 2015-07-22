@@ -35,13 +35,13 @@ function receiveHandler(cb){
 
 
 function initSensor(name, options, cb){
-  process.send({type: 'sensor-socket-request', name: name, options: options });
+  process.send({type: 'sensor-init', name: name, options: options });
 
   process.on('message', function(m){
     if ( m.type === 'sensor-event' ){
-      console.log(name, ':>ev|sensor-event', m.payload );
+      console.log('app:[M]->app t:sensor-event', name, m.payload );
     }
-  })
+  });
 
   return {
       stream: function(){

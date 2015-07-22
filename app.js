@@ -23,6 +23,9 @@ Matrix = require('./lib');
 api = require('admatrix-node-sdk');
 api.makeUrls( process.env['ADMATRIX_API'] || api.defaultConfig.apiUrl );
 
+//app processes
+Matrix.activeProcesses = [];
+
 
 //db
 Matrix.db = new DataStore({ filename: './db/store.db', autoload: true });
@@ -101,6 +104,7 @@ module.exports =
 process.on('SIGINT', function() {
   console.log('worker %d cancelled (%s). restarting...');
   Matrix.service.manager.clearList();
+  process.exit(1);
 });
 
 process.on('uncaughtException', function(err) {
