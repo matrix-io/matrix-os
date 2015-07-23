@@ -79,6 +79,8 @@ if ( _.isString(process.env['ADMATRIX_DEVICE_ID'])) {
   clog.addFilter(function(msg, meta, level) {
     return msg + ' [' + process.env['ADMATRIX_DEVICE_ID'] + ']';
   });
+} else {
+  console.error('No ADMATRIX_DEVICE_ID env var. Logging will lack');
 }
 
 

@@ -33,4 +33,3 @@ _.each(endpoints, function(category){
 });
 
 module.exports = endpoints;
-
