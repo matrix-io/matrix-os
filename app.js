@@ -1,15 +1,12 @@
 
-var Logger = require('le_node');
-var log = new Logger({
-  token:'69c24d93-3677-47d6-954c-984d58932924'
-});
-
-log = console.log;
+// var Logger = require('le_node');
+// var log = new Logger({
+//   token:'69c24d93-3677-47d6-954c-984d58932924'
+// });
 
 var DataStore = require('nedb');
 
 
-require('colors');
 
 _ = require('lodash');
 
@@ -58,6 +55,49 @@ Matrix.sensors = require('./sensors');
 
 Matrix.config = require('./config');
 config = Matrix.config;
+
+// Logging
+winston = require('winston');
+var Logentries = require('winston-logentries');
+
+
+  var clog = new(winston.Logger)({
+    transports: [
+      new(winston.transports.Console)({
+        colorize: true
+      }),
+      // new(winston.transports.File)({
+      //   filename: 'somefile.log'
+      // }),
+      new(winston.transports.Logentries)({
+        token: 'b80a0207-e6d3-4aef-a7cf-4a787ca7ab41'
+      })
+    ]
+  });
+
+if ( _.isString(process.env['ADMATRIX_DEVICE_ID'])) {
+  clog.addFilter(function(msg, meta, level) {
+    return msg + ' [' + process.env['ADMATRIX_DEVICE_ID'] + ']';
+  });
+}
+
+
+  log = clog.info;
+  warn = clog.warn;
+  error = clog.error;
+
+//
+// mainLogger.info('woo');
+// warn = debugLogger.error;
+//
+
+// log = clog.info;
+// warn = clog.warn;
+// error = clog.error;
+//
+log('pooped');
+warn('pooped');
+error('pooped2');
 
 
 //Deal with users
