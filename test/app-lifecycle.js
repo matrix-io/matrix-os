@@ -1,5 +1,6 @@
 var fs = require('fs-extra');
 var Matrix = require('../app').Matrix;
+var should = require('should');
 
 describe('Matrix<->App', function(){
   var pid;
@@ -10,8 +11,11 @@ describe('Matrix<->App', function(){
   //   //teardown
   //   fs.removeSync('./apps/test.matrix');
   // });
-  it('Matrix.service can start an app', function(done){
+  describe('Matrix.service.manager[]', function(){
+
+  it('[start] will start an app', function(done){
     Matrix.service.manager.start('test', function(err, proc){
+      proc.pid.should.be.ok();
       pid = proc.pid;
       done();
     });
@@ -20,6 +24,8 @@ describe('Matrix<->App', function(){
     Matrix.service.manager.stop(pid, function(){
       done();
     });
+  })
+  it('Matrix.')
   })
 
 });

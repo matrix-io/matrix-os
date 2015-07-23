@@ -22,7 +22,8 @@
     "nedb": "^1.1.2",
     "pm2": "^0.14.3",
     "portfinder": "^0.4.0",
-    "request": "^2.58.0"
+    "request": "^2.58.0",
+    "should": "^7.0.2"
   },
   "bin": {
     "adm": "./bin/adm"
