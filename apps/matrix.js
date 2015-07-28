@@ -5,14 +5,20 @@ var applyFilter = require('admobilize-eventfilter-sdk').apply;
 var _ = require('lodash');
 
 module.exports = {
-  sendData: function(message) {
+  send: function(message) {
     process.send({
       type: 'data-point',
       payload: message
     });
   },
   receive: receiveHandler,
-  init: initSensor
+  init: initSensor,
+  emit: function(type, msg){
+    process.send({
+      type: type,
+      payload: message
+    });
+  }
 }
 
 
@@ -53,7 +59,7 @@ function initSensor(name, options, cb) {
   var then = function(cb) {
     process.on('message', function(m) {
       if (m.eventType === 'sensor-event') {
-        console.log('app:[M]->app t:sensor-event'.blue, name, m);
+        // console.log('app:[M]->app t:sensor-event'.blue, name, m);
         // console.log('applying filter:', filter.json());
         //FIXME: recast needed for apply, requires type attribute
         m = _.omit(m,'eventType');
