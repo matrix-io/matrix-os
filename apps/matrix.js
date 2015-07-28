@@ -1,6 +1,3 @@
-var appName = require('path').basename(__dirname).split('.')[0];
-console.log('Welcome to', appName);
-
 require('colors');
 
 var EventFilter = require('admobilize-eventfilter-sdk').EventFilter;
@@ -8,10 +5,9 @@ var applyFilter = require('admobilize-eventfilter-sdk').apply;
 var _ = require('lodash');
 
 module.exports = {
-  send: function(message) {
+  sendData: function(message) {
     process.send({
-      type: 'app-data',
-      name: appName,
+      type: 'data-point',
       payload: message
     });
   },
@@ -44,6 +40,8 @@ function receiveHandler(cb) {
 
 
 function initSensor(name, options, cb) {
+  console.log('Initialize:'.blue , name);
+
   process.send({
     type: 'sensor-init',
     name: name,
@@ -55,10 +53,10 @@ function initSensor(name, options, cb) {
   var then = function(cb) {
     process.on('message', function(m) {
       if (m.eventType === 'sensor-event') {
-        // console.log('app:[M]->app t:sensor-event', name, m);
+        console.log('app:[M]->app t:sensor-event'.blue, name, m);
         // console.log('applying filter:', filter.json());
         //FIXME: recast needed for apply, requires type attribute
-        m.type = m.sensorType;
+        m = _.omit(m,'eventType');
         cb(null, applyFilter(filter, m));
       } else {
         cb(new Error('Invalid Message from Matrix', m));

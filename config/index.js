@@ -21,6 +21,26 @@ var fs = require('fs');
     }
   });
 
+  var configs = _.pick(process.env, [
+    'ADMATRIX_API_SERVER',
+    'ADMATRIX_STREAMING_SERVER',
+    'ADMATRIX_CLIENT_ID',
+    'ADMATRIX_DEVICE_ID',
+    'ADMATRIX_USER',
+    'ADMATRIX_PASSWORD',
+    'NODE_ENV'
+  ]);
+
+  configs = _.mapKeys(configs, function(v,k){
+    var k = k.replace('ADMATRIX','');
+    return _.camelCase(k);
+  })
+
+  clog('ENV VARS\n'.green, configs);
+
+  _.extend(Matrix, configs);
+
+
   f.local = require('./env');
   f.version = JSON.parse(fs.readFileSync(__dirname + '/../package.json')).version;
   f.heartbeatInterval = 10000;
