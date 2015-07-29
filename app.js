@@ -56,10 +56,13 @@ Matrix.service.token.get(function(err, token){
 Matrix.service.lifecycle.updateLastBootTime();
 Matrix.service.socket.init();
 
-// Start an app - FAKE
-Matrix.service.manager.start('temperature');
-
-
+// TODO: Enable Configurations
+// Start Apps - Hit API Server for App List (needs endpoint)
+// > Start App. Sensors
+// Scaffold for Install / Remove
+// Scaffold for Updates - socket > tmp + migrate & fallback
+// Start BTLE
+// WiFI connection
 
 
 
@@ -68,6 +71,11 @@ Matrix.service = require('./lib/service');
 
 //make sensors available
 Matrix.sensors = require('./sensors');
+
+
+// Start an app - FAKE
+Matrix.service.manager.start('temperature');
+Matrix.sensors.fake.init(8000);
 
 
 //
