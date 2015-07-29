@@ -11,6 +11,7 @@ describe('Matrix<->Sensors', function() {
   });
 
   it('can initialize a sensor');
+  it('cannot initialize a sensor twice');
   it('can read a sensor');
   it('can turn off a sensor');
   it('can hook up a sensor to an app and read the filter');
