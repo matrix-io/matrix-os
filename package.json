@@ -16,6 +16,7 @@
     "admatrix-node-sdk": "git+ssh://git@bitbucket.org:admobilize/admobilize-node-sdk.git",
     "colors": "^1.1.2",
     "commander": "^2.8.1",
+    "df": "^1.1.1",
     "fs-extra": "^0.22.1",
     "getmac": "^1.0.7",
     "le_node": "^1.0.8",

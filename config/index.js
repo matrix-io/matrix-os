@@ -46,4 +46,7 @@ var fs = require('fs');
   f.heartbeatInterval = 10000;
   f.spaceLimit = 5000000;
 
+// TODO: Figure out where storage happens, shouldn't it just be nedb
+  f.paths = { root : __dirname };
+
   module.exports = f;

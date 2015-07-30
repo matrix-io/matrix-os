@@ -40,7 +40,14 @@ Matrix.activeProcesses = [];
 
 //db -
 var DataStore = require('nedb');
-Matrix.db = new DataStore({ filename: './db/store.db', autoload: true });
+Matrix.db = {
+  config : new DataStore({ filename: config.path.db.config, autoload: true }),
+  device : new DataStore({ filename: config.path.db.device, autoload: true }),
+  user : new DataStore({ filename: config.path.db.user, autoload: true }),
+  service : new DataStore({ filename: config.path.db.service, autoload: true }),
+  pending : new DataStore({ filename: config.path.db.pending, autoload: true })
+}
+
 
 Matrix.service.token.get(function(err, token){
   if (err) return console.error(err);
@@ -54,7 +61,7 @@ Matrix.service.token.get(function(err, token){
 });
 
 Matrix.service.lifecycle.updateLastBootTime();
-Matrix.service.socket.init();
+Matrix.service.stream.init();
 
 // TODO: Enable Configurations
 // Start Apps - Hit API Server for App List (needs endpoint)
