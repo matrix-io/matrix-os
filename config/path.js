@@ -8,11 +8,11 @@ var p = {
 
   root: root,
   db: {
-    device: root + 'db/device.json',
-    config: root + 'db/config.json',
-    user: root + 'db/user.json',
-    service: root + 'db/service.json',
-    pending: root + 'db/pending.json'
+    device: root + 'db/device.db',
+    config: root + 'db/config.db',
+    user: root + 'db/user.db',
+    service: root + 'db/service.db',
+    pending: root + 'db/pending.db'
   },
   pendingFiles: root + 'public/pending_files',
   update: root + 'tmp/updates/',
