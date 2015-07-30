@@ -15,7 +15,9 @@ var p = {
     pending: root + 'db/pending.json'
   },
   pendingFiles: root + 'public/pending_files',
-  update: root + 'tmp/updates/'
+  update: root + 'tmp/updates/',
+
+  splash: 'public/splash'
 };
 
 p.openCVInstallerFile = root + 'node_modules/' + p.freshRunModule + '/scripts/openCVInstall.sh';

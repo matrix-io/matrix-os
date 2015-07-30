@@ -45,6 +45,7 @@ var fs = require('fs');
   f.version = JSON.parse(fs.readFileSync(__dirname + '/../package.json')).version;
   f.heartbeatInterval = 10000;
   f.spaceLimit = 5000000;
+  f.splashInterval = 30;
 
 // TODO: Figure out where storage happens, shouldn't it just be nedb
   f.paths = { root : __dirname };
