@@ -44,5 +44,6 @@ var fs = require('fs');
   f.local = require('./env');
   f.version = JSON.parse(fs.readFileSync(__dirname + '/../package.json')).version;
   f.heartbeatInterval = 10000;
+  f.spaceLimit = 5000000;
 
   module.exports = f;
