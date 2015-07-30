@@ -14,6 +14,7 @@
   "dependencies": {
     "admatrix-eventfilter-sdk": "git+ssh://git@bitbucket.org:admobilize/admobilize-eventfilter-sdk.git",
     "admatrix-node-sdk": "git+ssh://git@bitbucket.org:admobilize/admobilize-node-sdk.git",
+    "chai": "^3.2.0",
     "colors": "^1.1.2",
     "commander": "^2.8.1",
     "df": "^1.1.1",
