@@ -15,7 +15,8 @@ var p = {
     pending: root + 'db/pending.db'
   },
   pendingFiles: root + 'public/pending_files',
-  update: root + 'tmp/updates/',
+  update: '/tmp/matrix-update/',
+  backup: '/tmp/matrix-backup/',
 
   splash: 'public/splash'
 };

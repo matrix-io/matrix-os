@@ -1,9 +1,3 @@
-
-
-module.exports = {
-  url: require('./url')
-}
-
 var f = {
   fakeSensor: false
 };

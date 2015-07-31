@@ -1,5 +1,7 @@
 
 _ = require('lodash');
+async = require('async');
+
 var fs = require('fs');
 var events = require('events');
 var util = require('util');
@@ -41,27 +43,55 @@ Matrix.db = {
   pending : new DataStore({ filename: config.path.db.pending, autoload: true })
 }
 
-// check in with api server
-Matrix.service.token.get(function(err, token){
-  if (err) return console.error(err);
-  if (_.isNull(token)) {
-    // Try to get token from API
-    console.error('No Token Available. Requesting new token.'.red);
-    Matrix.api.authenticate({
-      clientId : Matrix.clientId,
-      clientSecret : Matrix.clientSecret,
-      apiUrl: Matrix.apiServer
-    }, function(err, state){
-      if (err) return error(err);
-      Matrix.service.token.set(state.client.token);
-      Matrix.events.emit('token-refresh');
-      Matrix.token = token;
-    })
-  } else {
-    log('Using Token'.green, token);
-    Matrix.token = token;
+// this is kind of an init
+async.series([
+  function getToken(cb){
+    // check in with api server
+    Matrix.service.token.get(function(err, token){
+      if (err) return cb(err);
+      if (_.isNull(token)) {
+        // Try to get token from API
+        console.error('No Token Available. Requesting new token.'.red);
+        Matrix.api.authenticate({
+          clientId : Matrix.clientId,
+          clientSecret : Matrix.clientSecret,
+          apiUrl: Matrix.apiServer
+        }, function(err, state){
+          if (err) cb(err);
+          Matrix.service.token.set(state.client.token);
+          Matrix.events.emit('token-refresh');
+          Matrix.token = token;
+          cb(null, token);
+        })
+      } else {
+        log('Using Token'.green, token);
+        Matrix.token = token;
+        cb(null, token);
+      }
+    });
+  },
+  function checkUpdates(cb){
+    Matrix.api.device.checkUpdates(function(err, update){
+      if (err) return cb(err);
+      // check version
+      if ( update.version === Matrix.version ){
+        cb(null);
+      } else {
+        api.getUrl( update.url, function(err, data){
+          fs.writeFileSync( config.path.update + update.version + '/update.zip');
+        };
+        // download update.url to /tmp/matrix_update/x.x.x
+        // run update bash script
+        // - shuts down Matrix
+        // - move old version to /tmp/matrix_backup/x.x.x/
+        // - copy update to folder
+      }
+    });
   }
-});
+], function(err, obj){
+  if (err) return cb(err);
+  log(obj);
+})
 Matrix.service.lifecycle.updateLastBootTime();
 Matrix.service.stream.init();
 
@@ -142,6 +172,7 @@ function onKill() {
 @description Stop process before stop application
 */
 function onDestroy() {
+  //TODO: Implemenent cleanups
   // clean up db
   // kill children apps
   // other maintenance
