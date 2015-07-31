@@ -1,38 +1,31 @@
 
-// var Logger = require('le_node');
-// var log = new Logger({
-//   token:'69c24d93-3677-47d6-954c-984d58932924'
-// });
-
-
-
-
 _ = require('lodash');
-
 var fs = require('fs');
 var events = require('events');
 var util = require('util');
-ulog = util.log;
-clog = console.log;
-
 
 // Core
 Matrix = require('./lib');
 
+// Logging
 Matrix.service.logging.init();
-
-Matrix.config = require('./config');
-config = Matrix.config;
-
-//Event Loop
-Matrix.events = new events.EventEmitter();
-
-//Initialize Listeners
-Matrix.event.init();
+ulog = util.log;
+clog = console.log;
 
 // SDK
 api = require('admatrix-node-sdk');
-api.makeUrls( process.env['ADMATRIX_API'] || api.defaultConfig.apiUrl );
+api.makeUrls( process.env['ADMATRIX_API'] );
+
+// Config
+Matrix.config = require('./config');
+config = Matrix.config;
+
+//Event Loop - Handles all events
+Matrix.events = new events.EventEmitter();
+
+//Initialize Listeners - Code goes here
+Matrix.event.init();
+
 Matrix.api = api;
 
 //app processes
@@ -48,18 +41,27 @@ Matrix.db = {
   pending : new DataStore({ filename: config.path.db.pending, autoload: true })
 }
 
-
+// check in with api server
 Matrix.service.token.get(function(err, token){
   if (err) return console.error(err);
   if (_.isNull(token)) {
-    console.error('Please Login with ./bin/adm start. No Token Available'.red);
+    // Try to get token from API
+    console.error('No Token Available. Requesting new token.'.red);
+    Matrix.api.authenticate({
+      clientId : Matrix.clientId,
+      clientSecret : Matrix.clientSecret,
+      apiUrl: Matrix.apiServer
+    }, function(err, state){
+      if (err) return error(err);
+      Matrix.service.token.set(state.client.token);
+      Matrix.events.emit('token-refresh');
+      Matrix.token = token;
+    })
   } else {
-    // log('Token Loaded'.green, token);
+    log('Using Token'.green, token);
     Matrix.token = token;
-    api.setToken(token);
   }
 });
-
 Matrix.service.lifecycle.updateLastBootTime();
 Matrix.service.stream.init();
 
@@ -73,27 +75,17 @@ Matrix.service.stream.init();
 
 
 
-// Init Services
-Matrix.service = require('./lib/service');
-
 //make sensors available
 Matrix.sensors = require('./sensors');
 
 
+if (config.fakeSensor === true){
 // Start an app - FAKE
 Matrix.service.manager.start('temperature');
+// Start a sensor -- FAKE
 Matrix.sensors.fake.init(8000);
+}
 
-
-//
-// mainLogger.info('woo');
-// warn = debugLogger.error;
-//
-
-// log = clog.info;
-// warn = clog.warn;
-// error = clog.error;
-//
 
 
 
@@ -109,41 +101,88 @@ Matrix.events.emit('poop', { stinky: true });
 */
 
 
-var authenticate = function(cb){
-  // Matrix.event.api.init();
-
-  //override with passed params
-  //TODO: read env for options
-  var options = _.extend(api.defaultConfig, options);
-  api.authenticate( options, function(err, state){
-    if (err) return cb(err);
-    console.log('Client Access Token', state.client.token);
-    Matrix.service.token.set(state.client.token, function(err, resp){
-      console.log('Token Set', resp, err );
-    });
-    Matrix.state = state;
-    cb(err, state);
-  });
-}
-
-Matrix.activeUser = false;
-Matrix.activeDevice = false;
-
-
-// console.log('========== vvv API vvv =========\n'.blue, api, "\n======== ^^^ API ^^^ =======".blue);
+// log('========== vvv API vvv =========\n'.blue, api, "\n======== ^^^ API ^^^ =======".blue);
 // console.log('========== vvv MATRIX vvv =========\n'.yellow, Matrix, "\n======== ^^^ MATRIX ^^^ =======".yellow);
 module.exports =
 {
-  Matrix: Matrix,
-  auth: authenticate
+  Matrix: Matrix
 }
 
-process.on('SIGINT', function() {
-  console.log('worker %d cancelled (%s). restarting...');
-  Matrix.service.manager.clearList();
-  process.exit(1);
+
+//Triggered when the application is killed by a [CRTL+C] from keyboard
+process.on("SIGINT", function () {
+  log("Matrix -- CRTL+C kill detected");
+  onKill();
 });
 
-process.on('uncaughtException', function(err) {
-  console.log('Caught exception: ' + err);
+//Triggered when the application is killed with a -15
+process.on("SIGTERM", function () {
+  log("Matrix -- Kill detected");
+  onKill();
+});
+
+//Triggered when the application is killed by a [CRTL+\] from keyboard
+process.on("SIGQUIT", function () {
+  log("Matrix -- CRTL+\\ kill detected");
+  onKill();
+});
+
+
+/*
+@method onKill
+@description Used to unify the behavior of all kill signals
+*/
+function onKill() {
+  log("Matrix -- Application Closing...");
+  onDestroy();
+}
+
+/*
+@method onDestroy
+@description Stop process before stop application
+*/
+function onDestroy() {
+  // clean up db
+  // kill children apps
+  // other maintenance
+  process.exit();
+}
+
+
+
+//Triggered when an unexpected (programming) error occurs
+//Also called when a DNS error is presented
+process.on('uncaughtException', function (err) {
+  error('Boot -- Uncaught exception: ');
+  if (err.code && err.code == "ENOTFOUND") {
+    error('Boot -- ENOTFOUND was detected (DNS error)');
+    Matrix.device.manager.setupDNS();
+  } else if (err.code && err.code == "EAFNOSUPPORT") {
+    error('Boot -- EAFNOSUPPORT was detected (DNS error 2?)');
+    Matrix.device.manager.setupDNS();
+  } else if (err.code && err.code == "ETIMEDOUT") {
+    error('Boot -- ETIMEDOUT was detected (DNS error 3?)');
+    Matrix.device.manager.setupDNS();
+  } else if (err.code && err.code == "ENOMEM") {
+    error('Boot -- ENOMEM was detected (Out of memory)');
+    error(err.stack);
+    Matrix.device.manager.reboot("Memory clean up");
+  } else {
+    error(err.stack);
+
+    // TODO: bad update? revert to last
+    //revert old
+    // getOldBranch(function (oldBranch) {
+    //   if (oldBranch && oldBranch !== "") {
+    //     revertUpdate(function (error) {
+    //       if (error) {
+    //         warn("Boot -- Error reverting...");
+    //         onDestroy();
+    //       }
+    //     });
+    //   } else {
+    //     onDestroy();
+    //   }
+    // });
+  }
 });

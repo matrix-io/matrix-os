@@ -4,7 +4,10 @@ module.exports = {
   url: require('./url')
 }
 
-var f = {};
+var f = {
+  fakeSensor: false
+};
+
 var fs = require('fs');
 
   var files = fs.readdirSync(__dirname);
@@ -25,6 +28,7 @@ var fs = require('fs');
     'ADMATRIX_API_SERVER',
     'ADMATRIX_STREAMING_SERVER',
     'ADMATRIX_CLIENT_ID',
+    'ADMATRIX_CLIENT_SECRET',
     'ADMATRIX_DEVICE_ID',
     'ADMATRIX_USER',
     'ADMATRIX_PASSWORD',
@@ -40,6 +44,7 @@ var fs = require('fs');
 
   _.extend(Matrix, configs);
 
+  f.version = JSON.parse( fs.readFileSync('./package.json') ).version;
 
   f.local = require('./env');
   f.version = JSON.parse(fs.readFileSync(__dirname + '/../package.json')).version;
