@@ -15,8 +15,5 @@ rm -r $TARGET*
 # extract update
 unzip $UPDATE/update.zip -d $TARGET
 
-#TODO: make work in case of changes
-#npm install
-
 # start the thing again
 ./bin/start.sh

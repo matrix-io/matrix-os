@@ -1,5 +1,5 @@
 var f = {
-  fakeSensor: false
+  fakeSensor: true
 };
 
 var fs = require('fs');

@@ -79,7 +79,7 @@ async.series([
       } else {
         api.getUrl( update.url, function(err, data){
           fs.writeFileSync( config.path.update + update.version + '/update.zip');
-        };
+        });
         // download update.url to /tmp/matrix_update/x.x.x
         // run update bash script
         // - shuts down Matrix
