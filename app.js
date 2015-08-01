@@ -91,7 +91,8 @@ async.series([
 ], function(err, obj){
   if (err) return cb(err);
   log(obj);
-})
+});
+
 Matrix.service.lifecycle.updateLastBootTime();
 Matrix.service.stream.init();
 
