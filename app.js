@@ -29,6 +29,7 @@ Matrix.events = new events.EventEmitter();
 Matrix.event.init();
 
 Matrix.api = api;
+Matrix.api.makeUrls(Matrix.apiServer);
 
 //app processes
 Matrix.activeProcesses = [];
@@ -45,38 +46,42 @@ Matrix.db = {
 
 // this is kind of an init
 async.series([
+  function checkApiServer(cb){
+    require('http').get(Matrix.apiServer, function(res){
+      cb(null, res);
+    }).on('error', function(){
+      error('No API Server Visible', Matrix.apiServer);
+      cb();
+    });
+  },
+  function checkStreamingServer(cb){
+    require('http').get(Matrix.streamingServer, function(res){
+      cb(null, res);
+    }).on('error', function(){
+      error('No Streaming Server Visible', Matrix.apiServer)
+      cb();
+    });
+  },
   function getToken(cb){
     // check in with api server
     Matrix.service.token.get(function(err, token){
       if (err) return cb(err);
-      if (_.isNull(token)) {
-        // Try to get token from API
-        console.error('No Token Available. Requesting new token.'.red);
-        Matrix.api.authenticate({
-          clientId : Matrix.clientId,
-          clientSecret : Matrix.clientSecret,
-          apiUrl: Matrix.apiServer
-        }, function(err, state){
-          if (err) cb(err);
-          Matrix.service.token.set(state.client.token);
-          Matrix.events.emit('token-refresh');
-          Matrix.token = token;
-          cb(null, token);
-        })
-      } else {
-        log('Using Token'.green, token);
-        Matrix.token = token;
-        cb(null, token);
-      }
+
+      log('Using Token'.green, token);
+      Matrix.token = token;
+      cb(null, token);
     });
   },
   function checkUpdates(cb){
     Matrix.api.device.checkUpdates(function(err, update){
       if (err) return cb(err);
       // check version
+      log('===', update);
       if ( update.version === Matrix.version ){
         cb(null);
       } else {
+
+        // pull the url and write to zip file to be processed by bin/applyUpdate
         api.getUrl( update.url, function(err, data){
           fs.writeFileSync( config.path.update + update.version + '/update.zip');
         });
@@ -89,8 +94,8 @@ async.series([
     });
   }
 ], function(err, obj){
-  if (err) return cb(err);
-  log(obj);
+  if (err) error(err);
+  log('== [.\\/.] Ready'.green.bold, obj);
 });
 
 Matrix.service.lifecycle.updateLastBootTime();
@@ -132,7 +137,7 @@ Matrix.events.emit('poop', { stinky: true });
 */
 
 
-// log('========== vvv API vvv =========\n'.blue, api, "\n======== ^^^ API ^^^ =======".blue);
+log('========== vvv API vvv =========\n'.blue, api, "\n======== ^^^ API ^^^ =======".blue);
 // console.log('========== vvv MATRIX vvv =========\n'.yellow, Matrix, "\n======== ^^^ MATRIX ^^^ =======".yellow);
 module.exports =
 {
