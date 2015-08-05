@@ -55,7 +55,10 @@ async.series([
     });
   },
   function checkStreamingServer(cb){
-    require('http').get(Matrix.streamingServer, function(res){
+    var streamOptions = require('url').parse( Matrix.streamingServer );
+    require('net').connect({
+      port: streamOptions.port,
+      host: streamOptions.hostname}, function(res){
       cb(null);
     }).on('error', function(){
       error('No Streaming Server Visible', Matrix.streamingServer)
@@ -74,6 +77,7 @@ async.series([
   },
   function checkUpdates(cb){
     warn('Updates not implemented on api yet');
+    return cb();
     Matrix.api.device.checkUpdates(function(err, update){
       if (err) return cb(err);
       // check version
@@ -182,18 +186,18 @@ function onDestroy() {
 //Triggered when an unexpected (programming) error occurs
 //Also called when a DNS error is presented
 process.on('uncaughtException', function (err) {
-  error('Boot -- Uncaught exception: ');
+  error('Matrix -- Uncaught exception: ');
   if (err.code && err.code == "ENOTFOUND") {
-    error('Boot -- ENOTFOUND was detected (DNS error)');
+    error('Matrix -- ENOTFOUND was detected (DNS error)');
     Matrix.device.manager.setupDNS();
   } else if (err.code && err.code == "EAFNOSUPPORT") {
-    error('Boot -- EAFNOSUPPORT was detected (DNS error 2?)');
+    error('Matrix -- EAFNOSUPPORT was detected (DNS error 2?)');
     Matrix.device.manager.setupDNS();
   } else if (err.code && err.code == "ETIMEDOUT") {
-    error('Boot -- ETIMEDOUT was detected (DNS error 3?)');
+    error('Matrix -- ETIMEDOUT was detected (DNS error 3?)');
     Matrix.device.manager.setupDNS();
   } else if (err.code && err.code == "ENOMEM") {
-    error('Boot -- ENOMEM was detected (Out of memory)');
+    error('Matrix -- ENOMEM was detected (Out of memory)');
     error(err.stack);
     Matrix.device.manager.reboot("Memory clean up");
   } else {

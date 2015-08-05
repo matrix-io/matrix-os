@@ -38,6 +38,12 @@ program.command('fake <sensor>').description('fire off a fake sensor for testing
   Matrix.events.emit('sensor-event', { type: sensor, value: 100 } );
 });
 
+program.command('update <app>')
+.action(function(appName){
+  Matrix.service.manager.install('http://0.0.0.0:8000/temp.zip',appName , '1.0.1', function(){
+    console.log('woot señor'.rainbow)
+  })
+})
 
 program
   .command('app <cmd> [name]')
