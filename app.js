@@ -1,4 +1,4 @@
-
+/* GLOBALS */
 _ = require('lodash');
 async = require('async');
 
@@ -28,13 +28,14 @@ Matrix.events = new events.EventEmitter();
 //Initialize Listeners - Code goes here
 Matrix.event.init();
 
+// Node-SDK - Use for API Server Communication
 Matrix.api = api;
 Matrix.api.makeUrls(Matrix.apiServer);
 
-//app processes
+//app processes, see lib/service/mananger
 Matrix.activeProcesses = [];
 
-//db -
+//db - files stored in db/
 var DataStore = require('nedb');
 Matrix.db = {
   config : new DataStore({ filename: config.path.db.config, autoload: true }),
@@ -91,8 +92,9 @@ async.series([
   }
 ], function(err, obj){
   if (err) error(err);
-  log('=<[^\\/^]>='.green.bold, '['.green+Matrix.deviceId.green+']'.green, 'Ready to go');
+  log(Matrix.is.green.bold, '['.green+Matrix.deviceId.green+']'.green, 'Ready to go');
 });
+
 
 Matrix.service.lifecycle.updateLastBootTime();
 Matrix.service.stream.init();
