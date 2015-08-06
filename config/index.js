@@ -1,5 +1,6 @@
 var f = {
-  fakeSensor: false
+  fakeSensor: true,
+  fakeFrequency: 30000
 };
 
 var fs = require('fs');
@@ -45,6 +46,7 @@ var fs = require('fs');
   f.heartbeatInterval = 10000;
   f.spaceLimit = 5000000;
   f.splashInterval = 30;
+
 
 // TODO: Figure out where storage happens, shouldn't it just be nedb
   f.paths = { root : __dirname };

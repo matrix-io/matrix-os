@@ -33,7 +33,7 @@ describe('Matrix<->App', function() {
     describe('test app should', function(){
       it('emits a message');
       it('emits a sensor-init')
-      it('emits a data-point');
+      it('emits a sensor-emit');
 
     });
 

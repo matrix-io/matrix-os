@@ -7,7 +7,7 @@ var _ = require('lodash');
 module.exports = {
   send: function(message) {
     process.send({
-      type: 'data-point',
+      type: 'sensor-emit',
       payload: message
     });
   },
@@ -58,8 +58,8 @@ function initSensor(name, options, cb) {
 
   var then = function(cb) {
     process.on('message', function(m) {
-      if (m.eventType === 'sensor-event') {
-        // console.log('app:[M]->app t:sensor-event'.blue, name, m);
+      if (m.eventType === 'sensor-emit') {
+        // console.log('app:[M]->app t:sensor-emit'.blue, name, m);
         // console.log('applying filter:', filter.json());
         //FIXME: recast needed for apply, requires type attribute
         m = _.omit(m,'eventType');

@@ -35,7 +35,7 @@ program
 program.command('fake <sensor>').description('fire off a fake sensor for testing')
 .action(function(sensor){
   // make new socket connection
-  Matrix.events.emit('sensor-event', { type: sensor, value: 100 } );
+  Matrix.events.emit('sensor-emit', { type: sensor, value: 100 } );
 });
 
 program.command('update <app>')

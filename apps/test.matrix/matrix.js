@@ -54,8 +54,8 @@ function initSensor(name, options, cb) {
 
   var then = function(cb) {
     process.on('message', function(m) {
-      if (m.eventType === 'sensor-event') {
-        // console.log('app:[M]->app t:sensor-event', name, m);
+      if (m.eventType === 'sensor-emit') {
+        // console.log('app:[M]->app t:sensor-emit', name, m);
         // console.log('applying filter:', filter.json());
         //FIXME: recast needed for apply, requires type attribute
         m.type = m.sensorType;
