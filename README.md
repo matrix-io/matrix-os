@@ -1,5 +1,8 @@
 # AdMatrix Device Container Kit
 
+NOTICE: Sensors requires node v0.10
+
+
 Requires env vars to be set, otherwise defaults are used.
 ```
 ADMATRIX_API_SERVER http://localhost:1337 -- points to admobilize-api server\
