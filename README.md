@@ -1,6 +1,15 @@
 # AdMatrix Device Container Kit
 
-NOTICE: Sensors requires node v0.10
+NOTICE: Sensors current require node v0.10
+
+Install NVM, compile, return to 0.12
+
+```
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | bash
+nvm install 0.10
+npm install ../admobilize-sensors/node-adsensors/
+nvm use system
+```
 
 
 Requires env vars to be set, otherwise defaults are used.
@@ -35,35 +44,50 @@ Matrix
 | |_filter             - (todo) Server side filtering + Database
 | |_heartbeat          - Actual Heartbeat Process
 | |_initialize         - Old Beacon Init
-| |_lifecycle          - 
-| |_logging            -
-| |_manager            -
-| |_media              -
-| |_server             -
-| |_stream             -
-| |_sync               -
-| |_token              -
+| |_lifecycle          - Keeps track of last boot
+| |_logging            - See Custom Global Functions
+| |_manager            - App Management ( start, stop, install )
+| |_media              - Video / Image from Beacon
+| |_stream             - Connect with streaming server
+| |_token              - Persist / Retrieve Token
 
-Matrix
-  .device
-    .
-  .events
-
-  .service
 
 events
-[See](https://docs.google.com/spreadsheets/d/131aFIKZRKLm8fIlFbYi-AnroEXMSJvxtpyujY18zcHk/edit?usp=sharing)
+(See)[https://docs.google.com/spreadsheets/d/131aFIKZRKLm8fIlFbYi-AnroEXMSJvxtpyujY18zcHk/edit?usp=sharing]
 Event Name Semantic rules
 **Noun-Verb** or **Container-Object**
 ```
 ->
+drive-full
+space-released
+network-change
+orientation-change
+token-refresh
+
+
 device-register
 sensor-emit
-filtered-sensor-emit
+app-emit
+sensor-init
+app-{ appName }
 ---
 
 ```
 
+socket channels from the streaming server
+```
+app-message
+user-authorization
+```
+
+socket channels to streaming server
+```
+device-register
+```
+
+Sends Socket Messages to Streaming Servers
+
+developer help
 
 custom global functions
 ```

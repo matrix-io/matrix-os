@@ -32,6 +32,9 @@ program
   });
 });
 
+program.command('poke').action(function () {
+  Matrix.sensor
+})
 program.command('fake <sensor>').description('fire off a fake sensor for testing')
 .action(function(sensor){
   // make new socket connection

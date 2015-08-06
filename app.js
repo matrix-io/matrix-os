@@ -118,6 +118,11 @@ if (config.fakeSensor === true){
 Matrix.service.manager.start('temperature');
 // Start a sensor -- FAKE
 Matrix.sensors.fake.init(8000);
+
+Matrix.sensors.accelerometer.start(function(err, d){
+  console.log('wow', d)
+});
+
 }
 
 
