@@ -115,13 +115,13 @@ Matrix.sensors = require('./sensors');
 
 if (config.fakeSensor === true){
 // Start an app - FAKE
-Matrix.service.manager.start('temperature');
+Matrix.service.manager.start('test');
 // Start a sensor -- FAKE
-Matrix.sensors.fake.init(8000);
-
-Matrix.sensors.accelerometer.start(function(err, d){
-  console.log('wow', d)
-});
+// Matrix.sensors.fake.openSocket(8000);
+// 
+// Matrix.sensors.fake.start(function(err, d){
+//   console.log('wow', d)
+// });
 
 }
 
