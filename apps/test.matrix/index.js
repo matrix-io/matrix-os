@@ -1,3 +1,3 @@
-matrix = require('./matrix.js');
+matrix = require('./../matrix.js');
 
 require('./app.js');

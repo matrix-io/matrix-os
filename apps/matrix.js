@@ -56,16 +56,18 @@ function initSensor(name, options, cb) {
 
   var filter = new EventFilter(name);
 
+// use then to setup listener for messages from sensors
   var then = function(cb) {
     process.on('message', function(m) {
+      console.log('[M]->app'.blue, name, m);
       if (m.eventType === 'sensor-emit') {
-        // console.log('app:[M]->app t:sensor-emit'.blue, name, m);
         // console.log('applying filter:', filter.json());
         //FIXME: recast needed for apply, requires type attribute
         m = _.omit(m,'eventType');
-        cb(null, applyFilter(filter, m));
+        m.payload.type = m.sensor;
+        cb(null, applyFilter(filter, m.payload));
       } else {
-        cb(new Error('Invalid Message from Matrix', m));
+        cb('Invalid Message from Matrix' + m);
       }
     });
   }
