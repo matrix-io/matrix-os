@@ -16,7 +16,7 @@ clog = console.log;
 
 // SDK
 api = require('admatrix-node-sdk');
-api.makeUrls( process.env['ADMATRIX_API'] );
+api.makeUrls( process.env['ADMATRIX_API_SERVER'] );
 
 // Config
 Matrix.config = require('./config');
@@ -118,7 +118,7 @@ if (config.fakeSensor === true){
 Matrix.service.manager.start('test');
 // Start a sensor -- FAKE
 // Matrix.sensors.fake.openSocket(8000);
-// 
+//
 // Matrix.sensors.fake.start(function(err, d){
 //   console.log('wow', d)
 // });
