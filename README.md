@@ -1,16 +1,5 @@
 # AdMatrix Device Container Kit
 
-NOTICE: Sensors current require node v0.10
-
-Install NVM, compile, return to 0.12
-
-```
-curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | bash
-nvm install 0.10
-npm install ../admobilize-sensors/node-adsensors/
-nvm use system
-```
-
 
 Requires env vars to be set, otherwise defaults are used.
 ```
@@ -20,6 +9,12 @@ ADMATRIX_CLIENT_ID AdMobilizeClientID - assigned id
 ADMATRIX_CLIENT_SECRET AdMobilizeClientSecret - assigned secret
 ADMATRIX_USER - diego@rokk3rlabs.com - user to login with
 ADMATRIX_PASSWORD - trudat
+```
+
+## install
+```
+Copy admatrix.tar, extract.
+npm rebuild on local architecture
 ```
 
 ```
