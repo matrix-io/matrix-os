@@ -3,7 +3,7 @@
 
 Requires env vars to be set, otherwise defaults are used.
 ```
-ADMATRIX_API_SERVER http://localhost:1337 -- points to admobilize-api server\
+ADMATRIX_API_SERVER http://localhost:1337 -- points to admobilize-api server
 ADMATRIX_STREAMING_SERVER http://localhost:1338 - points to admatrix-streaming-server
 ADMATRIX_CLIENT_ID AdMobilizeClientID - assigned id
 ADMATRIX_CLIENT_SECRET AdMobilizeClientSecret - assigned secret
@@ -14,7 +14,9 @@ ADMATRIX_PASSWORD - trudat
 ## install
 ```
 Copy admatrix.tar, extract.
-npm rebuild on local architecture
+npm rebuild on local architecture for adsensors
+node-gyp rebuild in node_modules/adsensors if necessary
+npm -g install nodemon
 ```
 
 ```
@@ -23,7 +25,6 @@ Matrix
 | |_bluetooth          - ( init, createCharacteristic, createService )
 | |_daemon             - Start / Kill Processes ( Not Intended for Apps )
 | |_file               - File Reading / Writing Utilities
-| |_manager            - ( reboot, setupDNS )
 | |_storage            - ( freespace(cb) ) Determine device storage capacity
 | |_wifi               - ( init )
 |_event  - Events are mainly for routing requests to services
