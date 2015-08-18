@@ -47,6 +47,9 @@ Matrix
 | |_stream             - Connect with streaming server
 | |_token              - Persist / Retrieve Token
 
+# Matrix Apps
+matrix.init - kicks off sensor
+  
 
 events
 (See)[https://docs.google.com/spreadsheets/d/131aFIKZRKLm8fIlFbYi-AnroEXMSJvxtpyujY18zcHk/edit?usp=sharing]

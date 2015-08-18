@@ -24,6 +24,7 @@ config = Matrix.config;
 
 //Event Loop - Handles all events
 Matrix.events = new events.EventEmitter();
+Matrix.events.on('addListener', function(name){ log (name);})
 
 //Initialize Listeners - Code goes here
 Matrix.event.init();
@@ -107,6 +108,7 @@ Matrix.service.lifecycle.updateLastBootTime();
 if (config.fakeSensor === true){
 // Start an app - FAKE
 Matrix.service.manager.start('test');
+Matrix.service.manager.start('test-event');
 // Start a sensor -- FAKE
 // Matrix.sensors.fake.openSocket(8000);
 //
