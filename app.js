@@ -115,7 +115,7 @@ Matrix.sensors = require('./sensors');
 
 if (config.fakeSensor === true){
 // Start an app - FAKE
-Matrix.service.manager.start('temperature');
+Matrix.service.manager.start('test');
 // Start a sensor -- FAKE
 Matrix.sensors.fake.init(8000);
 
