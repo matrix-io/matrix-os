@@ -16,7 +16,7 @@ clog = console.log;
 
 // SDK
 api = require('admatrix-node-sdk');
-api.makeUrls( process.env['ADMATRIX_API'] );
+api.makeUrls( process.env['ADMATRIX_API_SERVER'] );
 
 // Config
 Matrix.config = require('./config');
@@ -24,6 +24,7 @@ config = Matrix.config;
 
 //Event Loop - Handles all events
 Matrix.events = new events.EventEmitter();
+Matrix.events.on('addListener', function(name){ log (name);})
 
 //Initialize Listeners - Code goes here
 Matrix.event.init();
@@ -32,10 +33,14 @@ Matrix.event.init();
 Matrix.api = api;
 Matrix.api.makeUrls(Matrix.apiServer);
 
+//make sensors available
+Matrix.sensors = require('./sensors');
+
+
 //app processes, see lib/service/mananger
 Matrix.activeProcesses = [];
 
-//db - files stored in db/
+//db - files stored in db
 var DataStore = require('nedb');
 Matrix.db = {
   config : new DataStore({ filename: config.path.db.config, autoload: true }),
@@ -60,6 +65,8 @@ async.series([
     require('net').connect({
       port: streamOptions.port,
       host: streamOptions.hostname}, function(res){
+        // Initialize Streaming Server Socket
+        Matrix.service.stream.init();
       cb(null);
     }).on('error', function(){
       error('No Streaming Server Visible', Matrix.streamingServer)
@@ -77,12 +84,11 @@ async.series([
     });
   },
   function checkUpdates(cb){
-    warn('Updates not implemented on api yet');
+    // warn('Updates not implemented on api yet');
     return cb();
     Matrix.api.device.checkUpdates(function(err, update){
       if (err) return cb(err);
       // check version
-      log('===', err, update);
       if ( update.version === Matrix.version ){
         cb(null);
       } else {
@@ -97,56 +103,32 @@ async.series([
 
 
 Matrix.service.lifecycle.updateLastBootTime();
-Matrix.service.stream.init();
-
-// TODO: Enable Configurations
-// Start Apps - Hit API Server for App List (needs endpoint)
-// > Start App. Sensors
-// Scaffold for Install / Remove
-// Scaffold for Updates - socket > tmp + migrate & fallback
-// Start BTLE
-// WiFI connection
-
-
-
-//make sensors available
-Matrix.sensors = require('./sensors');
 
 
 if (config.fakeSensor === true){
 // Start an app - FAKE
 Matrix.service.manager.start('test');
+Matrix.service.manager.start('test-event');
 // Start a sensor -- FAKE
-Matrix.sensors.fake.init(8000);
-
-Matrix.sensors.accelerometer.start(function(err, d){
-  console.log('wow', d)
-});
+// Matrix.sensors.fake.openSocket(8000);
+//
+// Matrix.sensors.fake.start(function(err, d){
+//   console.log('wow', d)
+// });
 
 }
 
-
-
-
-//Deal with users
-
-// Example
-/*
-Matrix.events.on('poop', function(data){
-  log('iPooped!',data);
-});
-
-Matrix.events.emit('poop', { stinky: true });
-*/
-
-
+// These are helpful when debugging
 // log('========== vvv API vvv =========\n'.blue, api, "\n======== ^^^ API ^^^ =======".blue);
-// console.log('========== vvv MATRIX vvv =========\n'.yellow, Matrix, "\n======== ^^^ MATRIX ^^^ =======".yellow);
+// log('========== vvv MATRIX vvv =========\n'.yellow, Matrix, "\n======== ^^^ MATRIX ^^^ =======".yellow);
+
+
 module.exports =
 {
   Matrix: Matrix
 }
 
+// Process Level Event Listeners
 
 //Triggered when the application is killed by a [CRTL+C] from keyboard
 process.on("SIGINT", function () {
