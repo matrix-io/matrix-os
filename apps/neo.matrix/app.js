@@ -1,6 +1,7 @@
+
 var mic       = matrix.init('mic');
-var audio     = matrix.init('audio');
-var controls  = matrix.init('controls'); //connect to channel for user
+var audio     = matrix.audio;
+var controls  = matrix.controls; //connect to channel for user
 var file      = matrix.file;
 
 //if file does not exist, throw false
@@ -24,6 +25,8 @@ if(name) {
   controls.on('text.message', function(err, name){
     if(err) throw err;
     file.save('name.txt', name);
+
+    //mic.listen == convert speech to text
     mic.listen(name).then(function(err, out){
       //some sort of namespace for each app
       matrix.notify(out);
@@ -32,6 +35,6 @@ if(name) {
 }
 
 //listen for events coming in
-matrix.on('neo.say',function(err, out){
-    audio.say(out);
+matrix.on('neo.say',function(err, message){
+    audio.say(message);
 });
