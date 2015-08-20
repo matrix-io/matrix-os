@@ -5,32 +5,40 @@ require('colors');
 
 var EventFilter = require('admobilize-eventfilter-sdk').EventFilter;
 var applyFilter = require('admobilize-eventfilter-sdk').apply;
+var request = require('request');
+var fs = require('fs');
 var _ = require('lodash');
 
 var appName = '';
 
-module.exports = {
-  name: function(name){
-    appName = name;
-  },
-  send: function(message) {
-    process.send({
-      type: 'sensor-emit',
-      payload: message
-    });
-  },
-  receive: receiveHandler,
-  init: initSensor,
-  emit: function(type, msg){
-    process.send({
-      type: type,
-      payload: message
-    });
-  },
-  debug: matrixDebug,
-  notify: interAppNotification,
-  on: interAppResponse
-}
+
+
+var assetPath = __dirname + '/../assets/'
+
+var fileManager = {
+    save: function(url, filename, cb){
+      request.get(url, function(err, resp, body){
+        if (err) console.error(err);
+        fs.writeFileSync(assetPath + filename, body);
+        cb(null, body);
+      });
+    },
+    stream: function(){
+      // are we doing this?
+    },
+    remove: function(filename, cb){
+      fs.unlink(assetPath + filename, cb);
+    },
+    load: function(cb){
+      fs.readFile(assetPath + filename, cb);
+    },
+    list: function(cb){
+      fs.readdir(assetPath, function(err, files){
+        if (err) console.error(err);
+        cb(null, files);
+      }
+    }
+  }
 
 var matrixDebug = false;
 
@@ -139,4 +147,29 @@ function initSensor(name, options, cb) {
   });
 
   return filter;
+}
+
+
+module.exports = {
+  name: function(name){
+    appName = name;
+  },
+  send: function(message) {
+    process.send({
+      type: 'sensor-emit',
+      payload: message
+    });
+  },
+  receive: receiveHandler,
+  init: initSensor,
+  file: fileManager,
+  emit: function(type, msg){
+    process.send({
+      type: type,
+      payload: message
+    });
+  },
+  debug: matrixDebug,
+  notify: interAppNotification,
+  on: interAppResponse
 }

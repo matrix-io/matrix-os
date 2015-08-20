@@ -21,3 +21,9 @@ matrix.init('test').has('value').above(900000000).then(function(err, data){
 matrix.on(function(data){
   console.log('recieved global message'.blue, data);
 });
+
+console.log(matrix)
+matrix.file.save('http://google.com', 'google.txt', function(err, result){
+  if (err) console.error(err);
+  // console.log(result);
+});
