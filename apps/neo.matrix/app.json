@@ -1,0 +1,23 @@
+{
+  "name": "Neo",
+  "version": "1.0.0",
+  "description": "The voice of reason.",
+  "dependencies": {
+    "temperature.matrix": "1.0.0"
+  },
+  "interface": {
+    "sensor.camera": { "name": "Camera" },
+    "sensor.gyroscope": { "name": "Drone Controls", "interval": 200 }, 
+    "toggle.led": { "name": "Lights", "default": 0, "press": 1 }, 
+    "toggle.temperature": { "name": "Temperature", "default": 0, "press": 1 },
+    "slider.temperature": { "name": "Temperature", "range": [0,100] },
+    "buttongroup.lights": { "name": "Lights", "options": [ 
+        { "name": "Red", "default": 0, "press": 1 },
+        { "name": "Green", "default": 0, "press": 1 },
+        { "name": "Yellow", "default": 0, "press": 1 }
+      ] 
+    },
+    "text.message": { "name": "Search" },
+    "button.led": { "name": "Light", "default": 0, "press": 1 }
+  }
+}
