@@ -1,7 +1,7 @@
-var mic = matrix.init('mic');
-var audio = matrix.init('audio');
-var controls = matrix.init('controls'); //connect to channel for user
-var file = matrix.file;
+var mic       = matrix.init('mic');
+var audio     = matrix.init('audio');
+var controls  = matrix.init('controls'); //connect to channel for user
+var file      = matrix.file;
 
 //if file does not exist, throw false
 var name = file.load('name.txt');
