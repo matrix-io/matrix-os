@@ -17,7 +17,7 @@ RUN gpg --keyserver pool.sks-keyservers.net --recv-keys 7937DFD2AB06298B2293C318
 ENV NODE_VERSION 0.12.7
 ENV NPM_VERSION 2.13.2
 
-ENV ADMATRIX_API_SERVER http://localhost:1337
+ENV ADMATRIX_API_SERVER http://admatrix-api-884932375.us-east-1.elb.amazonaws.com
 ENV ADMATRIX_DEVICE_ID 'fc:aa:14:9d:f6:32'
 ENV ADMATRIX_STREAMING_SERVER http://localhost:1338
 ENV ADMATRIX_USER diego@rokk3rlabs.com

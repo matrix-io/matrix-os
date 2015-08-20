@@ -11,7 +11,6 @@ var appName = '';
 
 module.exports = {
   name: function(name){
-    console.log(name);
     appName = name;
   },
   send: function(message) {
@@ -70,7 +69,7 @@ function interAppResponse( name, cb ){
       // console.log('[M]->app'.blue, m, 'app-'+appName+'-message')
       // is global or app-specific
     if (m.type === "app-message" || m.type === 'app-'+appName+'-message'){
-      console.log('[M]->app(msg)'.blue, m)
+      // console.log('[M]->app(msg)'.blue, m)
       if ( _.isString(name) ){
         // if an event name was specified in the on()
         if ( m.event == name ){

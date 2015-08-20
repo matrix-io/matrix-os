@@ -5,16 +5,16 @@ matrix.init('test').has('value').above(900000000).then(function(err, data){
     console.error('no match on filter'.red);
   } else {
     console.log('app(test):then>'.green, data);
-    // matrix.send(data);
+    matrix.send(data);
 
     //test specific app + event
-    matrix.notify('test-event','doTest', data);
+    // matrix.notify('test-event','doTest', data);
 
     //test specific app
-    matrix.notify('test-event', {global: false});
+    // matrix.notify('test-event', {global: false});
 
     //test global
-    matrix.notify({global:true});
+    //matrix.notify({global:true});
   }
 });
 
