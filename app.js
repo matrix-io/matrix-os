@@ -48,6 +48,7 @@ Matrix.db = {
   user : new DataStore({ filename: config.path.db.user, autoload: true }),
   service : new DataStore({ filename: config.path.db.service, autoload: true }),
   pending : new DataStore({ filename: config.path.db.pending, autoload: true })
+  appStore : new DataStore({ filename: config.path.db.appStore, autoload: true })
 }
 
 // this is kind of an init
@@ -120,7 +121,7 @@ Matrix.service.manager.start('test-event');
 
 // These are helpful when debugging
 // log('========== vvv API vvv =========\n'.blue, api, "\n======== ^^^ API ^^^ =======".blue);
-// log('========== vvv MATRIX vvv =========\n'.yellow, Matrix, "\n======== ^^^ MATRIX ^^^ =======".yellow);
+log('========== vvv MATRIX vvv =========\n'.yellow, Matrix, "\n======== ^^^ MATRIX ^^^ =======".yellow);
 
 
 module.exports =

@@ -8,8 +8,44 @@ var applyFilter = require('admobilize-eventfilter-sdk').apply;
 var request = require('request');
 var fs = require('fs');
 var _ = require('lodash');
+var DataStore = require('nedb');
+var AppStore =  new DataStore({ filename: config.path.db.appStore, autoload: true });
+
+var config = require('../config');
 
 var appName = '';
+
+
+var storeManager = {
+  get: getStore,
+  set: setStore,
+  delete: deleteStore,
+  remove: deleteStore
+}
+
+function getStore(key){
+  var q = {};
+  q[key]= { $exists: true };
+  AppStore.findOne(q, function(err, resp){
+    if (err) cb(err);
+    cb(null, resp);
+  });
+}
+
+function setStore(){
+  var obj = {};
+  obj[key] = value;
+  AppStore.insert(obj);
+}
+
+function deleteStore(key){
+  var q = {};
+  q[key]= { $exists: true };
+  AppStore.remove(q, function(err, resp){
+    if (err) cb(err);
+    cb(null, resp);
+  });
+}
 
 
 
@@ -36,7 +72,7 @@ var fileManager = {
       fs.readdir(assetPath, function(err, files){
         if (err) console.error(err);
         cb(null, files);
-      }
+      });
     }
   }
 
