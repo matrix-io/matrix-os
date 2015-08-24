@@ -108,7 +108,7 @@ Matrix.service.lifecycle.updateLastBootTime();
 if (config.fakeSensor === true){
 // Start an app - FAKE
 Matrix.service.manager.start('test');
-Matrix.service.manager.start('test-event');
+// Matrix.service.manager.start('test-event');
 // Start a sensor -- FAKE
 // Matrix.sensors.fake.openSocket(8000);
 //
@@ -120,7 +120,7 @@ Matrix.service.manager.start('test-event');
 
 // These are helpful when debugging
 // log('========== vvv API vvv =========\n'.blue, api, "\n======== ^^^ API ^^^ =======".blue);
-log('========== vvv MATRIX vvv =========\n'.yellow, Matrix, "\n======== ^^^ MATRIX ^^^ =======".yellow);
+// log('========== vvv MATRIX vvv =========\n'.yellow, Matrix, "\n======== ^^^ MATRIX ^^^ =======".yellow);
 
 
 module.exports =

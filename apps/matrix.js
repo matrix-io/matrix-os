@@ -3,14 +3,14 @@
 
 require('colors');
 
-var config = require('../config');
+var config = require('./config.js');
 var EventFilter = require('admobilize-eventfilter-sdk').EventFilter;
 var applyFilter = require('admobilize-eventfilter-sdk').apply;
 var request = require('request');
 var fs = require('fs');
 var _ = require('lodash');
 var DataStore = require('nedb');
-var AppStore =  new DataStore({ filename: config.path.db.appStore, autoload: true });
+var AppStore =  new DataStore({ filename: config.path.appStore, autoload: true });
 
 
 var appName = '';

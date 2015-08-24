@@ -13,7 +13,6 @@ var p = {
     user: root + 'db/user.db',
     service: root + 'db/service.db',
     pending: root + 'db/pending.db'
-    appStore: root + 'db/app-store.db'
   },
   pendingFiles: root + 'public/pending_files',
   update: '/tmp/matrix-update/',
