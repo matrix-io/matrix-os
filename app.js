@@ -48,7 +48,6 @@ Matrix.db = {
   user : new DataStore({ filename: config.path.db.user, autoload: true }),
   service : new DataStore({ filename: config.path.db.service, autoload: true }),
   pending : new DataStore({ filename: config.path.db.pending, autoload: true })
-  appStore : new DataStore({ filename: config.path.db.appStore, autoload: true })
 }
 
 // this is kind of an init
