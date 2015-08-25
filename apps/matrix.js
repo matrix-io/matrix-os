@@ -30,6 +30,7 @@ var fileManager = {
       fs.unlink(assetPath + filename, cb);
     },
     load: function(cb){
+      //todo: handle async and sync
       fs.readFile(assetPath + filename, cb);
     },
     list: function(cb){
@@ -154,6 +155,11 @@ module.exports = {
   name: function(name){
     appName = name;
   },
+  audio: {
+    say: function(msg){
+      console.warn('')
+    }
+  }
   send: function(message) {
     process.send({
       type: 'sensor-emit',
