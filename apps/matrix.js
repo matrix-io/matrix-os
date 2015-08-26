@@ -195,7 +195,7 @@ module.exports = {
     say: function(msg){
       console.warn('')
     }
-  }
+  },
   send: function(message) {
     process.send({
       type: 'sensor-emit',
