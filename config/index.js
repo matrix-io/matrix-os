@@ -1,5 +1,5 @@
 var f = {
-  fakeSensor: true,
+  fakeSensor: false,
   fakeFrequency: 30000
 };
 
@@ -25,6 +25,7 @@ var fs = require('fs');
     'ADMATRIX_CLIENT_ID',
     'ADMATRIX_CLIENT_SECRET',
     'ADMATRIX_DEVICE_ID',
+    'ADMATRIX_DEVICE_NAME',
     'ADMATRIX_USER',
     'ADMATRIX_PASSWORD',
     'NODE_ENV'
@@ -46,7 +47,7 @@ var fs = require('fs');
   f.heartbeatInterval = 10000;
   f.spaceLimit = 5000000;
   f.splashInterval = 30;
-  f.sensorRefresh = 2500;
+  f.sensorRefresh = 10000;
 
 
 // TODO: Figure out where storage happens, shouldn't it just be nedb
