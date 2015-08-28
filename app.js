@@ -77,8 +77,10 @@ async.series([
     // check in with api server
     Matrix.service.token.get(function(err, token){
       if (err) return cb(err);
-      log('Using Token'.green, token);
-      Matrix.token = token;
+      Matrix.token = token.clientToken;
+      Matrix.clientToken = token.clientToken;
+      Matrix.deviceToken = token.deviceToken;
+      log('Client Token'.green, Matrix.token);
       cb(null);
     });
   },
@@ -97,8 +99,10 @@ async.series([
   }
 ], function(err, obj){
   if (err) error(err);
-  log(Matrix.is.green.bold, '['.green+Matrix.deviceId.green+']'.green, 'Ready to go');
+  log(Matrix.is.green.bold, '['.grey+Matrix.deviceId.grey+']'.grey, 'matrix ready'.yellow.bold);
+  Matrix.banner();
 });
+
 
 
 
