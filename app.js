@@ -64,7 +64,8 @@ async.series([
     var streamOptions = require('url').parse( Matrix.streamingServer );
     require('net').connect({
       port: streamOptions.port,
-      host: streamOptions.hostname}, function(res){
+      host: streamOptions.hostname
+    }, function(res){
         // Initialize Streaming Server Socket
         Matrix.service.stream.init();
       cb(null);
@@ -80,7 +81,7 @@ async.series([
       Matrix.token = token.clientToken;
       Matrix.clientToken = token.clientToken;
       Matrix.deviceToken = token.deviceToken;
-      log('Client Token'.green, Matrix.token);
+      log('Client Token'.green, token.clientToken);
       cb(null);
     });
   },
@@ -99,7 +100,7 @@ async.series([
   }
 ], function(err, obj){
   if (err) error(err);
-  log(Matrix.is.green.bold, '['.grey+Matrix.deviceId.grey+']'.grey, 'matrix ready'.yellow.bold);
+  log(Matrix.is.green.bold, '['.grey+Matrix.deviceId.grey+']'.grey, 'ready'.yellow.bold);
   Matrix.banner();
 });
 

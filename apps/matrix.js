@@ -66,7 +66,7 @@ var fileManager = {
       fs.unlink(assetPath + filename, cb);
     },
     load: function(cb){
-      //todo: handle async and sync
+      //todo: handle async and sync based on usage
       fs.readFile(assetPath + filename, cb);
     },
     list: function(cb){
@@ -211,6 +211,7 @@ module.exports = {
       payload: message
     });
   },
+  store: storeManager,
   debug: matrixDebug,
   notify: interAppNotification,
   on: interAppResponse
