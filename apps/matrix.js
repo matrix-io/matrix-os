@@ -3,6 +3,8 @@
 
 require('colors');
 
+var loudness = require('loudness');
+var player = require('player');
 var config = require('./config.js');
 var EventFilter = require('admobilize-eventfilter-sdk').EventFilter;
 var applyFilter = require('admobilize-eventfilter-sdk').apply;
@@ -47,9 +49,7 @@ function deleteStore(key){
   });
 }
 
-
-
-var assetPath = __dirname + '/../assets/'
+var assetPath = __dirname + 'storage/'
 
 var fileManager = {
     save: function(url, filename, cb){
@@ -60,7 +60,7 @@ var fileManager = {
       });
     },
     stream: function(){
-      // are we doing this?
+      // are we doing this? yes, for streaming media
     },
     remove: function(filename, cb){
       fs.unlink(assetPath + filename, cb);
@@ -194,6 +194,15 @@ module.exports = {
   audio: {
     say: function(msg){
       console.warn('')
+    },
+    play: function(file, volume){
+      var volume = ( !_.isUndefined(volume)) ? volume : 80;
+      require('loudness').setVolume( volume, function(){});
+      var soundPlayer = new player( assetPath + file );
+      soundPlayer.play( function(err, played){
+        if (err) console.error(err);
+        console.log('played');
+      });
     }
   },
   send: function(message) {

@@ -42,8 +42,11 @@ ENV ADMATRIX_CLIENT_SECRET AdMobilizeClientSecret
 
 EXPOSE 80 80
 RUN apt-get -y update && apt-get install -y wget
+
+## Sensor libs
 RUN apt-get install -y bluetooth
 RUN apt-get install -y libbluetooth-dev
+RUN sudo apt-get install -y libasound2-dev alsa-base alsa-utils
 
 RUN npm install -g nodemon
 
