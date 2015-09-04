@@ -193,7 +193,7 @@ module.exports = {
   },
   audio: {
     say: function(msg){
-      console.warn('')
+      console.warn('say() is not implemented yet')
     },
     play: function(file, volume){
       var volume = ( !_.isUndefined(volume)) ? volume : 80;

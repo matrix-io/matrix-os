@@ -13,10 +13,20 @@ ADMATRIX_PASSWORD - trudat
 
 ## install
 ```
-Copy admatrix.tar, extract.
-npm rebuild on local architecture for adsensors
-node-gyp rebuild in node_modules/adsensors if necessary
-npm -g install nodemon
+
+# from local admatrix parent folder
+zip -r admatrix.zip admatrix/ -x *.git*
+scp admatrix.zip admatrix@192.168.1.129:~/
+
+# on device
+echo "deb http://http.debian.net/debian jessie-backports main" >> /etc/apt/sources.list
+sudo apt-get update
+sudo apt-get install docker.io
+unzip admatrix.zip admatrix/
+cd admatrix/
+docker build -t admatrix .
+docker run -d admatrix
+
 ```
 
 ```
@@ -49,7 +59,7 @@ Matrix
 
 # Matrix Apps
 matrix.init - kicks off sensor
-  
+
 
 events
 (See)[https://docs.google.com/spreadsheets/d/131aFIKZRKLm8fIlFbYi-AnroEXMSJvxtpyujY18zcHk/edit?usp=sharing]

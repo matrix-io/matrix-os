@@ -23,6 +23,10 @@ RUN curl https://deb.nodesource.com/node_0.12/pool/main/n/nodejs/nodejs_0.12.7-1
  && dpkg -i node.deb \
  && rm node.deb
 
+ADD . matrix/
+
+WORKDIR matrix/node_modules/adsensors
+
 RUN npm install -g pangyp\
  && ln -s $(which pangyp) $(dirname $(which pangyp))/node-gyp\
  && npm cache clear\
@@ -44,19 +48,14 @@ EXPOSE 80 80
 RUN apt-get -y update && apt-get install -y wget
 
 ## Sensor libs
-RUN apt-get install -y bluetooth
-RUN apt-get install -y libbluetooth-dev
-RUN sudo apt-get install -y libasound2-dev alsa-base alsa-utils
+RUN apt-get install -y bluetooth libbluetooth-dev libasound2-dev alsa-base alsa-utils
 
-RUN npm install -g nodemon
-
-ADD . matrix/
 
 #Compile For Hardware
-WORKDIR matrix/
+WORKDIR ../../../matrix
 RUN npm rebuild
 
 # Install Node modules
 
 # RUN node app.js
-CMD ['nodemon']
+CMD npm start
