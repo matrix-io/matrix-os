@@ -169,15 +169,24 @@ function initSensor(name, options, cb) {
     process.on('message', function(m) {
       console.log('[M]->app'.blue, name, m);
       if (m.eventType === 'sensor-emit') {
+        var result;
         // console.log('applying filter:', filter.json());
         m = _.omit(m,'eventType');
         m.payload.type = m.sensor;
-        cb(null, applyFilter(filter, m.payload));
+
+        // if there is no filter, don't apply
+        if (filter.filters.length > 0){
+          result = applyFilter(filter, m.payload);
+        } else {
+          result = m.payload;
+        }
+
+        cb(null, result);
       } else {
         cb('Invalid Message from Matrix' + m);
       }
     });
-  }
+  };
 
   _.extend(filter, {
     then: then
