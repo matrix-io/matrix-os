@@ -34,7 +34,7 @@ Matrix.api = api;
 Matrix.api.makeUrls(Matrix.apiServer);
 
 //make sensors available
-Matrix.sensors = require('./sensors');
+Matrix.sensors = require('adsensors');
 
 
 //app processes, see lib/service/mananger
