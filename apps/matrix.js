@@ -2,9 +2,9 @@
 // see lib/services/manager
 
 require('colors');
-
-var loudness = require('loudness');
-var player = require('player');
+//needs sudo for audio commands disable until we figure this out
+// var loudness = require('loudness');
+// var player = require('player');
 var config = require('./config.js');
 var EventFilter = require('admobilize-eventfilter-sdk').EventFilter;
 var applyFilter = require('admobilize-eventfilter-sdk').apply;
@@ -154,6 +154,7 @@ function receiveHandler(cb) {
 function initSensor(name, options, cb) {
   console.log('Initialize Sensor:'.blue , name);
 
+  // kick off sensor readers
   process.send({
     type: 'sensor-init',
     name: name,

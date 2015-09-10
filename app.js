@@ -106,9 +106,9 @@ async.series([
 Matrix.service.lifecycle.updateLastBootTime();
 
 
-if (config.fakeSensor === true){
+if (config.fakeApp){
 // Start an app - FAKE
-Matrix.service.manager.start('test');
+Matrix.service.manager.start(config.fakeApp);
 // Matrix.service.manager.start('test-event');
 // Start a sensor -- FAKE
 // Matrix.sensors.fake.openSocket(8000);

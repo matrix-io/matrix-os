@@ -26,7 +26,8 @@ cd admatrix/node_modules/adsensors
 node-gyp rebuild
 
 cd ../..
-FAKE_SENSOR=true FAKE_APP=test nodemon
+npm rebuild
+FAKE_APP=test nodemon
 ```
 
 Prevent sudo for aplay
