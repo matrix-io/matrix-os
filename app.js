@@ -33,10 +33,6 @@ Matrix.event.init();
 Matrix.api = api;
 Matrix.api.makeUrls(Matrix.apiServer);
 
-//make sensors available
-Matrix.sensors = require('./sensors');
-
-
 //app processes, see lib/service/mananger
 Matrix.activeProcesses = [];
 
@@ -112,7 +108,7 @@ Matrix.service.lifecycle.updateLastBootTime();
 
 if (config.fakeSensor === true){
 // Start an app - FAKE
-Matrix.service.manager.start('accel');
+Matrix.service.manager.start('test');
 // Matrix.service.manager.start('test-event');
 // Start a sensor -- FAKE
 // Matrix.sensors.fake.openSocket(8000);

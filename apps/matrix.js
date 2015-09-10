@@ -14,9 +14,7 @@ var _ = require('lodash');
 var DataStore = require('nedb');
 var AppStore =  new DataStore({ filename: config.path.appStore, autoload: true });
 
-
 var appName = '';
-
 
 var storeManager = {
   get: getStore,
@@ -171,6 +169,8 @@ function initSensor(name, options, cb) {
       if (m.eventType === 'sensor-emit') {
         var result;
         // console.log('applying filter:', filter.json());
+
+        //TODO: when sensors fail to deliver, fail here gracefully
         m = _.omit(m,'eventType');
         m.payload.type = m.sensor;
 

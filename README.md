@@ -19,15 +19,19 @@ zip -r admatrix.zip admatrix/ -x *.git*
 scp admatrix.zip admatrix@192.168.1.129:~/
 
 # on device
-echo "deb http://http.debian.net/debian jessie-backports main" >> /etc/apt/sources.list
-sudo apt-get update
-sudo apt-get install docker.io
-unzip admatrix.zip admatrix/
-cd admatrix/
-docker build -t admatrix .
-docker run -d admatrix
+unzip admatrix.zip -d admatrix
 
+npm install -g node-gyp nodemon
+cd admatrix/node_modules/adsensors
+node-gyp rebuild
+
+cd ../..
+FAKE_SENSOR=true FAKE_APP=test nodemon
 ```
+
+Prevent sudo for aplay
+
+`apt-get install jackd2`
 
 ```
 Matrix
