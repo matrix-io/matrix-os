@@ -1,5 +1,5 @@
 var f = {
-  fakeSensor: false,
+  fakeSensor: ( process.env['FAKE_SENSOR']) ? true : false,
   fakeFrequency: 30000
 };
 

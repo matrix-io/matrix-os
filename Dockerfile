@@ -1,56 +1,61 @@
 FROM debian:jessie
 
 # Set the env variables to non-interactive
-ENV DEBIAN_FRONTEND noninteractive
-ENV DEBIAN_PRIORITY critical
-ENV DEBCONF_NOWARNINGS yes
+# ENV DEBIAN_FRONTEND noninteractive
+# ENV DEBIAN_PRIORITY critical
+# ENV DEBCONF_NOWARNINGS yes
 
-ENV NODE_ENV development
 
-FROM buildpack-deps:jessie
+# From https://github.com/nodesource/docker-node/blob/master/debian/jessie/node/0.12.7/Dockerfile
+RUN apt-get update \
+ && apt-get install -y --force-yes --no-install-recommends\
+      apt-transport-https \
+      build-essential \
+      curl \
+      ca-certificates \
+      git \
+      lsb-release \
+      python-all \
+      rlwrap \
+ && rm -rf /var/lib/apt/lists/*;
 
-# verify gpg and sha256: http://nodejs.org/dist/v0.10.30/SHASUMS256.txt.asc
-# gpg: aka "Timothy J Fontaine (Work) <tj.fontaine@joyent.com>"
-# gpg: aka "Julien Gilli <jgilli@fastmail.fm>"
-RUN gpg --keyserver pool.sks-keyservers.net --recv-keys 7937DFD2AB06298B2293C3187D33FF9D0246406D 114F43EE0176B71C7BC219DD50A3051F888C628D
+RUN curl https://deb.nodesource.com/node_0.12/pool/main/n/nodejs/nodejs_0.12.7-1nodesource1~jessie1_amd64.deb > node.deb \
+ && dpkg -i node.deb \
+ && rm node.deb
 
+ADD . matrix/
+
+WORKDIR matrix/node_modules/adsensors
+
+RUN npm install -g pangyp\
+ && ln -s $(which pangyp) $(dirname $(which pangyp))/node-gyp\
+ && npm cache clear\
+ && node-gyp configure || echo ""
+
+ENV NODE_ENV production
 ENV NODE_VERSION 0.12.7
 ENV NPM_VERSION 2.13.2
 
-ENV ADMATRIX_API_SERVER http://admatrix-api-884932375.us-east-1.elb.amazonaws.com
-ENV ADMATRIX_DEVICE_ID 'fc:aa:14:9d:f6:32'
-ENV ADMATRIX_STREAMING_SERVER http://localhost:1338
-ENV ADMATRIX_USER diego@rokk3rlabs.com
-ENV ADMATRIX_PASSWORD trudat
+ENV ADMATRIX_API_SERVER http://dev-demo.admobilize.com
+ENV ADMATRIX_DEVICE_ID '12:23:34:45:56'
+ENV ADMATRIX_STREAMING_SERVER http://admatrix-streaming-server-1954957778.us-east-1.elb.amazonaws.com:80
+ENV ADMATRIX_USER brian@rokk3rlabs.com
+ENV ADMATRIX_PASSWORD Trudat55
 ENV ADMATRIX_CLIENT_ID AdMobilizeClientID
 ENV ADMATRIX_CLIENT_SECRET AdMobilizeClientSecret
 
 EXPOSE 80 80
-
-
-# Install Node
-RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz" \
-	&& curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc" \
-	&& gpg --verify SHASUMS256.txt.asc \
-	&& grep " node-v$NODE_VERSION-linux-x64.tar.gz\$" SHASUMS256.txt.asc | sha256sum -c - \
-	&& tar -xzf "node-v$NODE_VERSION-linux-x64.tar.gz" -C /usr/local --strip-components=1 \
-	&& rm "node-v$NODE_VERSION-linux-x64.tar.gz" SHASUMS256.txt.asc \
-	&& npm install -g npm@"$NPM_VERSION" \
-	&& npm cache clear
-
 RUN apt-get -y update && apt-get install -y wget
-RUN apt-get install -y bluetooth
-RUN apt-get install -y libbluetooth-dev
 
-## Find Node
-RUN wget https://deb.nodesource.com/setup_0.12 | bash -
-RUN apt-get install -y nodejs
+## Sensor libs
+RUN apt-get install -y bluetooth libbluetooth-dev libasound2-dev alsa-base alsa-utils
 
-RUN npm install -g nodemon
 
-ADD . matrix/
+#Compile For Hardware
+WORKDIR ../../../matrix
+RUN npm rebuild
 
-WORKDIR matrix/
 # Install Node modules
 
 # RUN node app.js
+CMD npm start
