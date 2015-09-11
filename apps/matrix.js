@@ -2,9 +2,9 @@
 // see lib/services/manager
 
 require('colors');
-
-var loudness = require('loudness');
-var player = require('player');
+//needs sudo for audio commands disable until we figure this out
+// var loudness = require('loudness');
+// var player = require('player');
 var config = require('./config.js');
 var EventFilter = require('admobilize-eventfilter-sdk').EventFilter;
 var applyFilter = require('admobilize-eventfilter-sdk').apply;
@@ -14,9 +14,7 @@ var _ = require('lodash');
 var DataStore = require('nedb');
 var AppStore =  new DataStore({ filename: config.path.appStore, autoload: true });
 
-
 var appName = '';
-
 
 var storeManager = {
   get: getStore,
@@ -156,6 +154,7 @@ function receiveHandler(cb) {
 function initSensor(name, options, cb) {
   console.log('Initialize Sensor:'.blue , name);
 
+  // kick off sensor readers
   process.send({
     type: 'sensor-init',
     name: name,
@@ -169,15 +168,26 @@ function initSensor(name, options, cb) {
     process.on('message', function(m) {
       console.log('[M]->app'.blue, name, m);
       if (m.eventType === 'sensor-emit') {
+        var result;
         // console.log('applying filter:', filter.json());
+
+        //TODO: when sensors fail to deliver, fail here gracefully
         m = _.omit(m,'eventType');
         m.payload.type = m.sensor;
-        cb(null, applyFilter(filter, m.payload));
+
+        // if there is no filter, don't apply
+        if (filter.filters.length > 0){
+          result = applyFilter(filter, m.payload);
+        } else {
+          result = m.payload;
+        }
+
+        cb(null, result);
       } else {
         cb('Invalid Message from Matrix' + m);
       }
     });
-  }
+  };
 
   _.extend(filter, {
     then: then

@@ -1,6 +1,5 @@
 var f = {
-  fakeSensor: ( process.env['FAKE_SENSOR']) ? true : false,
-  fakeFrequency: 30000
+  fakeApp:  process.env['START_APP']
 };
 
 var fs = require('fs');
@@ -47,10 +46,12 @@ var fs = require('fs');
   f.heartbeatInterval = 10000;
   f.spaceLimit = 5000000;
   f.splashInterval = 30;
-  f.sensorRefresh = 10000;
+  f.sensorRefresh = 5000;
+  // not in yet
+  f.sensorSockets = true;
 
 
-// TODO: Figure out where storage happens, shouldn't it just be nedb
+// TODO: Figure out where file storage happens
   f.paths = { root : __dirname };
 
   module.exports = f;

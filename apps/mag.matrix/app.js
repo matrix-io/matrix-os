@@ -1,5 +1,5 @@
 
-matrix.init('test').then(function(err, data){
+matrix.init('mag').then(function(err, data){
   if (err) console.error(err);
   if (data === false || typeof data === 'undefined' ){
     console.error('no match on filter'.red);
