@@ -3,12 +3,12 @@
 
 Requires env vars to be set, otherwise defaults are used.
 ```
-ADMATRIX_API_SERVER http://localhost:1337 -- points to admobilize-api server
-ADMATRIX_STREAMING_SERVER http://localhost:1338 - points to admatrix-streaming-server
+ADMATRIX_API_SERVER http://dev-demo.admobilize.com -- points to admobilize-api server
+ADMATRIX_STREAMING_SERVER http://localhost:3000 - points to admatrix-streaming-server, deploy with convox
 ADMATRIX_CLIENT_ID AdMobilizeClientID - assigned id
 ADMATRIX_CLIENT_SECRET AdMobilizeClientSecret - assigned secret
-ADMATRIX_USER - diego@rokk3rlabs.com - user to login with
-ADMATRIX_PASSWORD - trudat
+ADMATRIX_USER - brian@rokk3rlabs.com - user to login with
+ADMATRIX_PASSWORD - Trudat55
 ```
 
 ## install
@@ -22,17 +22,22 @@ scp admatrix.zip admatrix@192.168.1.129:~/
 unzip admatrix.zip -d admatrix
 
 npm install -g node-gyp nodemon
-cd admatrix/node_modules/adsensors
-node-gyp rebuild
 
-cd ../..
+# rebuilds node-gyp
 npm rebuild
-FAKE_APP=test nodemon
+
+ADMATRIX_SENSOR_REFRESH=500 START_APP=test nodemon
 ```
 
 Prevent sudo for aplay
 
 `apt-get install jackd2`
+
+#adsensors setup
+
+Clone admobilize-adsensor repo
+Copy admobilize-adsensor/node-adsensors/ contents into admatrix/node_modules/adsensors
+`npm install` in admatrix/
 
 ```
 Matrix
