@@ -66,14 +66,16 @@ Matrix
 | |_media              - Video / Image from Beacon
 | |_stream             - Connect with streaming server
 | |_token              - Persist / Retrieve Token
+```
 
-events
+# Events
 (See)[https://docs.google.com/spreadsheets/d/131aFIKZRKLm8fIlFbYi-AnroEXMSJvxtpyujY18zcHk/edit?usp=sharing]
 
 
-developer help
+# Developer Help
 
-custom global functions
+Custom global functions
+
 ```
 clog() - console.log shortcut, no logentries
 ulog() - utility log, pretty prints object, no Logentries
