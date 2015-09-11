@@ -46,7 +46,7 @@ var fs = require('fs');
   f.heartbeatInterval = 10000;
   f.spaceLimit = 5000000;
   f.splashInterval = 30;
-  f.sensorRefresh = 5000;
+  f.sensorRefresh = process.env['ADMATRIX_SENSOR_REFRESH'] || 2500;
   // not in yet
   f.sensorSockets = true;
 

@@ -33,13 +33,6 @@ Matrix.event.init();
 Matrix.api = api;
 Matrix.api.makeUrls(Matrix.apiServer);
 
-<<<<<<< HEAD
-//make sensors available
-Matrix.sensors = require('adsensors');
-
-
-=======
->>>>>>> c368cf0520abf34a3a3cc8a75e29ede390972ad8
 //app processes, see lib/service/mananger
 Matrix.activeProcesses = [];
 
