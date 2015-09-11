@@ -67,44 +67,9 @@ Matrix
 | |_stream             - Connect with streaming server
 | |_token              - Persist / Retrieve Token
 
-# Matrix Apps
-matrix.init - kicks off sensor
-
-
 events
 (See)[https://docs.google.com/spreadsheets/d/131aFIKZRKLm8fIlFbYi-AnroEXMSJvxtpyujY18zcHk/edit?usp=sharing]
-Event Name Semantic rules
-**Noun-Verb** or **Container-Object**
-```
-->
-drive-full
-space-released
-network-change
-orientation-change
-token-refresh
 
-
-device-register
-sensor-emit
-app-emit
-sensor-init
-app-{ appName }
----
-
-```
-
-socket channels from the streaming server
-```
-app-message
-user-authorization
-```
-
-socket channels to streaming server
-```
-device-register
-```
-
-Sends Socket Messages to Streaming Servers
 
 developer help
 
