@@ -24,8 +24,13 @@ unzip admatrix.zip -d admatrix
 npm install -g node-gyp nodemon
 
 # rebuilds node-gyp
-npm rebuild
+```
+cd node_modules/adsensors && node-gyp rebuild
+cd ../ && npm rebuild
+```
 
+# Start your Application with a Test App
+```
 ADMATRIX_SENSOR_REFRESH=500 START_APP=test nodemon
 ```
 
