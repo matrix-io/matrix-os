@@ -23,14 +23,11 @@ RUN curl https://deb.nodesource.com/node_0.12/pool/main/n/nodejs/nodejs_0.12.7-1
  && dpkg -i node.deb \
  && rm node.deb
 
-ADD . matrix/
+ADD . admatrix/
+WORKDIR admatrix/
 
-WORKDIR matrix/node_modules/adsensors
-
-RUN npm install -g pangyp\
- && ln -s $(which pangyp) $(dirname $(which pangyp))/node-gyp\
- && npm cache clear\
- && node-gyp configure || echo ""
+RUN cd node_modules/adsensors && npm install -g pangyp && ln -s $(which pangyp) $(dirname $(which pangyp))/node-gyp && npm cache clear && node-gyp configure || echo ""
+RUN npm install -g nodemon
 
 ENV NODE_ENV production
 ENV NODE_VERSION 0.12.7
@@ -52,10 +49,10 @@ RUN apt-get install -y bluetooth libbluetooth-dev libasound2-dev alsa-base alsa-
 
 
 #Compile For Hardware
-WORKDIR ../../../matrix
+WORKDIR admatrix/
 RUN npm rebuild
 
 # Install Node modules
 
 # RUN node app.js
-CMD npm start
+CMD ["npm", "start"]
