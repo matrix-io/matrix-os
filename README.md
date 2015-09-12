@@ -11,9 +11,9 @@ ADMATRIX_USER - brian@rokk3rlabs.com - user to login with
 ADMATRIX_PASSWORD - Trudat55
 ```
 
-## install
-```
+# Freescale Installation
 
+```
 # from local admatrix parent folder
 zip -r admatrix.zip admatrix/ -x *.git*
 scp admatrix.zip admatrix@192.168.1.129:~/
@@ -22,14 +22,17 @@ scp admatrix.zip admatrix@192.168.1.129:~/
 unzip admatrix.zip -d admatrix
 
 npm install -g node-gyp nodemon
+```
 
 # rebuilds node-gyp
+
 ```
 cd node_modules/adsensors && node-gyp rebuild
 cd ../ && npm rebuild
 ```
 
 # Start your Application with a Test App
+
 ```
 ADMATRIX_SENSOR_REFRESH=500 START_APP=test nodemon
 ```
