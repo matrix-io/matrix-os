@@ -1,7 +1,7 @@
 # AdMatrix Device Container Kit
 
 
-Requires env vars to be set, otherwise defaults are used.
+## Environment Variables
 ```
 ADMATRIX_API_SERVER http://dev-demo.admobilize.com -- points to admobilize-api server
 ADMATRIX_STREAMING_SERVER http://localhost:3000 - points to admatrix-streaming-server, deploy with convox
@@ -11,8 +11,7 @@ ADMATRIX_USER - brian@rokk3rlabs.com - user to login with
 ADMATRIX_PASSWORD - Trudat55
 ```
 
-# Freescale Installation
-
+## Freescale Installation
 ```
 # from local admatrix parent folder
 zip -r admatrix.zip admatrix/ -x *.git*
@@ -24,7 +23,7 @@ unzip admatrix.zip -d admatrix
 npm install -g node-gyp nodemon
 ```
 
-# rebuilds node-gyp
+## Rebuilds node-gyp
 
 ```
 cd node_modules/adsensors && node-gyp rebuild
@@ -37,11 +36,12 @@ cd ../ && npm rebuild
 ADMATRIX_SENSOR_REFRESH=500 START_APP=test nodemon
 ```
 
-Configuration
+# Permission Fixes for Audio & Sensors
 
 ```
-# Audio Playback
+# Audio Playback Fix for Sudo
 apt-get install jackd2
+sudo chmod 666 /sys/class/input/input4/enable
 
 # Accelerometer Fix
 sudo chmod 666 /sys/class/input/input4/enable
