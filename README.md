@@ -53,10 +53,11 @@ sudo usermod -a -G i2c admatrix
 
 # Prerequisite - AdSensors
 
-Clone admobilize-adsensor repo
-Copy admobilize-adsensor/node-adsensors/ contents into admatrix/node_modules/adsensors
-`npm install` in admatrix/
+* Clone admobilize-adsensor repo
+* Copy admobilize-adsensor/node-adsensors/ contents into admatrix/node_modules/adsensors
+* `npm install` in admatrix/
 
+# AdMatrix File System
 ```
 Matrix
 |_device  - Everything having to do with the device
