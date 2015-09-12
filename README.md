@@ -30,13 +30,13 @@ cd node_modules/adsensors && node-gyp rebuild
 cd ../ && npm rebuild
 ```
 
-# Start your Application with a Test App
+## Start your Application with a Test App
 
 ```
 ADMATRIX_SENSOR_REFRESH=500 START_APP=test nodemon
 ```
 
-# Permission Fixes for Audio & Sensors
+## Permission Fixes for Audio & Sensors
 
 ```
 # Audio Playback Fix for Sudo
@@ -51,13 +51,13 @@ sudo usermod -a -G input admatrix
 sudo usermod -a -G i2c admatrix
 ```
 
-# Prerequisite - AdSensors
+## Prerequisite - AdSensors
 
 * Clone admobilize-adsensor repo
 * Copy admobilize-adsensor/node-adsensors/ contents into admatrix/node_modules/adsensors
 * `npm install` in admatrix/
 
-# AdMatrix File System
+## AdMatrix File System
 ```
 Matrix
 |_device  - Everything having to do with the device
@@ -87,11 +87,11 @@ Matrix
 | |_token              - Persist / Retrieve Token
 ```
 
-# Events
+## Events
 (See)[https://docs.google.com/spreadsheets/d/131aFIKZRKLm8fIlFbYi-AnroEXMSJvxtpyujY18zcHk/edit?usp=sharing]
 
 
-# Developer Help
+## Developer Help
 
 Custom global functions
 
