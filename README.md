@@ -37,11 +37,21 @@ cd ../ && npm rebuild
 ADMATRIX_SENSOR_REFRESH=500 START_APP=test nodemon
 ```
 
-Prevent sudo for aplay
+Configuration
 
-`apt-get install jackd2`
+```
+# Audio Playback
+apt-get install jackd2
 
-#adsensors setup
+# Accelerometer Fix
+sudo chmod 666 /sys/class/input/input4/enable
+sudo usermod -a -G input admatrix
+
+# Magnometer Fix
+sudo usermod -a -G i2c admatrix
+```
+
+# Prerequisite - AdSensors
 
 Clone admobilize-adsensor repo
 Copy admobilize-adsensor/node-adsensors/ contents into admatrix/node_modules/adsensors
