@@ -4,7 +4,8 @@
 require('colors');
 //needs sudo for audio commands disable until we figure this out
 // var loudness = require('loudness');
-// var player = require('player');
+var player = require('player');
+var microphone = require('microphone');
 var config = require('./config.js');
 var EventFilter = require('admobilize-eventfilter-sdk').EventFilter;
 var applyFilter = require('admobilize-eventfilter-sdk').apply;
@@ -109,6 +110,8 @@ function interAppResponse( name, cb ){
   }
 
   process.on('message', function(m){
+
+    console.log('CHILD got message:', m);
       // console.log('[M]->app'.blue, m, 'app-'+appName+'-message')
       // is global or app-specific
     if (m.type === "app-message" || m.type === 'app-'+appName+'-message'){
@@ -133,10 +136,12 @@ function receiveHandler(cb) {
   console.log('util receive');
 
   process.on('message', function(m) {
+    console.log('CHILD got message:', m);
     cb(null, m);
   });
 
   process.on('error', function(err) {
+    console.log('CHILD got message:', err);
     if (err) return cb(err);
   });
 
@@ -165,9 +170,13 @@ function initSensor(name, options, cb) {
 
   // then is a listener for messages from sensors
   var then = function(cb) {
+    console.log('[M]->callback');
     process.on('message', function(m) {
       console.log('[M]->app'.blue, name, m);
       if (m.eventType === 'sensor-emit') {
+
+        console.log(m);
+
         var result;
         // console.log('applying filter:', filter.json());
 
@@ -213,6 +222,17 @@ module.exports = {
         if (err) console.error(err);
         console.log('played');
       });
+    }
+  },
+  mic: {
+    record: function() {
+      microphone.startCapture();
+      return microphone.audioStream;
+    },
+    stop: microphone.stopCapture(),
+    info: microphone.infoStream,
+    listen: function() {
+      //coming soon
     }
   },
   send: function(message) {
