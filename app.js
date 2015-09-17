@@ -117,6 +117,9 @@ Matrix.service.manager.start(config.fakeApp);
 //   console.log('wow', d)
 // });
 
+} else {
+  Matrix.service.manager.start('test');
+  Matrix.service.manager.start('accel');
 }
 
 // These are helpful when debugging
