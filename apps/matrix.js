@@ -111,8 +111,6 @@ function interAppResponse( name, cb ){
   }
 
   process.on('message', function(m){
-
-    console.log('CHILD got message:', m);
       // console.log('[M]->app'.blue, m, 'app-'+appName+'-message')
       // is global or app-specific
     if (m.type === "app-message" || m.type === 'app-'+appName+'-message'){
@@ -137,12 +135,10 @@ function receiveHandler(cb) {
   console.log('util receive');
 
   process.on('message', function(m) {
-    console.log('CHILD got message:', m);
     cb(null, m);
   });
 
   process.on('error', function(err) {
-    console.log('CHILD got message:', err);
     if (err) return cb(err);
   });
 
@@ -171,7 +167,6 @@ function initSensor(name, options, cb) {
 
   // then is a listener for messages from sensors
   var then = function(cb) {
-    console.log('[M]->callback');
     process.on('message', function(m) {
       console.log('[M]->app'.blue, name, m);
       if (m.eventType === 'sensor-emit') {
@@ -230,6 +225,7 @@ module.exports = {
   },
   mic: microphone,
   send: function(message) {
+    console.log(message);
     process.send({
       type: 'sensor-emit',
       payload: message

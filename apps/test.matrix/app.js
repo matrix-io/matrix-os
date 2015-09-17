@@ -1,4 +1,4 @@
-console.log('app>[L]->test')
+console.log('app>[L]->test');
 matrix.init('test').then(function(err, data){
   console.log(err);
   if (err) console.error(err);

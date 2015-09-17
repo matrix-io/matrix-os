@@ -1,3 +1,4 @@
+console.log('app>[L]->accel');
 matrix.init('accel').then(function(err, data){
   console.log('app(accel):then>'.green, data);
   if (err) console.error(err);
