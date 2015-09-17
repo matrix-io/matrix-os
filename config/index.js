@@ -14,6 +14,7 @@ var fs = require('fs');
   files.forEach(function(file) {
     // require localized to this file
     if ( fs.statSync(__dirname+'/'+file).isFile() ){
+      console.log(file);
       f[file.slice(0,-3)] = require('./' + file);
     }
   });

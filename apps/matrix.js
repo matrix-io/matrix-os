@@ -3,9 +3,10 @@
 
 require('colors');
 //needs sudo for audio commands disable until we figure this out
-// var loudness = require('loudness');
+var loudness = require('loudness');
 var player = require('player');
-var microphone = require('microphone');
+var microphone = require('node-record-lpcm16');
+var request = require('request');
 var config = require('./config.js');
 var EventFilter = require('admobilize-eventfilter-sdk').EventFilter;
 var applyFilter = require('admobilize-eventfilter-sdk').apply;
@@ -48,7 +49,7 @@ function deleteStore(key){
   });
 }
 
-var assetPath = __dirname + 'storage/'
+var assetPath = __dirname + '/storage/'
 
 var fileManager = {
     save: function(url, filename, cb){
@@ -210,6 +211,8 @@ module.exports = {
   name: function(name){
     appName = name;
   },
+  _: _,
+  request: request,
   audio: {
     say: function(msg){
       console.warn('say() is not implemented yet')
@@ -222,19 +225,10 @@ module.exports = {
         if (err) console.error(err);
         console.log('played');
       });
+      return soundPlayer;
     }
   },
-  mic: {
-    record: function() {
-      microphone.startCapture();
-      return microphone.audioStream;
-    },
-    stop: microphone.stopCapture(),
-    info: microphone.infoStream,
-    listen: function() {
-      //coming soon
-    }
-  },
+  mic: microphone,
   send: function(message) {
     process.send({
       type: 'sensor-emit',
