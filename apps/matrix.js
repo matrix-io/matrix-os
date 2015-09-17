@@ -166,6 +166,8 @@ function initSensor(name, options, cb) {
   var filter = new EventFilter(name);
 
   // then is a listener for messages from sensors
+  // FIXME: Issue with app only storing one process at a time
+  console.log('err >> looking into fix');
   var then = function(cb) {
     process.on('message', function(m) {
       console.log('[M]->app'.blue, name, m);
