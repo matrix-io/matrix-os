@@ -5,8 +5,8 @@ matrix.init('accel').then(function(err, data){
   if (data === false || typeof data === 'undefined' ){
     console.error('no match on filter'.red);
   } else {
-    console.log('app(accel):then>'.green, data);
-    matrix.send({'type': 'accel', 'data': { x: Math.ceil(Math.random(0,1)*10), y: Math.ceil(Math.random(0,1)*10), z: Math.ceil(Math.random(0,1)*10) } });
+    // console.log('app(accel):then>'.green, data);
+    matrix.send({ 'type': 'accel', data: { x: Math.ceil(Math.random(0,1)*10), y: Math.ceil(Math.random(0,1)*10), z: Math.ceil(Math.random(0,1)*10) }});
 
     //test specific app + event
     // matrix.notify('test-event','doTest', data);

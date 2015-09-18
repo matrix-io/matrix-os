@@ -1,12 +1,10 @@
-console.log('app>[L]->test');
 matrix.init('test').then(function(err, data){
   console.log(err);
   if (err) console.error(err);
   if (data === false || typeof data === 'undefined' ){
     console.error('no match on filter'.red);
   } else {
-    console.log('app(test):then>'.green, data);
-    matrix.send(data);
+    matrix.send({ 'type': 'test', data: data });
 
     //test specific app + event
     // matrix.notify('test-event','doTest', data);
