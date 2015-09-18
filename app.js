@@ -118,8 +118,10 @@ Matrix.service.manager.start(config.fakeApp);
 // });
 
 } else {
-  Matrix.service.manager.start('test');
+  //3 apps in parallel
+  Matrix.service.manager.start('monitor');
   Matrix.service.manager.start('accel');
+  // Matrix.service.manager.start('neo');
 }
 
 // These are helpful when debugging

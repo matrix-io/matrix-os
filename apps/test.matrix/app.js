@@ -6,6 +6,7 @@ matrix.init('test').then(function(err, data){
   } else {
     matrix.send({ 'type': 'test', data: data });
 
+
     //test specific app + event
     // matrix.notify('test-event','doTest', data);
 

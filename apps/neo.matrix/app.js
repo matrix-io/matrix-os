@@ -12,29 +12,31 @@ matrix.notify('start');
 exports.parseResult = function (err, resp, body) {
     
     //stop the microphone from recording
-    microphone.stop();
-    var store = JSON.parse(body);
-    var text = store._text;
-
-    if(text !== null || body !== undefined) {
-      if(text.indexOf("stop") != -1 ) {
-        for(j = 0; j < trackPlayers.length; j++ ) {
-          trackPlayers[j].stop();
+    setTimeout(function(){
+      microphone.stop();
+      var store = JSON.parse(body);
+      var text = store._text;
+      console.log(text);
+      if(text != null && text != "undefined") {
+        if(text.indexOf("stop") != -1 ) {
+          for(j = 0; j < trackPlayers.length; j++ ) {
+            trackPlayers[j].stop();
+          }
+          matrix.notify('restart');
+        } else if(text.indexOf("do it") != -1 ) {
+          trackPlayers[i] = audio.play('shia-labeouf.mp3',25);
+          matrix.send({ 'type': 'neo', data: { 'engagements': 1, 'message': text } });
+          matrix.notify('restart');
+          i++;
+        } else {
+          matrix.send({ 'type': 'neo', data: { 'listens': 1, 'message': text } });
+          matrix.notify('restart');
         }
-        matrix.notify('restart');
-      } else if(text.indexOf("do it") != -1 ) {
-        trackPlayers[i] = audio.play('shia-labeouf.mp3',25);
-        matrix.send({ 'type': 'neo', data: { 'plays': 1, 'message': text } });
-        matrix.notify('restart');
-        i++;
       } else {
-        matrix.send({ 'type': 'neo', data: { 'interprets': 1, 'message': text } });
-        matrix.notify('restart');
+        matrix.notify('stop');
       }
-    } else {
-      matrix.notify('stop');
-    }
-
+    },500);
+    
 };
 
 matrix.on(function(message){

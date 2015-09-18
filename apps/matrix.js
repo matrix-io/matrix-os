@@ -191,7 +191,7 @@ function initSensor(name, options, cb) {
 
         cb(null, result);
       } else {
-        cb('Invalid Message from Matrix' + m);
+        cb('Invalid Message from Matrix' + JSON.stringify(m));
       }
     });
   };
@@ -239,7 +239,7 @@ module.exports = {
   emit: function(type, msg){
     process.send({
       type: type,
-      payload: message
+      payload: msg
     });
   },
   store: storeManager,
