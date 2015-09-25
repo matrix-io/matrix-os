@@ -20,7 +20,8 @@ matrix.init('accel').then(function(err, data){
 });
 
 matrix.on(function(data){
-  console.log('recieved global message'.blue, data);
+  console.log('accelerometer');
+  console.log('recieved global message -- ', data);
 });
 //
 // matrix.file.save('http://google.com', 'google.txt', function(err, result){

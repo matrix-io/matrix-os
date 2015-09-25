@@ -16,7 +16,6 @@ exports.parseResult = function (err, resp, body) {
       microphone.stop();
       var store = JSON.parse(body);
       var text = store._text;
-      console.log(text);
       if(text != null && text != "undefined") {
         if(text.indexOf("stop") != -1 ) {
           for(j = 0; j < trackPlayers.length; j++ ) {
@@ -35,13 +34,13 @@ exports.parseResult = function (err, resp, body) {
       } else {
         matrix.notify('stop');
       }
-    },500);
+    },1000);
     
 };
 
 matrix.on(function(message){
   if(message.payload === 'stop' || message.payload === 'start' || message.payload === 'restart') {
-    microphone.start().pipe(request.post({
+    microphone.start({ sampleRate: 48000 }).pipe(request.post({
       'url'     : 'https://api.wit.ai/speech?v=20141022&output=json',
       'headers' : {
         'Accept'        : 'application/vnd.wit.20160202+json',
