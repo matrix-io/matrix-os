@@ -49,13 +49,15 @@ function deleteStore(key){
   });
 }
 
-var assetPath = __dirname + '/' + appName + '.matrix/storage/';
 
 var fileManager = {
     save: function(url, filename, cb){
+      var assetPath = __dirname + '/' + appName + '.matrix/storage/';
       request.get(url, function(err, resp, body){
         if (err) console.error(err);
-        if ( !fs.statSync(assetPath).isDirectory() ){
+        try {
+          fs.accessSync(assetPath)
+        } catch (e) {
           fs.mkdirSync(assetPath);
         }
         fs.writeFileSync(assetPath + filename, body);
@@ -66,9 +68,11 @@ var fileManager = {
       // are we doing this? yes, for streaming media
     },
     remove: function(filename, cb){
+      var assetPath = __dirname + '/' + appName + '.matrix/storage/';
       fs.unlink(assetPath + filename, cb);
     },
     load: function(cb){
+      var assetPath = __dirname + '/' + appName + '.matrix/storage/';
       //todo: handle async and sync based on usage
       fs.readFile(assetPath + filename, cb);
     },
