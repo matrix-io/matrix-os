@@ -49,12 +49,15 @@ function deleteStore(key){
   });
 }
 
-var assetPath = __dirname + '/storage/'
+var assetPath = __dirname + '/' + appName + '.matrix/storage/';
 
 var fileManager = {
     save: function(url, filename, cb){
       request.get(url, function(err, resp, body){
         if (err) console.error(err);
+        if ( !fs.statSync(assetPath).isDirectory() ){
+          fs.mkdirSync(assetPath);
+        }
         fs.writeFileSync(assetPath + filename, body);
         cb(null, body);
       });
