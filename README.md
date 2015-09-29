@@ -43,12 +43,15 @@ ADMATRIX_SENSOR_REFRESH=500 START_APP=test nodemon
 apt-get install jackd2
 sudo chmod 666 /sys/class/input/input4/enable
 
-# Accelerometer Fix
+# Accelerometer Permissions
 sudo chmod 666 /sys/class/input/input4/enable
 sudo usermod -a -G input admatrix
 
-# Magnometer Fix
+# Magnometer Permissions
 sudo usermod -a -G i2c admatrix
+
+# Altimeter Permissions
+sudo chmod 777 /dev/spidev0.0
 ```
 
 ## Prerequisite - AdSensors

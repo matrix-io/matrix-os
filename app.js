@@ -56,20 +56,7 @@ async.series([
       cb();
     });
   },
-  function checkStreamingServer(cb){
-    var streamOptions = require('url').parse( Matrix.streamingServer );
-    require('net').connect({
-      port: streamOptions.port,
-      host: streamOptions.hostname
-    }, function(res){
-        // Initialize Streaming Server Socket
-        Matrix.service.stream.init();
-      cb(null);
-    }).on('error', function(){
-      error('No Streaming Server Visible', Matrix.streamingServer)
-      cb();
-    });
-  },
+  Matrix.service.stream.checkStreamingServer,
   function getToken(cb){
     // check in with api server
     Matrix.service.token.get(function(err, token){
@@ -214,4 +201,5 @@ process.on('uncaughtException', function (err) {
     //   }
     // });
   }
+  process.exit();
 });
