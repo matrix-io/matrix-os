@@ -3,8 +3,8 @@
 
 require('colors');
 //needs sudo for audio commands disable until we figure this out
-var loudness = require('loudness');
-var player = require('player');
+// var loudness = require('loudness');
+// var player = require('player');
 var microphone = require('node-record-lpcm16');
 var request = require('request');
 var config = require('./config.js');
@@ -236,6 +236,7 @@ module.exports = {
   send: function(message) {
     console.log(message);
     process.send({
+      time: Date.now(),
       type: 'sensor-emit',
       payload: message
     });

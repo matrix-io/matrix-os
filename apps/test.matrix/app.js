@@ -1,4 +1,4 @@
-matrix.init('test').then(function(err, data){
+matrix.init('test', {refresh:10000}).then(function(err, data){
   console.log(err);
   if (err) console.error(err);
   if (data === false || typeof data === 'undefined' ){
