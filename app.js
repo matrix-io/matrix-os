@@ -56,7 +56,6 @@ async.series([
       cb();
     });
   },
-  Matrix.service.stream.checkStreamingServer,
   function getToken(cb){
     // check in with api server
     Matrix.service.token.get(function(err, token){
@@ -80,7 +79,8 @@ async.series([
         cb(null);
       }
     });
-  }
+  },
+  Matrix.service.stream.checkStreamingServer,
 ], function(err, obj){
   if (err) error(err);
   log(Matrix.is.green.bold, '['.grey+Matrix.deviceId.grey+']'.grey, 'ready'.yellow.bold);
