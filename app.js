@@ -103,11 +103,11 @@ Matrix.service.manager.start(config.fakeApp);
 // Matrix.sensors.fake.start(function(err, d){
 //   console.log('wow', d)
 // });
+  // Matrix.service.manager.start('monitor');
 
 } else {
   //3 apps in parallel
-  Matrix.service.manager.start('monitor');
-  Matrix.service.manager.start('accel');
+  // Matrix.service.manager.start('accel');
   // Matrix.service.manager.start('neo');
 }
 
