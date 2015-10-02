@@ -4,11 +4,11 @@ var emitter = new EventEmitter();
 var cpu = 0;
 var memory = 0;
 
-matrix.send({ type: 'device-info', 
+matrix.send({ type: 'device', 
 	'osHostname': os.hostname(),
 	'osType': os.type(), 
 	'osPlatform': os.platform(),
-	'osArch': os.arch(), 
+	'osArch': os.arch()
 });
 
 setInterval(function(){
