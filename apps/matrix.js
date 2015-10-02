@@ -174,7 +174,7 @@ function initSensor(name, options, cb) {
 
   // then is a listener for messages from sensors
   // FIXME: Issue with app only storing one process at a time
-  console.log('err >> looking into fix');
+  // console.log('sensor err >> looking into fix');
   var then = function(cb) {
     process.on('message', function(m) {
       console.log('[M]->app'.blue, name, m);
@@ -234,7 +234,7 @@ module.exports = {
   },
   mic: microphone,
   send: function(message) {
-    console.log(message);
+    // console.log('[M]('+ appName +') ->', message);
     process.send({
       time: Date.now(),
       type: 'sensor-emit',
