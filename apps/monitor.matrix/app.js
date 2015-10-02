@@ -4,12 +4,14 @@ var emitter = new EventEmitter();
 var cpu = 0;
 var memory = 0;
 
-matrix.send({ type: 'device', 
-	'osHostname': os.hostname(),
-	'osType': os.type(), 
-	'osPlatform': os.platform(),
-	'osArch': os.arch()
-});
+setTimeout(function(){
+matrix.send({ type: 'device', data: { 
+	'os_hostname': os.hostname(),
+	'os_type': os.type(), 
+	'os_platform': os.platform(),
+	'os_arch': os.arch()
+}});
+},5000);
 
 setInterval(function(){
 		var loadavg = os.loadavg();
