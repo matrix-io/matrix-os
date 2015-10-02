@@ -4,6 +4,13 @@ var emitter = new EventEmitter();
 var cpu = 0;
 var memory = 0;
 
+matrix.send({ type: 'device-info', 
+	'osHostname': os.hostname(),
+	'osType': os.type(), 
+	'osPlatform': os.platform(),
+	'osArch': os.arch(), 
+});
+
 setInterval(function(){
 		var loadavg = os.loadavg();
 		var length = loadavg.length;
