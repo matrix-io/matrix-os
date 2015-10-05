@@ -5,9 +5,9 @@ var cpu = 0;
 var memory = 0;
 
 setTimeout(function(){
-matrix.send({ type: 'device', data: { 
+matrix.send({ type: 'device', data: {
 	'os_hostname': os.hostname(),
-	'os_type': os.type(), 
+	'os_type': os.type(),
 	'os_platform': os.platform(),
 	'os_arch': os.arch()
 }});
