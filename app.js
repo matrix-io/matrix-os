@@ -60,10 +60,12 @@ async.series([
     // check in with api server
     Matrix.service.token.get(function(err, token){
       if (err) return cb(err);
+      log(token);
       Matrix.token = token.clientToken;
       Matrix.clientToken = token.clientToken;
       Matrix.deviceToken = token.deviceToken;
       log('Client Token'.green, token.clientToken);
+      log('Device Token'.green, token.deviceToken);
       cb(null);
     });
   },
