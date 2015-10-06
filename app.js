@@ -60,7 +60,6 @@ async.series([
     // check in with api server
     Matrix.service.token.get(function(err, token){
       if (err) return cb(err);
-      log(token);
       Matrix.token = token.clientToken;
       Matrix.clientToken = token.clientToken;
       Matrix.deviceToken = token.deviceToken;
@@ -87,6 +86,7 @@ async.series([
   if (err) error(err);
   log(Matrix.is.green.bold, '['.grey+Matrix.deviceId.grey+']'.grey, 'ready'.yellow.bold);
   Matrix.banner();
+  Matrix.service.stream.startWatcher();
 });
 
 
@@ -160,8 +160,10 @@ function onKill() {
 */
 function onDestroy() {
   //TODO: Implemenent cleanups
-  // clean up db
   // kill children apps
+  Matrix.service.manager.killAllApps();
+  // clean up db
+  Matrix.service.manager.clearAppList();
   // other maintenance
   process.exit();
 }
@@ -183,10 +185,10 @@ process.on('uncaughtException', function (err) {
     Matrix.device.manager.setupDNS();
   } else if (err.code && err.code == "ENOMEM") {
     error('Matrix -- ENOMEM was detected (Out of memory)');
-    error(err.stack);
+    // error(err.stack);
     Matrix.device.manager.reboot("Memory clean up");
   } else {
-    error(err.stack);
+    // error(err.stack);
 
     // TODO: bad update? revert to last
     //revert old
