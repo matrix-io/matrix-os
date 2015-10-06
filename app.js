@@ -169,7 +169,7 @@ function onDestroy() {
 //Triggered when an unexpected (programming) error occurs
 //Also called when a DNS error is presented
 process.on('uncaughtException', function (err) {
-  error('Matrix -- Uncaught exception: ');
+  error('Matrix -- Uncaught exception: ', err, err.stack);
   if (err.code && err.code == "ENOTFOUND") {
     error('Matrix -- ENOTFOUND was detected (DNS error)');
     Matrix.device.manager.setupDNS();
