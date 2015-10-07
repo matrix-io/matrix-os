@@ -150,7 +150,7 @@ process.on("SIGQUIT", function () {
 */
 function onKill() {
   log("Matrix -- Application Closing...");
-  Matrix.service.stream.close();
+  // Matrix.service.stream.close();
   onDestroy();
 }
 
