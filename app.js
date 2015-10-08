@@ -24,6 +24,8 @@ config = Matrix.config;
 
 //Event Loop - Handles all events
 Matrix.events = new events.EventEmitter();
+// seems like a fair number
+Matrix.events.setMaxListeners(50);
 Matrix.events.on('addListener', function(name){ log (name);})
 
 //Initialize Listeners - Code goes here
@@ -204,6 +206,6 @@ process.on('uncaughtException', function (err) {
     //     onDestroy();
     //   }
     // });
+    onDestroy();
   }
-  process.exit();
 });

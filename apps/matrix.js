@@ -237,7 +237,7 @@ module.exports = {
     // console.log('[M]('+ appName +') ->', message);
     process.send({
       time: Date.now(),
-      type: 'sensor-emit',
+      type: 'app-emit',
       payload: message
     });
   },
