@@ -4,4 +4,8 @@ matrix.name(appName);
 matrix.appConfig = JSON.parse( require('fs').readFileSync(__dirname + '/app.json'));
 matrix.config = matrix.appConfig.configuration;
 
+
 require('./app.js');
+
+// kicks off app init process
+matrix.startApp();

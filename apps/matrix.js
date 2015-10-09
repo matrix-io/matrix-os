@@ -250,6 +250,15 @@ module.exports = {
       payload: msg
     });
   },
+  startApp: function(){
+    if ( !matrix.hasOwnProperty('appConfig')){
+      console.error('No Configuration Specified')
+    }
+    process.send({
+      type: 'app-config',
+      payload: matrix.appConfig
+    })
+  },
   store: storeManager,
   debug: matrixDebug,
   notify: interAppNotification,
