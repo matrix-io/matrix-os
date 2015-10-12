@@ -18,5 +18,5 @@ setInterval(function(){
 		var length = loadavg.length;
 		var avg = loadavg.reduce(function(total, num){ return total + num }, 0)/length;
 		var memory = 1 - os.freemem()/os.totalmem();
-		matrix.send({ type: 'monitor', data: { 'cpu': avg, 'memory': memory } });
+		matrix.send({ type: 'monitor', data: { 'cpu': avg, 'memory': memory*100 } });
 },1000);
