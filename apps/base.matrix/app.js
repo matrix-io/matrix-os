@@ -4,8 +4,6 @@ var emitter = new EventEmitter();
 var cpu = 0;
 var memory = 0;
 
-console.log("=====", matrix.config)
-
 setTimeout(function(){
 matrix.send({ type: 'device', data: {
   'os_hostname': os.hostname(),

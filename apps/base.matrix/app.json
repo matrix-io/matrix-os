@@ -12,7 +12,7 @@
         "name": "Device Info",
         "help": "",
         "display": "list-group",
-        "series": [ "os_hostname:string", "os_type:string", "os_arch:string" ]
+        "series": [ "os_platform:string", "os_hostname:string", "os_type:string", "os_arch:string" ]
       }
     ],
     [
