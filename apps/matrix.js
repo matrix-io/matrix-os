@@ -251,6 +251,8 @@ module.exports = {
     });
   },
   startApp: function(){
+    console.log('startapp');
+    // TODO: Make sure something can request app-config
     if ( !matrix.hasOwnProperty('appConfig')){
       console.error('No Configuration Specified')
     }
