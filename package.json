@@ -21,6 +21,7 @@
     "commander": "^2.8.1",
     "debug": "^2.2.0",
     "df": "^1.1.1",
+    "engine.io-client": "^1.5.4",
     "fs-extra": "^0.22.1",
     "getmac": "^1.0.7",
     "le_node": "^1.0.8",
