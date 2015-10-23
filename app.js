@@ -89,36 +89,17 @@ async.series([
   log(Matrix.is.green.bold, '['.grey+Matrix.deviceId.grey+']'.grey, 'ready'.yellow.bold);
   Matrix.banner();
   Matrix.service.stream.startWatcher();
-});
-
-
-
-
-Matrix.service.lifecycle.updateLastBootTime();
-
-
-if (config.fakeApp){
-// Start an app - FAKE
-Matrix.service.manager.start(config.fakeApp);
-// Matrix.service.manager.start('test-event');
-// Start a sensor -- FAKE
-// Matrix.sensors.fake.openSocket(8000);
-//
-// Matrix.sensors.fake.start(function(err, d){
-//   console.log('wow', d)
-// });
-  // Matrix.service.manager.start('monitor');
-
-} else {
-  //3 apps in parallel
-  // Matrix.service.manager.start('accel');
-  // Matrix.service.manager.start('neo');
-}
-
 // These are helpful when debugging
 // log('========== vvv API vvv =========\n'.blue, api, "\n======== ^^^ API ^^^ =======".blue);
 // log('========== vvv MATRIX vvv =========\n'.yellow, Matrix, "\n======== ^^^ MATRIX ^^^ =======".yellow);
 
+  //if START_APP is set
+  if (config.fakeApp){
+    Matrix.service.manager.start(config.fakeApp);
+  }
+});
+
+Matrix.service.lifecycle.updateLastBootTime();
 
 module.exports =
 {

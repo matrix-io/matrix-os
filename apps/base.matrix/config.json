@@ -1,56 +1,47 @@
 {
-  "name": "Monitor",
-  "version": "1.0.0",
-  "description": "Monitor your device metrics.",
-  "configuration": {
-    "foo": "bar"
-  },
-  "dashboard": [
-    [
-      {
-        "sensors": "device-info",
-        "name": "Device Info",
-        "help": "",
-        "display": "list-group",
-        "series": [ "os_platform:string", "os_hostname:string", "os_type:string", "os_arch:string" ]
-      }
-    ],
-    [
-      {
-        "sensors": "monitor",
-        "name": "CPU",
-        "help": "",
-        "display": "digit",
-        "series": [ "cpu:float,@.toFixed(2)" ]
-      },
-      {
-        "sensors": "monitor",
-        "name": "Memory",
-        "help": "",
-        "display": "digit",
-        "series": [ "memory:float,(@*100).toFixed(2)+'%'" ]
-      }
-    ],
-
-    [
-      {
-        "sensors": "monitor",
-        "name": "CPU",
-        "help": "",
-        "display": "line",
-        "points": 30,
-        "series": [ "cpu:float" ]
-      }
-    ],
-    [
-      {
-        "sensors": "monitor",
-        "name": "Memory",
-        "help": "",
-        "display": "line",
-        "points": 30,
-        "series": [ "memory:float" ]
-      }
+    "name": "Monitor",
+    "version": "1.0.0",
+    "description": "Monitor your device metrics.",
+    "configuration": {
+        "foo": "var",
+        "bitch": "brian"
+    },
+    "dashboard": [
+        [{
+            "sensors": "device-info",
+            "name": "Device Info",
+            "help": "",
+            "display": "list-group",
+            "series": ["os_platform:string", "os_hostname:string", "os_type:string", "os_arch:string"]
+        }],
+        [{
+            "sensors": "monitor",
+            "name": "CPU",
+            "help": "",
+            "display": "digit",
+            "series": ["cpu:float,@.toFixed(2)"]
+        }, {
+            "sensors": "monitor",
+            "name": "Memory",
+            "help": "",
+            "display": "digit",
+            "series": ["memory:float,(@*100).toFixed(2)+'%'"]
+        }],
+        [{
+            "sensors": "monitor",
+            "name": "CPU",
+            "help": "",
+            "display": "line",
+            "points": 30,
+            "series": ["cpu:float"]
+        }],
+        [{
+            "sensors": "monitor",
+            "name": "Memory",
+            "help": "",
+            "display": "line",
+            "points": 30,
+            "series": ["memory:float"]
+        }]
     ]
-  ]
 }
