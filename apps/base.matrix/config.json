@@ -3,8 +3,7 @@
     "version": "1.0.0",
     "description": "Monitor your device metrics.",
     "configuration": {
-        "foo": "var",
-        "bitch": "brian"
+        "foo": "var"
     },
     "dashboard": [
         [{

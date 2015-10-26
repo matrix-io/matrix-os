@@ -1,6 +1,21 @@
 # AdMatrix Device Container Kit
 
 
+### Debugging
+
+Use `DEBUG=* nodemon` to see all debug messages.
+
+#### Debug categories
+
+` app, sensor, stream `
+
+**example:**
+To see output from socket streams and apps, do
+`DEBUG=app,stream nodemon`
+
+To exclude engine-io from the output, do
+`DEBUG=*,-engine* nodemon`
+
 ## Environment Variables
 ```
 ADMATRIX_API_SERVER http://dev-demo.admobilize.com -- points to admobilize-api server

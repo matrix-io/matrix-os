@@ -2,9 +2,13 @@
 _ = require('lodash');
 async = require('async');
 
+// for debug messages
+debugLog = require('debug');
+
 var fs = require('fs');
 var events = require('events');
 var util = require('util');
+
 
 // Core
 Matrix = require('./lib');
@@ -13,6 +17,7 @@ Matrix = require('./lib');
 Matrix.service.logging.init();
 ulog = util.log;
 clog = console.log;
+
 
 // SDK
 api = require('admatrix-node-sdk');
@@ -88,7 +93,8 @@ async.series([
   if (err) error(err);
   log(Matrix.is.green.bold, '['.grey+Matrix.deviceId.grey+']'.grey, 'ready'.yellow.bold);
   Matrix.banner();
-  Matrix.service.stream.startWatcher();
+
+
 // These are helpful when debugging
 // log('========== vvv API vvv =========\n'.blue, api, "\n======== ^^^ API ^^^ =======".blue);
 // log('========== vvv MATRIX vvv =========\n'.yellow, Matrix, "\n======== ^^^ MATRIX ^^^ =======".yellow);
@@ -98,6 +104,7 @@ async.series([
     Matrix.service.manager.start(config.fakeApp);
   }
 });
+
 
 Matrix.service.lifecycle.updateLastBootTime();
 
