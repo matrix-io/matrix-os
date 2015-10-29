@@ -50,6 +50,7 @@ var fs = require('fs');
   f.sensorRefresh = process.env['ADMATRIX_SENSOR_REFRESH'] || 2500;
   // not in yet
   f.sensorSockets = true;
+  f.socketCheckDelay = 500;
 
 
 // TODO: Figure out where file storage happens
