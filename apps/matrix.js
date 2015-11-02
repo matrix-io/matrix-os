@@ -14,6 +14,9 @@ var request = require('request');
 var fs = require('fs');
 var _ = require('lodash');
 var DataStore = require('nedb');
+
+var OpenCv = require('opencv-node-sdk');
+
 var AppStore =  new DataStore({ filename: config.path.appStore, autoload: true });
 
 var appName = '';
@@ -163,6 +166,26 @@ function receiveHandler(cb) {
 function initSensor(name, options, cb) {
   console.log('Initialize Sensor:'.blue , name);
 
+  if ( name === 'camera' ){
+    // pop into OpenCv
+    var eyes = new OpenCv({cameraId:'test'});
+
+    eyes.setConfiguration(options, function(err, a){
+
+      //test
+      var file = require('fs').readFileSync('/Users/god/Desktop/holly.jpg');
+      eyes.analyzeImage(file, function(err, d){
+        console.log('Image', err, d);
+      });
+      console.log('setConfig', err, a)
+      eyes.startCamera(0, function(err, b){
+        console.log('startCamera', err, b);
+        eyes.startContinuousDetection( function(err, c){
+          console.log('detect', err, c);
+        });
+      });
+    });
+  }
   // kick off sensor readers
   process.send({
     type: 'sensor-init',
@@ -234,9 +257,14 @@ module.exports = {
   },
   mic: microphone,
   send: function(message) {
-    // console.log('[M]('+ appName +') ->', message);
+    //console.log('[M]('+ appName +') ->', message);
+    if (message.hasOwnProperty('data')){
+      message.data.time = Date.now();
+    } else {
+      console.error('(Matrix.send)'.yellow, 'Message has no Data');
+    }
+
     process.send({
-      time: Date.now(),
       type: 'app-emit',
       payload: message
     });
@@ -248,7 +276,7 @@ module.exports = {
     process.send({
       type: type,
       payload: msg
-    });
+    })
   },
   startApp: function(){
     // TODO: Make sure something can request app-config

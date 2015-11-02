@@ -1,28 +1,37 @@
-matrix.init('test', {refresh:10000}).then(function(err, data){
-  console.log(err);
-  if (err) console.error(err);
-  if (data === false || typeof data === 'undefined' ){
-    console.error('no match on filter'.red);
-  } else {
-    matrix.send({ 'type': 'test', data: data });
+matrix.init('camera', {
+      'height': 640,
+      'width': 480,
+      'minSize': 20,
+      'maxSize': 400,
+      'drawObjects': true,
+      'show': false,
+      'save': false,
+      //'output':'/home/julio/photos',
+      'processUniques': false,
+      "detection": {
+        type: "humans",
+        detector: 3
+      },
+      "directory": "/Volumes/Synapse/Projects/_client/r3r/admob/admobilize-detection/data/"})
+        .then(function(err, data) {
+          console.log(err);
+          if (err) console.error(err);
+          if (data === false || typeof data === 'undefined') {
+            console.error('no match on filter'.red);
+          } else {
+            matrix.send({
+              'type': 'test',
+              data: data
+            });
 
 
-    //test specific app + event
-    // matrix.notify('test-event','doTest', data);
+            //test specific app + event
+            // matrix.notify('test-event','doTest', data);
 
-    //test specific app
-    // matrix.notify('test-event', {global: false});
+            //test specific app
+            // matrix.notify('test-event', {global: false});
 
-    //test global
-    //matrix.notify({global:true});
-  }
-});
-
-matrix.on(function(data){
-  console.log('recieved global message'.blue, data);
-});
-//
-// matrix.file.save('http://google.com', 'google.txt', function(err, result){
-//   if (err) console.error(err);
-//   // console.log(result);
-// });
+            //test global
+            //matrix.notify({global:true});
+          }
+        });
