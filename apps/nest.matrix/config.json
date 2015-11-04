@@ -1,0 +1,58 @@
+{
+  "name": "Nest Control",
+  "version": "1.0.0",
+  "description": "Control your nest with voice commands.",
+  "configuration": {
+    "username": "appdev@admobilize.com",
+    "password": "NestPassword1!",
+    "token": "E6VKUM55E4YCNMF2T4H7A2CUTU6OD4BE"
+  },
+  "dashboard": [
+    [
+      {
+        "sensors": "device-info",
+        "name": "Device Info",
+        "help": "",
+        "display": "list-group",
+        "series": [ "os_platform:string", "os_hostname:string", "os_type:string", "os_arch:string" ]
+      }
+    ],
+    [
+      {
+        "sensors": "monitor",
+        "name": "CPU",
+        "help": "",
+        "display": "digit",
+        "series": [ "cpu:float,@.toFixed(2)" ]
+      },
+      {
+        "sensors": "monitor",
+        "name": "Memory",
+        "help": "",
+        "display": "digit",
+        "series": [ "memory:float,(@*100).toFixed(2)+'%'" ]
+      }
+    ],
+
+    [
+      {
+        "sensors": "monitor",
+        "name": "CPU",
+        "help": "",
+        "display": "line",
+        "points": 30,
+        "series": [ "cpu:float" ]
+      }
+    ],
+    [
+      {
+        "sensors": "monitor",
+        "name": "Memory",
+        "help": "",
+        "display": "line",
+        "points": 30,
+        "series": [ "memory:float" ]
+      }
+    ]
+  ]
+}
