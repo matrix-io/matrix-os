@@ -11,7 +11,7 @@ matrix.send({ type: 'device', data: {
   'os_platform': os.platform(),
   'os_arch': os.arch()
 }});
-},10000);
+},1000);
 
 setInterval(function(){
     var loadavg = os.loadavg();
@@ -19,4 +19,4 @@ setInterval(function(){
     var avg = loadavg.reduce(function(total, num){ return total + num }, 0)/length;
     var memory = 1 - os.freemem()/os.totalmem();
     matrix.send({ type: 'monitor', data: { 'cpu': avg, 'memory': memory } });
-},5000);
+},500);

@@ -233,6 +233,12 @@ function initSensor(name, options, cb) {
   return filter;
 }
 
+function sendConfig(){
+  process.send({
+    type: 'app-config',
+    payload: matrix.appConfig
+  });
+}
 
 module.exports = {
   name: function(name){
@@ -283,10 +289,14 @@ module.exports = {
     if ( !matrix.hasOwnProperty('appConfig')){
       console.error('No Configuration Specified')
     }
-    process.send({
-      type: 'app-config',
-      payload: matrix.appConfig
+    // sending config on socket open
+    process.on('message', function(m){
+      if (m.type === 'request-config'){
+        sendConfig();
+      }
     })
+    //send config on app start
+    sendConfig();
   },
   store: storeManager,
   debug: matrixDebug,
