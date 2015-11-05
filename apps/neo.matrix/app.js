@@ -10,7 +10,7 @@ var witToken      = 'E6VKUM55E4YCNMF2T4H7A2CUTU6OD4BE'; // get one from wit.ai!
 matrix.notify('start');
 
 exports.parseResult = function (err, resp, body) {
-    
+    console.log('start processing', err, resp, body);
     //stop the microphone from recording
     setTimeout(function(){
       microphone.stop();
@@ -39,6 +39,8 @@ exports.parseResult = function (err, resp, body) {
 };
 
 matrix.on(function(message){
+  console.log(message);
+  console.log('start listening...');
   if(message.payload === 'stop' || message.payload === 'start' || message.payload === 'restart') {
     microphone.start({ sampleRate: 48000 }).pipe(request.post({
       'url'     : 'https://api.wit.ai/speech?v=20141022&output=json',

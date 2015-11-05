@@ -4,7 +4,7 @@
 require('colors');
 //needs sudo for audio commands disable until we figure this out
 // var loudness = require('loudness');
-// var player = require('player');
+var player = require('player');
 var microphone = require('node-record-lpcm16');
 var request = require('request');
 var config = require('./config.js');
@@ -15,7 +15,7 @@ var fs = require('fs');
 var _ = require('lodash');
 var DataStore = require('nedb');
 
-var OpenCv = require('opencv-node-sdk');
+// var OpenCv = require('opencv-node-sdk');
 
 var AppStore =  new DataStore({ filename: config.path.appStore, autoload: true });
 
@@ -251,6 +251,7 @@ module.exports = {
       console.warn('say() is not implemented yet')
     },
     play: function(file, volume){
+      var assetPath = __dirname + '/' + appName + '.matrix/storage/';
       var volume = ( !_.isUndefined(volume)) ? volume : 80;
       require('loudness').setVolume( volume, function(){});
       var soundPlayer = new player( assetPath + file );

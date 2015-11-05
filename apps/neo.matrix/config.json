@@ -2,8 +2,8 @@
   "name": "Neo",
   "version": "1.0.0",
   "description": "The voice of reason.",
-  "dependencies": {
-    "temperature.matrix": "1.0.0"
+  "configuration": {
+    "token": "E6VKUM55E4YCNMF2T4H7A2CUTU6OD4BE"
   },
   "interface": {
     "sensor.camera": { "name": "Camera" },
