@@ -168,23 +168,23 @@ function initSensor(name, options, cb) {
 
   if ( name === 'camera' ){
     // pop into OpenCv
-    var eyes = new OpenCv({cameraId:'test'});
-
-    eyes.setConfiguration(options, function(err, a){
-
-      //test
-      var file = require('fs').readFileSync('/Users/god/Desktop/holly.jpg');
-      eyes.analyzeImage(file, function(err, d){
-        console.log('Image', err, d);
-      });
-      console.log('setConfig', err, a)
-      eyes.startCamera(0, function(err, b){
-        console.log('startCamera', err, b);
-        eyes.startContinuousDetection( function(err, c){
-          console.log('detect', err, c);
-        });
-      });
-    });
+    // var eyes = new OpenCv({cameraId:'test'});
+    //
+    // eyes.setConfiguration(options, function(err, a){
+    //
+    //   //test
+    //   var file = require('fs').readFileSync('/Users/god/Desktop/holly.jpg');
+    //   eyes.analyzeImage(file, function(err, d){
+    //     console.log('Image', err, d);
+    //   });
+    //   console.log('setConfig', err, a)
+    //   eyes.startCamera(0, function(err, b){
+    //     console.log('startCamera', err, b);
+    //     eyes.startContinuousDetection( function(err, c){
+    //       console.log('detect', err, c);
+    //     });
+    //   });
+    // });
   }
   // kick off sensor readers
   process.send({

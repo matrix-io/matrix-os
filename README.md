@@ -67,6 +67,13 @@ sudo usermod -a -G i2c admatrix
 
 # Altimeter Permissions
 sudo chmod 777 /dev/spidev0.0
+
+# Install Sox For Linux
+sudo apt-get install sox libsox-fmt-all
+
+# Install Sox for mac
+brew install sox
+
 ```
 
 ## Prerequisite - AdSensors
