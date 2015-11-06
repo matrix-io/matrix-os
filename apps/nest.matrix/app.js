@@ -73,11 +73,12 @@ function stt(err, resp, body) {
       } else if(r2.test(text)) {
         console.log('locking the door...');
         emitter.emit('august.lock', 'lock');
-      } else if(typeof store.outcomes === 'object' && store.outcomes.length > 0) {
+      }
+
+      if(typeof store.outcomes === 'object' && store.outcomes.length > 0) {
         if(store.outcomes[0].entities !== undefined) {
           if(typeof store.outcomes[0].entities.temperature === 'object') {
             emitter.emit('nest.temp', store.outcomes[0].entities.temperature[0].value);
-            matrix.notify('restart');
           } else {
             matrix.notify('restart');
           }
@@ -107,6 +108,7 @@ function nesty(value) {
         console.log(data);
         say.speak('Alex','Setting the temperature to' + value);
         nest.setTemperature('09AA01AC281513MY', nest.ftoc(value));
+        matrix.notify('restart');
       });
   });
 }
@@ -123,8 +125,24 @@ emitter.on('nest.temp', function(msg){
 emitter.on('august.lock', function(msg){
   if(msg === 'unlock') {
     say.speak('Alex','Welcome Brian');
+    exec('AUGUSTCTL_CONFIG=~/admobilize/admatrix/apps/nest.matrix/config.json augustctl unlock',function (error, stdout, stderr) {
+        console.log('stdout: ' + stdout);
+        console.log('stderr: ' + stderr);
+        if (error !== null) {
+          console.log('exec error: ' + error);
+        }
+    });
+    matrix.notify('restart');
   } else {
     say.speak('Alex','Goodbye Brian, have a good day.');
+        exec('AUGUSTCTL_CONFIG=~/admobilize/admatrix/apps/nest.matrix/config.json augustctl lock',function (error, stdout, stderr) {
+        console.log('stdout: ' + stdout);
+        console.log('stderr: ' + stderr);
+        if (error !== null) {
+          console.log('exec error: ' + error);
+        }
+    });
+    matrix.notify('restart');
   }
   august(msg);
 });
