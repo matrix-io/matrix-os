@@ -6,51 +6,11 @@ var audio         = matrix.audio;
 var microphone    = matrix.mic;
 var EventEmitter  = require('events').EventEmitter;
 var emitter       = new EventEmitter();
-
-function august(value) {
-  'use strict';
-  
-  var augustctl   = require('./node_modules/augustctl/index');
-
-  console.log('work motherfucker...');
-
-  var config = { "offlineKey": "474139B674B6A4AB324237FCD9AEEA2D", "offlineKeyOffset": 1 };
-  var op = value;
-  if (typeof augustctl.Lock.prototype[op] !== 'function') {
-    throw new Error('invalid operation: ' + op);
-  }
-
-
-  augustctl.scan(config.lockUuid).then(function(peripheral) {
-    console.log('scanning...', peripheral);
-    var lock = new augustctl.Lock(
-      peripheral,
-      config.offlineKey,
-      config.offlineKeyOffset
-    );
-    lock.connect().then(function() {
-      console.log('connecting, and running lock function...', op);
-      return lock[op]();
-    }).catch(function(e) {
-      console.log(e.toString());
-      //matrix.notify('restart');
-    }).finally(function() {
-      console.log('finally');
-      return lock.disconnect().finally(function() {
-        // console.log('disconnect');
-        augustctl = {};
-        matrix.notify('restart');
-      });
-    });
-  });
-
-  //log in and set the temperature
-}
+var lock = {};
+var exec = require('child_process').exec, child;
 
 function stt(err, resp, body) {
     //stop the microphone from recording, while it's spitting out a result.
-    console.log('checking wit api...');
-
     if(err) {
       matrix.notify('restart');
     }
@@ -74,11 +34,12 @@ function stt(err, resp, body) {
       } else if(r2.test(text)) {
         console.log('locking the door...');
         emitter.emit('august.lock', 'lock');
-      } else if(typeof store.outcomes === 'object' && store.outcomes.length > 0) {
+      } 
+
+      if(typeof store.outcomes === 'object' && store.outcomes.length > 0) {
         if(store.outcomes[0].entities !== undefined) {
           if(typeof store.outcomes[0].entities.temperature === 'object') {
             emitter.emit('nest.temp', store.outcomes[0].entities.temperature[0].value);
-            matrix.notify('restart');
           } else {
             matrix.notify('restart');
           }
@@ -108,6 +69,7 @@ function nesty(value) {
         console.log(data);
         say.speak('Alex','Setting the temperature to' + value);
         nest.setTemperature('09AA01AC281513MY', nest.ftoc(value));
+        matrix.notify('restart');
       });
   });
 }
@@ -124,11 +86,25 @@ emitter.on('nest.temp', function(msg){
 emitter.on('august.lock', function(msg){
   if(msg === 'unlock') {
     say.speak('Alex','Welcome Brian');
+    exec('AUGUSTCTL_CONFIG=~/admobilize/admatrix/apps/nest.matrix/config.json augustctl unlock',function (error, stdout, stderr) {
+        console.log('stdout: ' + stdout);
+        console.log('stderr: ' + stderr);
+        if (error !== null) {
+          console.log('exec error: ' + error);
+        }
+    });
+    matrix.notify('restart');
   } else {
     say.speak('Alex','Goodbye Brian, have a good day.');
+        exec('AUGUSTCTL_CONFIG=~/admobilize/admatrix/apps/nest.matrix/config.json augustctl lock',function (error, stdout, stderr) {
+        console.log('stdout: ' + stdout);
+        console.log('stderr: ' + stderr);
+        if (error !== null) {
+          console.log('exec error: ' + error);
+        }
+    });
+    matrix.notify('restart');
   }
-  console.log('Food');
-  august(msg);
 });
 
 // emitter.emit('august.lock', 'lock');
