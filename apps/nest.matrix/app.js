@@ -7,24 +7,89 @@ var microphone    = matrix.mic;
 var EventEmitter  = require('events').EventEmitter;
 var emitter       = new EventEmitter();
 
+function august(value) {
+  'use strict';
+  
+  var augustctl   = require('./node_modules/augustctl/index');
+
+  console.log('work motherfucker...');
+
+  var config = { "offlineKey": "474139B674B6A4AB324237FCD9AEEA2D", "offlineKeyOffset": 1 };
+  var op = value;
+  if (typeof augustctl.Lock.prototype[op] !== 'function') {
+    throw new Error('invalid operation: ' + op);
+  }
+
+
+  augustctl.scan(config.lockUuid).then(function(peripheral) {
+    console.log('scanning...', peripheral);
+    var lock = new augustctl.Lock(
+      peripheral,
+      config.offlineKey,
+      config.offlineKeyOffset
+    );
+    lock.connect().then(function() {
+      console.log('connecting, and running lock function...', op);
+      return lock[op]();
+    }).catch(function(e) {
+      console.log(e.toString());
+      //matrix.notify('restart');
+    }).finally(function() {
+      console.log('finally');
+      return lock.disconnect().finally(function() {
+        // console.log('disconnect');
+        augustctl = {};
+        matrix.notify('restart');
+      });
+    });
+  });
+
+  //log in and set the temperature
+}
+
 function stt(err, resp, body) {
     //stop the microphone from recording, while it's spitting out a result.
     console.log('checking wit api...');
+
+    if(err) {
+      matrix.notify('restart');
+    }
+
     setTimeout(function(){
       microphone.stop();
       var store = JSON.parse(body);
       var text = store._text;
       console.log(store);
 
-      if(typeof store.outcomes === 'object' && store.outcomes.length > 0) {
+      if(text === undefined) {
+        matrix.notify('restart');
+      }
+
+      var r1 = /^(unlock|open)/;
+      var r2 = /^(lock|close)/;
+      
+      if(r1.test(text)) {
+        console.log('unlocking the door...');
+        emitter.emit('august.lock', 'unlock');
+      } else if(r2.test(text)) {
+        console.log('locking the door...');
+        emitter.emit('august.lock', 'lock');
+      } else if(typeof store.outcomes === 'object' && store.outcomes.length > 0) {
         if(store.outcomes[0].entities !== undefined) {
           if(typeof store.outcomes[0].entities.temperature === 'object') {
             emitter.emit('nest.temp', store.outcomes[0].entities.temperature[0].value);
+            matrix.notify('restart');
+          } else {
+            matrix.notify('restart');
           }
+        } else {
+          matrix.notify('restart');
         }
+      } else {
+        matrix.notify('restart');
       }
 
-      matrix.notify('restart');
+      
     },1000);
 
 }
@@ -40,12 +105,12 @@ function nesty(value) {
 
       //always need to fetch status
       nest.fetchStatus(function (data) {
+        console.log(data);
         say.speak('Alex','Setting the temperature to' + value);
-        nest.setTemperature(nest.ftoc(value));
+        nest.setTemperature('09AA01AC281513MY', nest.ftoc(value));
       });
   });
 }
-
 
 matrix.notify('start');
 console.log('starting nest app...');
@@ -56,6 +121,18 @@ emitter.on('nest.temp', function(msg){
   nesty(msg);
 });
 
+emitter.on('august.lock', function(msg){
+  if(msg === 'unlock') {
+    say.speak('Alex','Welcome Brian');
+  } else {
+    say.speak('Alex','Goodbye Brian, have a good day.');
+  }
+  console.log('Food');
+  august(msg);
+});
+
+// emitter.emit('august.lock', 'lock');
+
 //start, stop, restart audo loop
 matrix.on(function(message){
   if(message.payload === 'stop' || message.payload === 'start' || message.payload === 'restart') {
@@ -63,7 +140,6 @@ matrix.on(function(message){
     microphone.start({ sampleRate: 48000 }).pipe(request.post({
       'url'     : 'https://api.wit.ai/speech?v=20141022&output=json',
       'headers' : {
-        'Accept'        : 'application/vnd.wit.20160202+json',
         'Authorization' : 'Bearer ' + matrix.config.token,
         'Content-Type'  : 'audio/wav'
       }
