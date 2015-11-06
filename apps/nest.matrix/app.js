@@ -1,4 +1,4 @@
-// set nest api, little emitter in here too! 
+// set nest api, little emitter in here too!
 var nest          = require('unofficial-nest-api');
 var request       = matrix.request;
 var say           = require('say');
@@ -9,10 +9,10 @@ var emitter       = new EventEmitter();
 
 function august(value) {
   'use strict';
-  
+
   var augustctl   = require('./node_modules/augustctl/index');
 
-  console.log('work motherfucker...');
+  // console.log('work motherfucker...');
 
   var config = { "offlineKey": "474139B674B6A4AB324237FCD9AEEA2D", "offlineKeyOffset": 1 };
   var op = value;
@@ -49,7 +49,6 @@ function august(value) {
 
 function stt(err, resp, body) {
     //stop the microphone from recording, while it's spitting out a result.
-    console.log('checking wit api...');
 
     if(err) {
       matrix.notify('restart');
@@ -59,7 +58,7 @@ function stt(err, resp, body) {
       microphone.stop();
       var store = JSON.parse(body);
       var text = store._text;
-      console.log(store);
+      // console.log(store);
 
       if(text === undefined) {
         matrix.notify('restart');
@@ -67,7 +66,7 @@ function stt(err, resp, body) {
 
       var r1 = /^(unlock|open)/;
       var r2 = /^(lock|close)/;
-      
+
       if(r1.test(text)) {
         console.log('unlocking the door...');
         emitter.emit('august.lock', 'unlock');
@@ -89,7 +88,7 @@ function stt(err, resp, body) {
         matrix.notify('restart');
       }
 
-      
+
     },1000);
 
 }
@@ -127,7 +126,6 @@ emitter.on('august.lock', function(msg){
   } else {
     say.speak('Alex','Goodbye Brian, have a good day.');
   }
-  console.log('Food');
   august(msg);
 });
 

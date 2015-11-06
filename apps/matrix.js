@@ -219,7 +219,10 @@ function initSensor(name, options, cb) {
           result = m.payload;
         }
 
-        cb(null, result);
+        if (result !== false && !_.isUndefined(result)){
+          cb(null, result);
+        }
+
       } else {
         cb('Invalid Message from Matrix' + JSON.stringify(m));
       }
