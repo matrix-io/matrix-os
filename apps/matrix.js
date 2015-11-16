@@ -268,11 +268,12 @@ module.exports = {
   mic: microphone,
   send: function(message) {
     //console.log('[M]('+ appName +') ->', message);
-    if (message.hasOwnProperty('data')){
-      message.data.time = Date.now();
-    } else {
+    if (!message.hasOwnProperty('data')){
       console.error('(Matrix.send)'.yellow, 'Message has no Data');
+      message = { data: message };
     }
+
+    message.data.time = Date.now();
 
     process.send({
       type: 'app-emit',
