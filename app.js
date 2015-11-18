@@ -4,6 +4,7 @@ async = require('async');
 
 // for debug messages
 debugLog = require('debug');
+var debug = debugLog('matrix');
 
 var fs = require('fs');
 var events = require('events');
@@ -26,6 +27,8 @@ api.makeUrls( process.env['ADMATRIX_API_SERVER'] );
 // Config
 Matrix.config = require('./config');
 config = Matrix.config;
+
+debug(config);
 
 //Event Loop - Handles all events
 Matrix.events = new events.EventEmitter();

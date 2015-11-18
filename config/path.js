@@ -18,7 +18,11 @@ var p = {
   update: '/tmp/matrix-update/',
   backup: '/tmp/matrix-backup/',
 
-  splash: 'public/splash'
+  splash: 'public/splash',
+
+  // logs
+
+  appLog: root + 'apps/app.log'
 };
 
 p.openCVInstallerFile = root + 'node_modules/' + p.freshRunModule + '/scripts/openCVInstall.sh';
