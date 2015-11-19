@@ -157,6 +157,8 @@ function onDestroy() {
   Matrix.service.manager.killAllApps();
   // clean up db
   Matrix.service.manager.clearAppList();
+  // clean logs
+  Matrix.service.manager.cleanLogs();
   // other maintenance
   process.exit();
 }
