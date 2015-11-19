@@ -6,7 +6,7 @@
   "repository": "https://bitbucket.org/admobilize/admatrix",
   "scripts": {
     "start": "nodemon app.js",
-    "test": "mocha tests/device.test.js",
+    "test": "mocha test/_runner.js",
     "pr": "open https://bitbucket.org/admobilize/admatrix/pull-request/new"
   },
   "author": "Sean Canton <sean@rokk3rlabs.com>",
