@@ -1,7 +1,7 @@
 var f = {
   fakeApp:  process.env['START_APP']
 };
-
+var debug = debugLog('matrix');
 var fs = require('fs');
 
   var files = fs.readdirSync(__dirname);
@@ -14,7 +14,6 @@ var fs = require('fs');
   files.forEach(function(file) {
     // require localized to this file
     if ( fs.statSync(__dirname+'/'+file).isFile() ){
-      console.log(file);
       f[file.slice(0,-3)] = require('./' + file);
     }
   });
@@ -36,7 +35,7 @@ var fs = require('fs');
     return _.camelCase(k);
   })
 
-  clog('ENV VARS\n'.green, configs);
+  debug('ENV VARS\n'.green, configs);
 
   _.extend(Matrix, configs);
 
