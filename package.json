@@ -12,8 +12,8 @@
   "author": "Sean Canton <sean@rokk3rlabs.com>",
   "license": "ISC",
   "dependencies": {
-    "admatrix-eventfilter-sdk": "git+ssh://git@bitbucket.org:admobilize/admobilize-eventfilter-sdk.git",
-    "admatrix-node-sdk": "git+ssh://git@bitbucket.org:admobilize/admobilize-node-sdk.git",
+    "admatrix-eventfilter-sdk": "https://brianofadmobilize@bitbucket.org/admobilize/admobilize-eventfilter-sdk.git",
+    "admatrix-node-sdk": "https://brianofadmobilize@bitbucket.org/admobilize/admobilize-node-sdk.git",
     "async": "^1.4.0",
     "bleno": "^0.1.14",
     "chai": "^3.2.0",

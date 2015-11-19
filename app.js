@@ -74,7 +74,7 @@ async.series([
       // Matrix.clientToken = token.clientToken;
       Matrix.deviceToken = token.deviceToken;
       // log('Client Token'.green, token.clientToken);
-      log('Device Token'.green, token.deviceToken);
+      debug('Device Token'.green, token.deviceToken);
       cb(null);
     });
   },
