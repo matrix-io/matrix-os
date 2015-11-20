@@ -7,7 +7,7 @@ Use `DEBUG=* nodemon` to see all debug messages.
 
 #### Debug categories
 
-` app, sensor, stream `
+` app, sensor, stream, matrix `
 
 **example:**
 To see output from socket streams and apps, do
