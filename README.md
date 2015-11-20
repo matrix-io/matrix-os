@@ -38,6 +38,12 @@ unzip admatrix.zip -d admatrix
 npm install -g node-gyp nodemon
 ```
 
+## Raspberry Pi Installation
+```
+sudo apt-get install bluetooth bluez libbluetooth-dev libudev-dev
+sudo apt-get install libasound2-dev
+```
+
 ## Rebuilds node-gyp
 
 ```
