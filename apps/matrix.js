@@ -243,7 +243,10 @@ function sendConfig(){
   });
 }
 
-module.exports = {
+
+module.exports = Matrix;
+
+var Matrix = {
   name: function(name){
     appName = name;
   },
@@ -289,7 +292,17 @@ module.exports = {
       payload: msg
     })
   },
-  startApp: function(){
+  startApp: function(name){
+    appName = name;
+
+    try {
+      Matrix.appConfig = JSON.parse( require('fs').readFileSync(__dirname + '/config.json'));
+    } catch(e){
+      console.error(appName, 'invalid config.json');
+    }
+
+    Matrix.config = Matrix.appConfig.configuration;
+
     // TODO: Make sure something can request app-config
     if ( !matrix.hasOwnProperty('appConfig')){
       console.error('No Configuration Specified')
@@ -302,6 +315,8 @@ module.exports = {
     })
     //send config on app start
     sendConfig();
+
+    return Matrix;
   },
   store: storeManager,
   debug: matrixDebug,

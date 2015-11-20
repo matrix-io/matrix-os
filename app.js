@@ -92,7 +92,7 @@ async.series([
     });
   },
   Matrix.service.stream.checkStreamingServer,
-], function(err, obj){
+], function(err){
   if (err) error(err);
   log(Matrix.is.green.bold, '['.grey+Matrix.deviceId.grey+']'.grey, 'ready'.yellow.bold);
   Matrix.banner();
@@ -163,7 +163,10 @@ function onDestroy() {
   process.exit();
 }
 
-
+// every 4 hours do this
+setInterval(function maintenance(){
+  Matrix.service.manager.cleanLogs();
+}, 1000*60*60*4);
 
 //Triggered when an unexpected (programming) error occurs
 //Also called when a DNS error is presented
