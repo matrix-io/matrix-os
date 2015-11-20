@@ -272,16 +272,26 @@ var Matrix = {
   send: function(message) {
     //console.log('[M]('+ appName +') ->', message);
     if (!message.hasOwnProperty('data')){
-      console.error('(Matrix.send)'.yellow, 'Message has no Data');
+      console.warn('(Matrix.send)'.yellow, 'Message has no Data');
       message = { data: message };
     }
 
     message.data.time = Date.now();
 
+    if(this.hasOwnProperty('dataType')) {
+      var type = this.dataType;
+      message.type = type;
+    }
+
     process.send({
       type: 'app-emit',
       payload: message
     });
+  },
+  type: function(type) {
+    //set type, return this
+    this.dataType = type;
+    return this;
   },
   receive: receiveHandler,
   init: initSensor,
