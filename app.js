@@ -10,7 +10,6 @@ var fs = require('fs');
 var events = require('events');
 var util = require('util');
 
-
 // Core
 Matrix = require('./lib');
 

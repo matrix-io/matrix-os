@@ -14,10 +14,16 @@ var request = require('request');
 var fs = require('fs');
 var _ = require('lodash');
 var DataStore = require('nedb');
+var opencv = {};
 
-// var OpenCv = require('opencv-node-sdk');
+try {
+  opencv = require('opencv-node-sdk');
+} catch(e) {
+  console.error('MATRIX CV could not initialize. Please make sure the MATRIX OS has been updated -- see error:', e);
+}
 
-var AppStore =  new DataStore({ filename: config.path.appStore, autoload: true });
+
+var AppStore = new DataStore({ filename: config.path.appStore, autoload: true });
 
 var appName = '';
 
@@ -245,8 +251,59 @@ function sendConfig(){
 
 
 var Matrix = {
-  name: function(name){
-    appName = name;
+  name: function(name){ appName = name; },
+  cv: function(camera, options) {
+    if(camera === undefined || camera === null) {
+      camera = 'localCamera';
+    }
+
+    var cv = new opencv({ "cameraId" : camera });
+    var options = {
+      'height' : 640,
+      'width' :  480,
+      'minSize' :  20, //50,
+      'maxSize' : 400,//-1,
+      'drawObjects' : false, 
+      'processAge' : false, //should be minimized to "age"
+      'processGender' : true, // should be "gender"
+      'processEmotion' : true, // should be "emotion"
+      'processDwell':true, // should be "dwell"
+      'show': false, // "show should = preview"
+      'save':false, // should be "store", or "save"
+      'debug': false,
+      'processUniques' : true, //should be just "uniques"
+      'frameRate': 5,  //number of frames per second
+      'device' : 0, //this seems like duplicate code, could be normalized
+      'bufferImage' : null,
+      'detection': { // should just be part of configuration (e.g. face), see above
+        type: "humans",
+        detector: 3
+      },
+      "directory": __dirname + "/../../opencv-node-sdk/admobilize-detection-manager/admobilize-detection/data" 
+      //should have a default path that works, seems to never work with default path
+    };
+    if(options === undefined || options === null) {
+      // do nothing
+    } else {
+      options.processAge = options.age || false;
+      options.processGender = options.gender || false;
+      options.processEmotion = options.emotion || false;
+      options.processDwell = options.dwell || false;
+      if(options.type === 'face') {
+        options.detection = { type: 'humans', detector: 3 };
+      }
+    }
+
+    cv.setConfiguration(options , function(){
+      opencvsdk.startCamera(0, function(error){
+        if(!error) {
+          cv.startContinuousDetection();
+        }else{
+          error("error", error);
+        }
+      });
+    });
+    return cv;
   },
   _: _,
   request: request,
