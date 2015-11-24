@@ -6,7 +6,7 @@ try {
 
 var lib = {  
   config: function(camera, appOptions) {
-
+    console.log('updating configuration...');
     var options = {
       'height': 640,
       'width':  480,
@@ -56,6 +56,7 @@ var lib = {
 
   init: function(camera, appOptions) {
     var options = lib.config(camera, appOptions);
+    console.log('updated options...', options);
     var cv = new opencv({ "cameraId" : options.camera });
     cv.setConfiguration(options,function(){
       cv.startCamera(0, function(error){
@@ -68,6 +69,8 @@ var lib = {
         }
       });
     });
+
+    console.log('passing cv lib to exports');
     return cv;
   }
 }

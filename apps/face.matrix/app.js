@@ -8,5 +8,6 @@ var face    = matrix.cv.init(null, options); //localCamera, stream (rtsp), with 
 // CHANGE: trigger event when configuration is set, instead initialize camera automatically (startCamera is redundant)
 
 face.on('faceProcessed',function(data) {
-	if(matrix._.size(data.faceObject.faces) > 0) console.log(data);
+	console.log(data);
+	// if(matrix._.size(data.faceObject.faces) > 0) console.log(data);
 });
