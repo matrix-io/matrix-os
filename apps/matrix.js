@@ -17,7 +17,7 @@ var DataStore = require('nedb');
 var opencv = {};
 
 try {
-  opencv = require('opencv-node-sdk');
+  opencv = require('../opencv-node-sdk/index.js');
 } catch(e) {
   console.error('MATRIX CV could not initialize. Please make sure the MATRIX OS has been updated -- see error:', e);
 }
@@ -294,8 +294,8 @@ var Matrix = {
       }
     }
 
-    cv.setConfiguration(options , function(){
-      opencvsdk.startCamera(0, function(error){
+    cv.setConfiguration(options,function(){
+      cv.startCamera(0, function(error){
         if(!error) {
           cv.startContinuousDetection();
         }else{
