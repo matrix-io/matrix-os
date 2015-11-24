@@ -244,8 +244,6 @@ function sendConfig(){
 }
 
 
-module.exports = Matrix;
-
 var Matrix = {
   name: function(name){
     appName = name;
@@ -306,9 +304,9 @@ var Matrix = {
     appName = name;
 
     try {
-      Matrix.appConfig = JSON.parse( require('fs').readFileSync(__dirname + '/config.json'));
+      Matrix.appConfig = JSON.parse( require('fs').readFileSync(__dirname + '/'+ name +'.matrix/config.json'));
     } catch(e){
-      console.error(appName, 'invalid config.json');
+      return console.error(appName, 'invalid config.json');
     }
 
     Matrix.config = Matrix.appConfig.configuration;
@@ -333,3 +331,5 @@ var Matrix = {
   notify: interAppNotification,
   on: interAppResponse
 }
+
+module.exports = Matrix;
