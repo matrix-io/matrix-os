@@ -8,49 +8,28 @@
   "dashboard": [
     [
       {
-        "sensors": "device-info",
-        "name": "Device Info",
+        "type": "face",
+        "name": "Dwell Time (per face)",
         "help": "",
-        "display": "list-group",
-        "series": [ "os_platform:string", "os_hostname:string", "os_type:string", "os_arch:string" ]
-      }
-    ],
-    [
-      {
-        "sensors": "monitor",
-        "name": "CPU",
-        "help": "",
-        "display": "digit",
-        "series": [ "cpu:float,@.toFixed(2)" ]
+        "display": "line",
+        "series": [ "dwellTime:float" ]
       },
       {
-        "sensors": "monitor",
-        "name": "Memory",
+        "type": "face",
+        "name": "Last Dwell",
         "help": "",
         "display": "digit",
-        "series": [ "memory:float,(@*100).toFixed(2)+'%'" ]
-      }
-    ],
-
-    [
-      {
-        "sensors": "monitor",
-        "name": "CPU",
-        "help": "",
-        "display": "line",
-        "points": 30,
-        "series": [ "cpu:float" ]
+        "series": [ "dwellTime:string"]
       }
     ],
     [
       {
-        "sensors": "monitor",
-        "name": "Memory",
+        "type": "face",
+        "name": "Age",
         "help": "",
         "display": "line",
-        "points": 30,
-        "series": [ "memory:float" ]
-      }
+        "series": [ "age:int" ]
+      },
     ]
   ]
 }
