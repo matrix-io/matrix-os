@@ -312,7 +312,7 @@ var Matrix = {
 =======
 >>>>>>> updates to lib refactor for matrix.js
   _: _,
-  cv: lib.cv,
+  camera: lib.cv,
   request: request,
   audio: {
     say: function(msg){
