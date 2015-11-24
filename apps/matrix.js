@@ -14,6 +14,9 @@ var request = require('request');
 var fs = require('fs');
 var _ = require('lodash');
 var DataStore = require('nedb');
+var events = require('events');
+var eventEmitter = new events.EventEmitter();
+
 var opencv = {};
 
 try {
@@ -245,65 +248,70 @@ function initSensor(name, options, cb) {
 function sendConfig(){
   process.send({
     type: 'app-config',
-    payload: matrix.appConfig
+    payload: Matrix.appConfig
   });
 }
 
-
 var Matrix = {
   name: function(name){ appName = name; },
-  cv: function(camera, options) {
+  cv: function(camera, appOptions) {
     if(camera === undefined || camera === null) {
       camera = 'localCamera';
     }
 
     var cv = new opencv({ "cameraId" : camera });
     var options = {
-      'height' : 640,
-      'width' :  480,
-      'minSize' :  20, //50,
-      'maxSize' : 400,//-1,
-      'drawObjects' : false, 
-      'processAge' : false, //should be minimized to "age"
-      'processGender' : true, // should be "gender"
-      'processEmotion' : true, // should be "emotion"
+      'height': 640,
+      'width':  480,
+      'minSize':  20, //50,
+      'maxSize': 400,//-1,
+      'drawObjects': false,
+      'processAge': false, //should be minimized to "age"
+      'processGender': true, // should be "gender"
+      'processEmotion': true, // should be "emotion"
       'processDwell':true, // should be "dwell"
-      'show': false, // "show should = preview"
-      'save':false, // should be "store", or "save"
-      'debug': false,
-      'processUniques' : true, //should be just "uniques"
+      'show': true, // "show should = preview"
+      'save': false, // should be "store", or "save"
+      'debug': true,
+      'processUniques': true, //should be just "uniques"
       'frameRate': 5,  //number of frames per second
-      'device' : 0, //this seems like duplicate code, could be normalized
-      'bufferImage' : null,
+      'device': 0, //this seems like duplicate code, could be normalized
+      'bufferImage': null,
       'detection': { // should just be part of configuration (e.g. face), see above
         type: "humans",
         detector: 3
       },
-      "directory": __dirname + "/../../opencv-node-sdk/admobilize-detection-manager/admobilize-detection/data" 
+      "directory": __dirname + "/../../opencv-node-sdk/admobilize-detection-manager/admobilize-detection/data"
       //should have a default path that works, seems to never work with default path
     };
     if(options === undefined || options === null) {
       // do nothing
     } else {
-      options.processAge = options.age || false;
-      options.processGender = options.gender || false;
-      options.processEmotion = options.emotion || false;
-      options.processDwell = options.dwell || false;
-      if(options.type === 'face') {
+      options.processAge = appOptions.age || false;
+      options.processGender = appOptions.gender || false;
+      options.processEmotion = appOptions.emotion || false;
+      options.processDwell = appOptions.dwell || false;
+      if(appOptions.type === 'face') {
         options.detection = { type: 'humans', detector: 3 };
       }
     }
 
     cv.setConfiguration(options,function(){
+      console.log('setting configuration');
       cv.startCamera(0, function(error){
+        console.log('starting camera', error);
         if(!error) {
+          console.log('starting continuous detection');
           cv.startContinuousDetection();
         }else{
           error("error", error);
         }
       });
     });
+
+    // eventEmitter.on('cv:start', function(){
     return cv;
+    // });
   },
   _: _,
   request: request,
@@ -313,7 +321,7 @@ var Matrix = {
     },
     play: function(file, volume){
       var assetPath = __dirname + '/' + appName + '.matrix/storage/';
-      var volume = ( !_.isUndefined(volume)) ? volume : 80;
+      var volume = ( !_.isUndefined(volume)) ? volume: 80;
       require('loudness').setVolume( volume, function(){});
       var soundPlayer = new player( assetPath + file );
       soundPlayer.play( function(err, played){
@@ -358,7 +366,6 @@ var Matrix = {
   },
   startApp: function(name){
     appName = name;
-
     try {
       Matrix.appConfig = JSON.parse( require('fs').readFileSync(__dirname + '/'+ name +'.matrix/config.json'));
     } catch(e){
@@ -368,7 +375,7 @@ var Matrix = {
     Matrix.config = Matrix.appConfig.configuration;
 
     // TODO: Make sure something can request app-config
-    if ( !matrix.hasOwnProperty('appConfig')){
+    if ( !Matrix.hasOwnProperty('appConfig')){
       console.error('No Configuration Specified')
     }
     // sending config on socket open
