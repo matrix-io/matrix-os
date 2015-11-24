@@ -1,7 +1,7 @@
 {
-  "name": "Monitor",
+  "name": "Face",
   "version": "1.0.0",
-  "description": "Monitor your device metrics.",
+  "description": "I see your face.",
   "configuration": {
     "foo": "bar"
   },
@@ -29,6 +29,15 @@
         "help": "",
         "display": "line",
         "series": [ "age:int" ]
+      }
+    ],
+    [
+      {
+        "type": "face",
+        "name": "Metrics",
+        "help": "",
+        "display": "list",
+        "series": [ "sex:string","age:int","viewed:string","dwellTime:int" ]
       }
     ]
   ]

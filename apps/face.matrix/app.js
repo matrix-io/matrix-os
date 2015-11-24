@@ -11,7 +11,8 @@ face.on('frameProcessed',function(data) {
 	if(matrix._.size(data.faceObject.faces) > 0) {
 		console.log(JSON.stringify(data.faceObject.faces));
 		matrix._.forEach(data.faceObject.faces, function(face, key) {
-			face.sex = (face.sex == 0) ? 'male' : 'female';
+			face.sex = (face.sex === 0) ? 'male' : 'female';
+			face.looked = (face.isView === true) ? 'true' : 'false';
 			matrix.type('face').send(face);
 			//[{"uniqueId":"1448395663-4796249989411-181993","dwellTime":0.50509,"emotion":"unknown","age":55,"sex":0,"isView":true}]
 		});
