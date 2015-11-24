@@ -9,7 +9,9 @@ var lib = {
 
     //set the camera
     if(camera === undefined || camera === null) {
-      lib.camera = 'localCamera';
+      options.camera = 'localCamera';
+    } else {
+      options.camera = camera;
     }
 
     var options = {
@@ -54,7 +56,7 @@ var lib = {
 
   init: function(camera, appOptions) {
     var options = lib.config(camera, appOptions);
-    var cv = new opencv({ "cameraId" : camera });
+    var cv = new opencv({ "cameraId" : options.camera });
     cv.setConfiguration(options,function(){
       cv.startCamera(0, function(error){
         console.log('starting camera', error);
