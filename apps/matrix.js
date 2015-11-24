@@ -270,7 +270,6 @@ var Matrix = {
   send: function(message) {
     //console.log('[M]('+ appName +') ->', message);
     if (!message.hasOwnProperty('data')){
-      console.warn('(Matrix.send)'.yellow, 'Message has no Data');
       message = { data: message };
     }
 
