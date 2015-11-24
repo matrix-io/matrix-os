@@ -8,6 +8,7 @@ var player = require('player');
 var microphone = require('node-record-lpcm16');
 var request = require('request');
 var config = require('./config.js');
+var lib = require('./lib');
 var EventFilter = require('admobilize-eventfilter-sdk').EventFilter;
 var applyFilter = require('admobilize-eventfilter-sdk').apply;
 var request = require('request');
@@ -16,16 +17,6 @@ var _ = require('lodash');
 var DataStore = require('nedb');
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
-
-var opencv = {};
-
-try {
-  opencv = require('../opencv-node-sdk/index.js');
-} catch(e) {
-  console.error('MATRIX CV could not initialize. Please make sure the MATRIX OS has been updated -- see error:', e);
-}
-
-
 var AppStore = new DataStore({ filename: config.path.appStore, autoload: true });
 
 var appName = '';
@@ -254,6 +245,7 @@ function sendConfig(){
 
 var Matrix = {
   name: function(name){ appName = name; },
+<<<<<<< HEAD
   cv: function(camera, appOptions) {
     if(camera === undefined || camera === null) {
       camera = 'localCamera';
@@ -317,7 +309,10 @@ var Matrix = {
 
     return cv;
   },
+=======
+>>>>>>> updates to lib refactor for matrix.js
   _: _,
+  cv: lib.cv,
   request: request,
   audio: {
     say: function(msg){
