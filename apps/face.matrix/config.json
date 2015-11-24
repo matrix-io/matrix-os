@@ -29,7 +29,7 @@
         "help": "",
         "display": "line",
         "series": [ "age:int" ]
-      },
+      }
     ]
   ]
 }
