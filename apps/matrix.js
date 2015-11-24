@@ -270,7 +270,7 @@ var Matrix = {
       'processGender': true, // should be "gender"
       'processEmotion': true, // should be "emotion"
       'processDwell':true, // should be "dwell"
-      'show': true, // "show should = preview"
+      'show': false, // "show should = preview"
       'save': false, // should be "store", or "save"
       'debug': true,
       'processUniques': true, //should be just "uniques"
