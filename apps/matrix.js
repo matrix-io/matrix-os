@@ -282,6 +282,7 @@ var Matrix = {
         detector: 3
       },
       "directory": __dirname + "/../../opencv-node-sdk/admobilize-detection-manager/admobilize-detection/data"
+
       //should have a default path that works, seems to never work with default path
     };
     if(options === undefined || options === null) {
