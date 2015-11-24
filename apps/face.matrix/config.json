@@ -37,7 +37,7 @@
         "name": "Metrics",
         "help": "",
         "display": "list",
-        "series": [ "sex:string","age:int","viewed:string","dwellTime:int" ]
+        "series": [ "sex:string","age:int","looked:string","dwellTime:int" ]
       }
     ]
   ]
