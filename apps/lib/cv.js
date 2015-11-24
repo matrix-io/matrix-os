@@ -7,13 +7,6 @@ try {
 var lib = {  
   config: function(camera, appOptions) {
 
-    //set the camera
-    if(camera === undefined || camera === null) {
-      options.camera = 'localCamera';
-    } else {
-      options.camera = camera;
-    }
-
     var options = {
       'height': 640,
       'width':  480,
@@ -48,6 +41,13 @@ var lib = {
       if(appOptions.type === 'face') {
         options.detection = { type: 'humans', detector: 3 };
       }
+    }
+
+    //set the camera
+    if(camera === undefined || camera === null) {
+      options.camera = 'localCamera';
+    } else {
+      options.camera = camera;
     }
 
     //update options
