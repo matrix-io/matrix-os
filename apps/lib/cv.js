@@ -6,7 +6,6 @@ try {
 
 var lib = {  
   config: function(camera, appOptions) {
-    console.log('updating configuration...');
     var options = {
       'height': 640,
       'width':  480,
@@ -19,7 +18,7 @@ var lib = {
       'processDwell':true, // should be "dwell"
       'show': false, // "show should = preview"
       'save': false, // should be "store", or "save"
-      'debug': true,
+      'debug': false,
       'processUniques': true, //should be just "uniques"
       'frameRate': 5,  //number of frames per second
       'device': 0, //this seems like duplicate code, could be normalized
@@ -56,11 +55,9 @@ var lib = {
 
   init: function(camera, appOptions) {
     var options = lib.config(camera, appOptions);
-    console.log('updated options...', options);
     var cv = new opencv({ "cameraId" : options.camera });
     cv.setConfiguration(options,function(){
       cv.startCamera(0, function(error){
-        console.log('starting camera', error);
         if(!error) {
           console.log('starting continuous detection');
           cv.startContinuousDetection();
@@ -69,8 +66,6 @@ var lib = {
         }
       });
     });
-
-    console.log('passing cv lib to exports');
     return cv;
   }
 }
