@@ -1,0 +1,57 @@
+{
+  "name": "Accelerometer",
+  "version": "1.0.0",
+  "description": "Accelerometer test application.",
+  "dashboard": [
+    [
+      {
+        "type": "accel",
+        "name": "X",
+        "help": "",
+        "display": "digit",
+        "series": [ "X:integer" ]
+      },
+      {
+        "type": "accel",
+        "name": "Y",
+        "help": "",
+        "display": "digit",
+        "series": [ "Y:integer" ]
+      },
+      {
+        "type": "accel",
+        "name": "Z",
+        "help": "",
+        "display": "digit",
+        "series": [ "Z:integer" ]
+      }
+    ],
+    [
+      {
+        "type": "accel",
+        "name": "Accelerometer (X)",
+        "help": "",
+        "display": "line",
+        "series": [ "X:integer"]
+      }
+    ],
+    [
+      {
+        "type": "accel",
+        "name": "Accelerometer (Y)",
+        "help": "",
+        "display": "line",
+        "series": [ "Y:integer"]
+      }
+    ],
+    [
+      {
+        "type": "accel",
+        "name": "Accelerometer (Z)",
+        "help": "",
+        "display": "line",
+        "series": [ "Z:integer"]
+      }
+    ]
+  ]
+}

@@ -1,8 +1,12 @@
-var options = { type: 'face', dwell: true, age: false, gender: true };
-var face = matrix.cv('localCamera', options);
+// localCamera seems weird, should just be by default
+// CHANGE: loads local camera `matrix.cv()`
+// CHANGE: loads camera `matrix.cv('video0')`
 
-face.on('frameProcessed', function(data){
-  if(matrix._.size(data.faceObject.faces) > 0) console.log(data);
-  //should be event for face start -- currently missing this event
-  //should contain first detections of all demographic info and so forth
+var options = { type: 'face', dwell: true, age: true, gender: true };
+var face    = matrix.cv.init(null, options); //localCamera, stream (rtsp), with type of face applied -- should override initial options
+// CHANGE: throw this away, and set the configuration together when initializing camera
+// CHANGE: trigger event when configuration is set, instead initialize camera automatically (startCamera is redundant)
+
+face.on('faceProcessed',function(data) {
+	if(matrix._.size(data.faceObject.faces) > 0) console.log(data);
 });
