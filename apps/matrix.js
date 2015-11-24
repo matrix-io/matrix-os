@@ -264,8 +264,13 @@ var Matrix = {
       'height': 640,
       'width':  480,
       'minSize':  20, //50,
+<<<<<<< HEAD
       'maxSize': 400,//-1,
       'drawObjects': false,
+=======
+      'maxSize': 400, //-1,
+      'drawObjects': false, 
+>>>>>>> app updates for matrix
       'processAge': false, //should be minimized to "age"
       'processGender': true, // should be "gender"
       'processEmotion': true, // should be "emotion"
@@ -310,9 +315,7 @@ var Matrix = {
       });
     });
 
-    // eventEmitter.on('cv:start', function(){
     return cv;
-    // });
   },
   _: _,
   request: request,
