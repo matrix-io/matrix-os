@@ -8,16 +8,16 @@ var player = require('player');
 var microphone = require('node-record-lpcm16');
 var request = require('request');
 var config = require('./config.js');
+var lib = require('./lib');
 var EventFilter = require('admobilize-eventfilter-sdk').EventFilter;
 var applyFilter = require('admobilize-eventfilter-sdk').apply;
 var request = require('request');
 var fs = require('fs');
 var _ = require('lodash');
 var DataStore = require('nedb');
-
-// var OpenCv = require('opencv-node-sdk');
-
-var AppStore =  new DataStore({ filename: config.path.appStore, autoload: true });
+var events = require('events');
+var eventEmitter = new events.EventEmitter();
+var AppStore = new DataStore({ filename: config.path.appStore, autoload: true });
 
 var appName = '';
 
@@ -239,16 +239,14 @@ function initSensor(name, options, cb) {
 function sendConfig(){
   process.send({
     type: 'app-config',
-    payload: matrix.appConfig
+    payload: Matrix.appConfig
   });
 }
 
-
 var Matrix = {
-  name: function(name){
-    appName = name;
-  },
+  name: function(name){ appName = name; },
   _: _,
+  camera: lib.cv,
   request: request,
   audio: {
     say: function(msg){
@@ -256,7 +254,7 @@ var Matrix = {
     },
     play: function(file, volume){
       var assetPath = __dirname + '/' + appName + '.matrix/storage/';
-      var volume = ( !_.isUndefined(volume)) ? volume : 80;
+      var volume = ( !_.isUndefined(volume)) ? volume: 80;
       require('loudness').setVolume( volume, function(){});
       var soundPlayer = new player( assetPath + file );
       soundPlayer.play( function(err, played){
@@ -301,7 +299,6 @@ var Matrix = {
   },
   startApp: function(name){
     appName = name;
-
     try {
       Matrix.appConfig = JSON.parse( require('fs').readFileSync(__dirname + '/'+ name +'.matrix/config.json'));
     } catch(e){
@@ -311,7 +308,7 @@ var Matrix = {
     Matrix.config = Matrix.appConfig.configuration;
 
     // TODO: Make sure something can request app-config
-    if ( !matrix.hasOwnProperty('appConfig')){
+    if ( !Matrix.hasOwnProperty('appConfig')){
       console.error('No Configuration Specified')
     }
     // sending config on socket open
