@@ -123,7 +123,7 @@ function interAppResponse( name, cb ){
   process.on('message', function(m){
       // console.log('[M]->app'.blue, m, 'app-'+appName+'-message')
       // is global or app-specific
-    if (m.type === "app-message" || m.type === 'app-'+appName+'-message'){
+    if (m.type === 'trigger' || m.type === "app-message" || m.type === 'app-'+appName+'-message'){
       // console.log('[M]->app(msg)'.blue, m)
       if ( _.isString(name) ){
         // if an event name was specified in the on()

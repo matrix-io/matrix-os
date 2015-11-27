@@ -14,7 +14,7 @@ setTimeout(function() {
       'os_arch': os.arch()
     }
   });
-}, 1000);
+}, 10000);
 
 setInterval(function() {
   var loadavg = os.loadavg();
@@ -30,4 +30,8 @@ setInterval(function() {
       'memory': memory
     }
   });
-}, 500);
+}, 5000);
+
+matrix.on(function(data){
+  console.log('global event', data);
+});
