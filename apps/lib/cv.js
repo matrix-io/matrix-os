@@ -58,8 +58,9 @@ var lib = {
     var cv = new opencv({ "cameraId" : options.camera });
     cv.setConfiguration(options,function(){
       cv.startCamera(0, function(err){
-        if(err) console.error(err);
-        cv.startContinuousDetection();
+        if(err) { console.error(err); } else {
+          cv.startContinuousDetection();
+        }
       });
     });
     return cv;
