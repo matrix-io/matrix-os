@@ -202,9 +202,6 @@ function initSensor(name, options, cb) {
     process.on('message', function(m) {
       console.log('[M]->app'.blue, name, m);
       if (m.eventType === 'sensor-emit') {
-
-        console.log(m);
-
         var result;
         // console.log('applying filter:', filter.json());
 

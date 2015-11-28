@@ -57,13 +57,9 @@ var lib = {
     var options = lib.config(camera, appOptions);
     var cv = new opencv({ "cameraId" : options.camera });
     cv.setConfiguration(options,function(){
-      cv.startCamera(0, function(error){
-        if(!error) {
-          console.log('starting continuous detection');
-          cv.startContinuousDetection();
-        }else{
-          error("error", error);
-        }
+      cv.startCamera(0, function(err){
+        if(err) console.error(err);
+        cv.startContinuousDetection();
       });
     });
     return cv;
