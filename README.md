@@ -110,11 +110,9 @@ To exclude engine-io from the output, do
 ## Environment Variables
 ```
 ADMATRIX_API_SERVER http://dev-demo.admobilize.com -- points to admobilize-api server
-ADMATRIX_STREAMING_SERVER http://localhost:3000 - points to admatrix-streaming-server, deploy with convox
+ADMATRIX_STREAMING_SERVER http://localhost:3000 - points to admatrix-streaming-server
 ADMATRIX_CLIENT_ID AdMobilizeClientID - assigned id
 ADMATRIX_CLIENT_SECRET AdMobilizeClientSecret - assigned secret
-ADMATRIX_USER - brian@rokk3rlabs.com - user to login with
-ADMATRIX_PASSWORD - Trudat55
 ```
 
 ## Freescale Installation
