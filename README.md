@@ -7,8 +7,7 @@ MatrixOS is a node application which provides a host for sensor libraries, compu
 # Authentication
 MatrixOS authentication is provided by `admatrix-node-sdk` using the device id and device secret. 
 
-# Storage
-## Local Storage
+# Local Storage
 Device tokens and application state is saved on the local device via `nedb`. 
 
 # Globals
@@ -88,8 +87,23 @@ If no Streaming Server is visible, Matrix keeps trying with an ever-increasing d
 ### SocketEmit
 `SocketEmit` is a custom wrapper around the socket to provide channel and message capabilities. Please use this when you want to send something to the server.
 
+## Sensors
+Sensors are provided by node modules with following namespace:
+
+```
+matrix.sensor.{sensorModel}.{systemArchitecture}
+```
+
+So for a MX1174 sensor to be installed on an ARM board, one would install `matrix.sensor.mx1174.arm` to the matrix os with the CLI command `matrix install -s mx1174`. 
+
+All sensor modules are written to a common specification, which allows them to interchange easily with matrix apps using sensor.type as the single point of reference. 
 
 # Installation
+```
+git clone git@bitbucket.org:admobilize/admatrix.git
+cd admatrix
+npm install
+```
 # Running
 
 ### Debugging
