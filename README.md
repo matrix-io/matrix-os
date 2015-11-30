@@ -1,4 +1,4 @@
-# AdMatrix Device Container Kit
+# MATRIX Device Container Kit
 
 
 ### Debugging
@@ -88,7 +88,7 @@ brew install sox
 * Copy admobilize-adsensor/node-adsensors/ contents into admatrix/node_modules/adsensors
 * `npm install` in admatrix/
 
-## AdMatrix File System
+## MATRIX File System
 ```
 Matrix
 |_device  - Everything having to do with the device
