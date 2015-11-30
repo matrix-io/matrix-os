@@ -32,6 +32,8 @@ Events
 app-config - sends an configuration to the infrastructure
 app-emit - sends a datapoint to the infrastructure
 app-log - sends a log to the infrastructure (only used with CLI now)
+app-message - Global Interapp Messaging
+app-{appName}-message - Targeted Interapp messaging
 sensor-init - initialize a sensor
 cli-message - incoming message from CLI
 trigger - incoming event from dashboard / inter device messaging
@@ -57,13 +59,39 @@ Applications are prompted to install on MatrixOS via infrastructure commands ( `
 
 ## App Messaging
 
-
 ### Global
+Each app subscribes to the global app messaging channel `app-message`. 
 
 ### Inter App
+Each app sets up a targeted messaging channel `app-{appname}-message`.
 
-### Inter Device
+### Inter Device / Trigger
+Each app is available for inter device messages, which move on the `trigger` channel.  
  
+## App Data Flows
+External: 
+
+Applications send data with `matrix.send()` or `matrix.type('foo').send()`
+
+Internal:
+
+Data from an app process is captured and routed into the event system as `app-emit` events. These events are directed into `service.stream.sendDataPoint`, which sends the data point if there is a connection to the Streaming Server, or adds to a local storage queue if no connection is made.
+
+## Socket Streaming Server Connection
+
+### Register Device
+The first step in establishing a socket connection is to send a `device-register` socket message. 
+
+### Progressive Check Delay
+If no Streaming Server is visible, Matrix keeps trying with an ever-increasing delay.
+
+### SocketEmit
+`SocketEmit` is a custom wrapper around the socket to provide channel and message capabilities. Please use this when you want to send something to the server.
+
+
+# Installation
+# Running
+
 ### Debugging
 
 Use `DEBUG=* nodemon` to see all debug messages.
