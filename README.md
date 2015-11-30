@@ -1,6 +1,69 @@
 # MATRIX Device Container Kit
+*stay in wonderland and I show you how deep the rabbit-hole goes...*
+
+# Overview
+MatrixOS is a node application which provides a host for sensor libraries, computer vision software and Matrix applications. MatrixOS connects to the `matrix-streaming-server` to provide real-time, socket based information for clients.
+
+# Authentication
+MatrixOS authentication is provided by `admatrix-node-sdk` using the device id and device secret. 
+
+# Storage
+## Local Storage
+Device tokens and application state is saved on the local device via `nedb`. 
+
+# Globals
+```
+Matrix - is the primary global namespace. 
+  .api - access to node-sdk
+  .db  - provides access to local storage
+  .events - EventEmitter
+  .activeProcesses - all active apps
+  .service - all files in /lib/service
+  .event - all files in /lib/event
+  .device - all files in /lib/device
+```
+See below for more details
+
+## Event Flow
+Events are at the core of MatrixOS. 
+
+```
+Events
+app-config - sends an configuration to the infrastructure
+app-emit - sends a datapoint to the infrastructure
+app-log - sends a log to the infrastructure (only used with CLI now)
+sensor-init - initialize a sensor
+cli-message - incoming message from CLI
+trigger - incoming event from dashboard / inter device messaging
+token-refresh - get a new token
+device-reboot - restart the device
+```
+
+## Application Lifecycle
+
+### Start
+Applications are managed by `/lib/service/manager.js`. Applications can be started by the CLI `matrix start` command or by providing a `START_APP` env variable with the name of the application. Each application is a discrete node process.
+
+Starting an application does the following:
+
+1. Checks config.json
+1. Stops duplicates
+1. Handles log and error messages for redirecting to CLI or Terminal
+1. Routes messages sent from application to infrastructure
+1. Sets up listeners for inter-app routing
+
+### Installation
+Applications are prompted to install on MatrixOS via infrastructure commands ( `cli-message` with `{type:'app-install'}` ). These commands include a URL which the Matrix downloads, conducts an `npm install` upon, and checks to make sure appropriate sensors are available (todo).
+
+## App Messaging
 
 
+### Global
+
+### Inter App
+
+### Inter Device
+ 
 ### Debugging
 
 Use `DEBUG=* nodemon` to see all debug messages.
