@@ -240,6 +240,19 @@ function sendConfig(){
   });
 }
 
+function doTrigger(group, payload){
+  if ( _.isUndefined(cb)){
+    cb = group;
+  }
+
+  // assume if no group, hit all of same group
+  process.send({
+    type:'trigger',
+    group: group,
+    payload:payload
+  })
+}
+
 var Matrix = {
   name: function(name){ appName = name; },
   _: _,
@@ -322,7 +335,8 @@ var Matrix = {
   store: storeManager,
   debug: matrixDebug,
   notify: interAppNotification,
-  on: interAppResponse
+  on: interAppResponse,
+  trigger: doTrigger
 }
 
 module.exports = Matrix;
