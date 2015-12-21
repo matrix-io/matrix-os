@@ -5,6 +5,7 @@ FROM debian:jessie
 # ENV DEBIAN_PRIORITY critical
 # ENV DEBCONF_NOWARNINGS yes
 
+MAINTAINER Sean Canton <sean.canton@admobilize.com>
 
 # From https://github.com/nodesource/docker-node/blob/master/debian/jessie/node/0.12.7/Dockerfile
 RUN apt-get update \
@@ -30,7 +31,7 @@ RUN cd node_modules/adsensors && npm install -g pangyp && ln -s $(which pangyp) 
 RUN npm install -g nodemon
 
 ENV NODE_ENV production
-ENV NODE_VERSION 0.12.7
+ENV NODE_VERSION 4.2
 ENV NPM_VERSION 2.13.2
 
 ENV ADMATRIX_API_SERVER http://dev-demo.admobilize.com
