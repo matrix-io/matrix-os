@@ -55,4 +55,4 @@ RUN npm rebuild
 # Install Node modules
 
 # RUN node app.js
-CMD ["npm", "start"]
+CMD ["node", "app.js"]
