@@ -27,7 +27,7 @@
     "lodash": "^3.10.0",
     "loudness": "^0.2.2",
     "mocha": "^2.3.4",
-    "nedb": "^1.1.2",
+    "nedb": "git@github.com/matrix-io/nedb",
     "node-record-lpcm16": "^0.1.4",
     "omxctrl": "^0.1.2",
     "portfinder": "^0.4.0",
