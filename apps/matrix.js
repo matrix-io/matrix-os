@@ -1,10 +1,12 @@
 // NOTE: Required by each app, so these will be seperate. Shared resources and events are managed by the Matrix one layer up.
 // see lib/services/manager
 
+console.log('Matrix Library Loading')
+
 require('colors');
 //needs sudo for audio commands disable until we figure this out
 // var loudness = require('loudness');
-var player = require('player');
+// var player = require('player');
 var microphone = require('node-record-lpcm16');
 var request = require('request');
 var config = require('./config.js');
@@ -263,15 +265,16 @@ var Matrix = {
       console.warn('say() is not implemented yet')
     },
     play: function(file, volume){
-      var assetPath = __dirname + '/' + appName + '.matrix/storage/';
-      var volume = ( !_.isUndefined(volume)) ? volume: 80;
-      require('loudness').setVolume( volume, function(){});
-      var soundPlayer = new player( assetPath + file );
-      soundPlayer.play( function(err, played){
-        if (err) console.error(err);
-        console.log('played');
-      });
-      return soundPlayer;
+      console.warn('play() is not implemented yet' )
+      // var assetPath = __dirname + '/' + appName + '.matrix/storage/';
+      // var volume = ( !_.isUndefined(volume)) ? volume: 80;
+      // require('loudness').setVolume( volume, function(){});
+      // var soundPlayer = new player( assetPath + file );
+      // soundPlayer.play( function(err, played){
+      //   if (err) console.error(err);
+      //   console.log('played');
+      // });
+      // return soundPlayer;
     }
   },
   mic: microphone,

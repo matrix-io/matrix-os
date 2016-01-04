@@ -4,15 +4,25 @@
 # Overview
 MatrixOS is a node application which provides a host for sensor libraries, computer vision software and Matrix applications. MatrixOS connects to the `matrix-streaming-server` to provide real-time, socket based information for clients.
 
+# Private repos
+Had to move `admatrix-node-sdk` and `admobilize-eventfilter-sdk` out of package.json for deployment reaosns.
+
+Here is the mapping.
+```
+"admatrix-eventfilter-sdk": "git+ssh://git@bitbucket.org:admobilize/admobilize-eventfilter-sdk.git",
+"admatrix-node-sdk": "git+ssh://git@bitbucket.org:admobilize/admobilize-node-sdk.git"
+```
+
+
 # Authentication
-MatrixOS authentication is provided by `admatrix-node-sdk` using the device id and device secret. 
+MatrixOS authentication is provided by `admatrix-node-sdk` using the device id and device secret.
 
 # Local Storage
-Device tokens and application state is saved on the local device via `nedb`. 
+Device tokens and application state is saved on the local device via `nedb`.
 
 # Globals
 ```
-Matrix - is the primary global namespace. 
+Matrix - is the primary global namespace.
   .api - access to node-sdk
   .db  - provides access to local storage
   .events - EventEmitter
@@ -24,7 +34,7 @@ Matrix - is the primary global namespace.
 See below for more details
 
 ## Event Flow
-Events are at the core of MatrixOS. 
+Events are at the core of MatrixOS.
 
 ```
 Events
@@ -59,16 +69,16 @@ Applications are prompted to install on MatrixOS via infrastructure commands ( `
 ## App Messaging
 
 ### Global
-Each app subscribes to the global app messaging channel `app-message`. 
+Each app subscribes to the global app messaging channel `app-message`.
 
 ### Inter App
 Each app sets up a targeted messaging channel `app-{appname}-message`.
 
 ### Inter Device / Trigger
 Each app is available for inter device messages, which move on the `trigger` channel.  
- 
+
 ## App Data Flows
-External: 
+External:
 
 Applications send data with `matrix.send()` or `matrix.type('foo').send()`
 
@@ -79,7 +89,7 @@ Data from an app process is captured and routed into the event system as `app-em
 ## Socket Streaming Server Connection
 
 ### Register Device
-The first step in establishing a socket connection is to send a `device-register` socket message. 
+The first step in establishing a socket connection is to send a `device-register` socket message.
 
 ### Progressive Check Delay
 If no Streaming Server is visible, Matrix keeps trying with an ever-increasing delay.
@@ -94,9 +104,9 @@ Sensors are provided by node modules with following namespace:
 matrix.sensor.{sensorModel}.{systemArchitecture}
 ```
 
-So for a MX1174 sensor to be installed on an ARM board, one would install `matrix.sensor.mx1174.arm` to the matrix os with the CLI command `matrix install -s mx1174`. 
+So for a MX1174 sensor to be installed on an ARM board, one would install `matrix.sensor.mx1174.arm` to the matrix os with the CLI command `matrix install -s mx1174`.
 
-All sensor modules are written to a common specification, which allows them to interchange easily with matrix apps using sensor.type as the single point of reference. 
+All sensor modules are written to a common specification, which allows them to interchange easily with matrix apps using sensor.type as the single point of reference.
 
 # Installation
 ```

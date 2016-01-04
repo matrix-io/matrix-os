@@ -1,17 +1,17 @@
 try {
-  var opencv = require('../../opencv-node-sdk/index.js');
+  var opencv = require('opencv-node-sdk');
 } catch(e) {
   console.error('MATRIX CV could not initialize. Please make sure the MATRIX OS has been updated -- see error:', e);
 }
 
-var lib = {  
+var lib = {
   config: function(camera, appOptions) {
     var options = {
       'height': 640,
       'width':  480,
       'minSize':  20, //50,
       'maxSize': 400, //-1,
-      'drawObjects': false, 
+      'drawObjects': false,
       'processAge': false, //should be minimized to "age"
       'processGender': true, // should be "gender"
       'processEmotion': true, // should be "emotion"
@@ -27,7 +27,7 @@ var lib = {
         type: "humans",
         detector: 3
       },
-      "directory": __dirname + "/../../opencv-node-sdk/admobilize-detection-manager/admobilize-detection/data" 
+      "directory": __dirname + "/../../opencv-node-sdk/admobilize-detection-manager/admobilize-detection/data"
       //should have a default path that works, seems to never work with default path
     };
     if(options === undefined || options === null) {
@@ -54,11 +54,15 @@ var lib = {
   },
 
   init: function(camera, appOptions) {
+    console.log('init');
     var options = lib.config(camera, appOptions);
     var cv = new opencv({ "cameraId" : options.camera });
     cv.setConfiguration(options,function(){
+      log('start camera')
+
       cv.startCamera(0, function(err){
         if(err) { console.error(err); } else {
+          log('start detect');
           cv.startContinuousDetection();
         }
       });
