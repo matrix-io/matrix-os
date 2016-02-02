@@ -27,11 +27,20 @@ var fs = require('fs');
     'ADMATRIX_DEVICE_NAME',
     'ADMATRIX_USER',
     'ADMATRIX_PASSWORD',
+    // support matrix too, prioritize these
+    'MATRIX_API_SERVER',
+    'MATRIX_STREAMING_SERVER',
+    'MATRIX_CLIENT_ID',
+    'MATRIX_CLIENT_SECRET',
+    'MATRIX_DEVICE_ID',
+    'MATRIX_DEVICE_NAME',
+    'MATRIX_USER',
+    'MATRIX_PASSWORD',
     'NODE_ENV'
   ]);
 
   configs = _.mapKeys(configs, function(v,k){
-    var k = k.replace('ADMATRIX','');
+    var k = k.replace('ADMATRIX','').replace('MATRIX','');
     return _.camelCase(k);
   })
 

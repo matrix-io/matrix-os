@@ -6,6 +6,9 @@ async = require('async');
 debugLog = require('debug');
 var debug = debugLog('matrix');
 
+log = console.log;
+error = console.error;
+
 var fs = require('fs');
 var events = require('events');
 var util = require('util');
@@ -13,21 +16,17 @@ var util = require('util');
 // Core
 Matrix = require('./lib');
 
-// Logging
-Matrix.service.logging.init();
-ulog = util.log;
-clog = console.log;
 
-
-// SDK
-api = require('admatrix-node-sdk');
-api.makeUrls( process.env['ADMATRIX_API_SERVER'] );
 
 // Config
 Matrix.config = require('./config');
 config = Matrix.config;
-
 debug(config);
+
+// SDK
+api = require('admatrix-node-sdk');
+api.makeUrls( config.apiServer );
+
 
 //Event Loop - Handles all events
 Matrix.events = new events.EventEmitter();

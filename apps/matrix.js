@@ -1,7 +1,7 @@
 // NOTE: Required by each app, so these will be seperate. Shared resources and events are managed by the Matrix one layer up.
 // see lib/services/manager
 
-console.log('Matrix Library Loading')
+console.log('Matrix OS Application Library Loading...')
 
 require('colors');
 //needs sudo for audio commands disable until we figure this out

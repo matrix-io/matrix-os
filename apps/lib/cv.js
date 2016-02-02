@@ -1,8 +1,4 @@
-try {
-  var opencv = require('opencv-node-sdk');
-} catch(e) {
-  console.error('MATRIX CV could not initialize. Please make sure the MATRIX OS has been updated -- see error:', e);
-}
+var opencv;
 
 var lib = {
   config: function(camera, appOptions) {
@@ -54,7 +50,14 @@ var lib = {
   },
 
   init: function(camera, appOptions) {
-    console.log('init');
+    console.log('open cv init');
+    
+    try {
+      opencv = require('opencv-node-sdk');
+    } catch(e) {
+      console.error('MATRIX CV could not initialize. Please make sure the MATRIX OS has been updated -- see error:', e);
+    }
+
     var options = lib.config(camera, appOptions);
     var cv = new opencv({ "cameraId" : options.camera });
     cv.setConfiguration(options,function(){
