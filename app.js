@@ -25,14 +25,16 @@ debug(config);
 
 // SDK
 api = require('admatrix-node-sdk');
-api.makeUrls( config.apiServer );
+api.makeUrls(config.apiServer);
 
 
 //Event Loop - Handles all events
 Matrix.events = new events.EventEmitter();
 // seems like a fair number
 Matrix.events.setMaxListeners(50);
-Matrix.events.on('addListener', function(name){ log (name);})
+Matrix.events.on('addListener', function(name) {
+  log(name);
+})
 
 //Initialize Listeners - Code goes here
 Matrix.event.init();
@@ -47,26 +49,41 @@ Matrix.activeProcesses = [];
 //db - files stored in db
 var DataStore = require('nedb');
 Matrix.db = {
-  config : new DataStore({ filename: config.path.db.config, autoload: true }),
-  device : new DataStore({ filename: config.path.db.device, autoload: true }),
-  user : new DataStore({ filename: config.path.db.user, autoload: true }),
-  service : new DataStore({ filename: config.path.db.service, autoload: true }),
-  pending : new DataStore({ filename: config.path.db.pending, autoload: true })
+  config: new DataStore({
+    filename: config.path.db.config,
+    autoload: true
+  }),
+  device: new DataStore({
+    filename: config.path.db.device,
+    autoload: true
+  }),
+  user: new DataStore({
+    filename: config.path.db.user,
+    autoload: true
+  }),
+  service: new DataStore({
+    filename: config.path.db.service,
+    autoload: true
+  }),
+  pending: new DataStore({
+    filename: config.path.db.pending,
+    autoload: true
+  })
 }
 
 // this is kind of an init
 async.series([
-  function checkApiServer(cb){
-    require('http').get(Matrix.apiServer, function(res){
+  function checkApiServer(cb) {
+    require('http').get(Matrix.apiServer, function(res) {
       cb(null);
-    }).on('error', function(){
+    }).on('error', function() {
       error('No API Server Visible', Matrix.apiServer);
       cb();
     });
   },
-  function getToken(cb){
+  function getToken(cb) {
     // check in with api server
-    Matrix.service.token.get(function(err, token){
+    Matrix.service.token.get(function(err, token) {
       if (err) return cb(err);
       // Matrix.token = token.clientToken;
       // Matrix.clientToken = token.clientToken;
@@ -76,32 +93,32 @@ async.series([
       cb(null);
     });
   },
-  function checkUpdates(cb){
-    // warn('Updates not implemented on api yet');
+  function checkUpdates(cb) {
     return cb();
-    Matrix.api.device.checkUpdates(function(err, update){
-      if (err) return cb(err);
-      // check version
-      if ( update.version === Matrix.version ){
-        cb(null);
-      } else {
-        cb(null);
-      }
-    });
+    // warn('Updates not implemented on api yet');
+    // Matrix.api.device.checkUpdates(function(err, update) {
+    //   if (err) return cb(err);
+    //   // check version
+    //   if (update.version === Matrix.version) {
+    //     cb(null);
+    //   } else {
+    //     cb(null);
+    //   }
+    // });
   },
   Matrix.service.stream.checkStreamingServer,
-], function(err){
+], function(err) {
   if (err) error(err);
-  log(Matrix.is.green.bold, '['.grey+Matrix.deviceId.grey+']'.grey, 'ready'.yellow.bold);
+  log(Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
   Matrix.banner();
 
 
-// These are helpful when debugging
-// log('========== vvv API vvv =========\n'.blue, api, "\n======== ^^^ API ^^^ =======".blue);
-// log('========== vvv MATRIX vvv =========\n'.yellow, Matrix, "\n======== ^^^ MATRIX ^^^ =======".yellow);
+  // These are helpful when debugging
+  // log('========== vvv API vvv =========\n'.blue, api, "\n======== ^^^ API ^^^ =======".blue);
+  // log('========== vvv MATRIX vvv =========\n'.yellow, Matrix, "\n======== ^^^ MATRIX ^^^ =======".yellow);
 
   //if START_APP is set
-  if (config.fakeApp){
+  if (config.fakeApp) {
     Matrix.service.manager.start(config.fakeApp);
   }
 });
@@ -109,27 +126,26 @@ async.series([
 
 Matrix.service.lifecycle.updateLastBootTime();
 
-module.exports =
-{
+module.exports = {
   Matrix: Matrix
 }
 
 // Process Level Event Listeners
 
 //Triggered when the application is killed by a [CRTL+C] from keyboard
-process.on("SIGINT", function () {
+process.on("SIGINT", function() {
   log("Matrix -- CRTL+C kill detected");
   onKill();
 });
 
 //Triggered when the application is killed with a -15
-process.on("SIGTERM", function () {
+process.on("SIGTERM", function() {
   log("Matrix -- Kill detected");
   onKill();
 });
 
 //Triggered when the application is killed by a [CRTL+\] from keyboard
-process.on("SIGQUIT", function () {
+process.on("SIGQUIT", function() {
   log("Matrix -- CRTL+\\ kill detected");
   onKill();
 });
@@ -152,23 +168,26 @@ function onKill() {
 function onDestroy() {
   //TODO: Implemenent cleanups
   // kill children apps
-  Matrix.service.manager.killAllApps();
-  // clean up db
-  Matrix.service.manager.clearAppList();
-  // clean logs
-  Matrix.service.manager.cleanLogs();
-  // other maintenance
-  process.exit();
+  async.series([
+      Matrix.service.manager.killAllApps,
+      Matrix.service.manager.clearAppList,
+      Matrix.service.manager.cleanLogs,
+
+  ], function(err){
+    if (err) error(err);
+    console.log('Cleanup complete...');
+    process.exit(0);
+  });
 }
 
 // every 4 hours do this
-setInterval(function maintenance(){
+setInterval(function maintenance() {
   Matrix.service.manager.cleanLogs();
-}, 1000*60*60*4);
+}, 1000 * 60 * 60 * 4);
 
 //Triggered when an unexpected (programming) error occurs
 //Also called when a DNS error is presented
-process.on('uncaughtException', function (err) {
+process.on('uncaughtException', function(err) {
   console.error('Matrix -- Uncaught exception: ', err, err.stack);
   if (err.code && err.code == "ENOTFOUND") {
     error('Matrix -- ENOTFOUND was detected (DNS error)');
