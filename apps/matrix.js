@@ -19,7 +19,7 @@ var _ = require('lodash');
 var DataStore = require('nedb');
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
-var AppStore = new DataStore({ filename: Matrix.config.path.appStore, autoload: true });
+var AppStore = new DataStore({ filename: config.path.appStore, autoload: true });
 
 var appName = '';
 

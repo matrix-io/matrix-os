@@ -20,7 +20,7 @@ Matrix = require('./lib');
 
 // Config
 Matrix.config = require('./config');
-debug('\n====== config ===vvv'.yellow)
+debug('====== config ===vvv'.yellow)
 debug( Matrix.config , '\n');
 
 // SDK
