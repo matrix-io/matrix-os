@@ -20,12 +20,12 @@ Matrix = require('./lib');
 
 // Config
 Matrix.config = require('./config');
-config = Matrix.config;
-debug(config);
+debug('\n====== config ===vvv'.yellow)
+debug( Matrix.config , '\n');
 
 // SDK
 api = require('admatrix-node-sdk');
-api.makeUrls(config.apiServer);
+api.makeUrls( Matrix.config.apiServer);
 
 
 //Event Loop - Handles all events
@@ -50,23 +50,23 @@ Matrix.activeProcesses = [];
 var DataStore = require('nedb');
 Matrix.db = {
   config: new DataStore({
-    filename: config.path.db.config,
+    filename: Matrix.config.path.db.config,
     autoload: true
   }),
   device: new DataStore({
-    filename: config.path.db.device,
+    filename: Matrix.config.path.db.device,
     autoload: true
   }),
   user: new DataStore({
-    filename: config.path.db.user,
+    filename: Matrix.config.path.db.user,
     autoload: true
   }),
   service: new DataStore({
-    filename: config.path.db.service,
+    filename: Matrix.config.path.db.service,
     autoload: true
   }),
   pending: new DataStore({
-    filename: config.path.db.pending,
+    filename: Matrix.config.path.db.pending,
     autoload: true
   })
 }
@@ -89,7 +89,7 @@ async.series([
       // Matrix.clientToken = token.clientToken;
       Matrix.deviceToken = token.deviceToken;
       // log('Client Token'.green, token.clientToken);
-      debug('Device Token'.green, token.deviceToken);
+      debug('[API] -> Device Token'.green, token.deviceToken);
       cb(null);
     });
   },
@@ -118,8 +118,8 @@ async.series([
   // log('========== vvv MATRIX vvv =========\n'.yellow, Matrix, "\n======== ^^^ MATRIX ^^^ =======".yellow);
 
   //if START_APP is set
-  if (config.fakeApp) {
-    Matrix.service.manager.start(config.fakeApp);
+  if (Matrix.config.fakeApp) {
+    Matrix.service.manager.start(Matrix.config.fakeApp);
   }
 });
 
