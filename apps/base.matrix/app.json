@@ -1,0 +1,53 @@
+{
+  "name": "Monitor",
+  "version": "1.0.0",
+  "description": "Monitor your device metrics.",
+  "dashboard": [
+    [
+      {
+        "sensors": "device-info",
+        "name": "Device Info",
+        "help": "",
+        "display": "list-group",
+        "series": [ "os_hostname", "os_type", "os_arch" ]
+      }
+    ],
+    [
+      { 
+        "sensors": "monitor",
+        "name": "CPU", 
+        "help": "",
+        "display": "digit",
+        "series": [ "cpu,@.toFixed(2)" ]
+      },
+      { 
+        "sensors": "monitor",
+        "name": "Memory", 
+        "help": "",
+        "display": "digit",
+        "series": [ "memory,(@*100).toFixed(2)+'%'" ]
+      }
+    ],
+
+    [
+      { 
+        "sensors": "monitor",
+        "name": "CPU", 
+        "help": "",
+        "display": "line",
+        "points": 30,
+        "series": [ "cpu" ]
+      }
+    ],
+    [
+      { 
+        "sensors": "monitor",
+        "name": "Memory", 
+        "help": "",
+        "display": "line",
+        "points": 30,
+        "series": [ "memory" ]
+      }
+    ]
+  ]
+}
