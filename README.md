@@ -1,4 +1,6 @@
-# MATRIX Device Container Kit
+
+
+# MATRIX Device Container
 *stay in wonderland and I show you how deep the rabbit-hole goes...*
 
 # Overview
@@ -246,3 +248,7 @@ log() - logentries
 warn() - logentries
 error() - logentries
 ```
+
+## Maintainers
+
+Sean Canton <sean.canton@admobilize.com> 
