@@ -16,8 +16,6 @@ var util = require('util');
 // Core
 Matrix = require('./lib');
 
-
-
 // Config
 Matrix.config = require('./config');
 debug('====== config ===vvv'.yellow)

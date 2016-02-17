@@ -10,5 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "cpu-stats": "^1.0.0"
-  }
+  },
+  "sensors": [
+    "matrix.test"
+  ]
 }

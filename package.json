@@ -10,9 +10,9 @@
     "pr": "open https://bitbucket.org/admobilize/admatrix/pull-request/new"
   },
   "author": "Sean Canton <sean.canton@admobilize.com>",
-  "contributors":[{
+  "contributors":[
     "Sean Canton <sean.canton@admobilize.com>"
-  }],
+  ],
   "license": "ISC",
   "dependencies": {
     "async": "^1.4.0",
@@ -44,8 +44,5 @@
     "unzip": "^0.1.11",
     "winston": "^1.0.1",
     "winston-logentries": "^1.0.1"
-  },
-  "bin": {
-    "adm": "./bin/adm"
   }
 }
