@@ -126,7 +126,7 @@ function interAppResponse( name, cb ){
       // debug('[M]->app'.blue, m, 'app-'+appName+'-message')
       // is global or app-specific
     if (m.type === 'trigger' || m.type === "app-message" || m.type === 'app-'+appName+'-message'){
-      debug('[M]->app(msg)'.blue, m)
+      console.log('[M]->app(msg)'.blue, m)
       if ( _.isString(name) ){
         // if an event name was specified in the on()
         if ( m.event == name ){
@@ -188,6 +188,7 @@ function initSensor(name, options, cb) {
     //   });
     // });
   }
+
   // kick off sensor readers
   process.send({
     type: 'sensor-init',
@@ -202,7 +203,6 @@ function initSensor(name, options, cb) {
   // console.log('sensor err >> looking into fix');
   var then = function(cb) {
     process.on('message', function(m) {
-      console.log('[M]->app'.blue, name, m);
       if (m.eventType === 'sensor-emit') {
         var result;
         // console.log('applying filter:', filter.json());
@@ -211,6 +211,7 @@ function initSensor(name, options, cb) {
         m = _.omit(m,'eventType');
         m.payload.type = m.sensor;
 
+        console.log('sensor->app'.blue, name, m);
         // if there is no filter, don't apply
         if (filter.filters.length > 0){
           result = applyFilter(filter, m.payload);
@@ -222,8 +223,6 @@ function initSensor(name, options, cb) {
           cb(null, result);
         }
 
-      } else {
-        cb('Invalid Message from Matrix' + JSON.stringify(m));
       }
     });
   };
@@ -328,6 +327,9 @@ var Matrix = {
     process.on('message', function(m){
       if (m.type === 'request-config'){
         sendConfig();
+      } else if ( m.type === 'container-status'){
+
+          Matrix.pid = m.pid;
       }
     })
     //send config on app start

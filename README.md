@@ -13,6 +13,7 @@ Here is the mapping.
 ```
 "admatrix-eventfilter-sdk": "git+ssh://git@bitbucket.org:admobilize/admobilize-eventfilter-sdk.git",
 "admatrix-node-sdk": "git+ssh://git@bitbucket.org:admobilize/admobilize-node-sdk.git"
+"matrix-test-sensor": "//TODO"
 ```
 
 
@@ -251,4 +252,4 @@ error() - logentries
 
 ## Maintainers
 
-Sean Canton <sean.canton@admobilize.com> 
+Sean Canton <sean.canton@admobilize.com>

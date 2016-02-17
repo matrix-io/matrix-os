@@ -4,9 +4,8 @@ var emitter = new EventEmitter();
 var cpu = 0;
 var memory = 0;
 
-Matrix.init('monitor').then( function(data) {
+matrix.init('test').then( function(data) {
   matrix.send(data);
-  log('hi from monitor', data);
 });
 //
 // setTimeout(function() {
