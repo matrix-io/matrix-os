@@ -7,6 +7,7 @@ debugLog = require('debug');
 var debug = debugLog('matrix');
 
 log = console.log;
+warn = console.log;
 error = console.error;
 
 var fs = require('fs');

@@ -211,7 +211,7 @@ function initSensor(name, options, cb) {
         m = _.omit(m,'eventType');
         m.payload.type = m.sensor;
 
-        console.log('sensor->app'.blue, name, m);
+        console.log('sensor', m.sensor, '->app'.blue, name, m);
         // if there is no filter, don't apply
         if (filter.filters.length > 0){
           result = applyFilter(filter, m.payload);
@@ -242,9 +242,6 @@ function sendConfig(){
 }
 
 function doTrigger(group, payload){
-  if ( _.isUndefined(cb)){
-    cb = group;
-  }
 
   // assume if no group, hit all of same group
   process.send({

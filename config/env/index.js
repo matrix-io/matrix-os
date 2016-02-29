@@ -15,6 +15,6 @@ if ( files.length === 0 ){
   files = ['production'];
 }
 
-e = require('./' + files[0]);
+e = require( __dirname + '/' + files[0] + '.js');
 
 module.exports = e;
