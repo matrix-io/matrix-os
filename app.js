@@ -17,7 +17,7 @@ var util = require('util');
 // Core
 Matrix = require('./lib');
 
-// Config
+// Config - Envs are handled here
 Matrix.config = require('./config');
 debug('====== config ===vvv'.yellow)
 debug( Matrix.config , '\n');
