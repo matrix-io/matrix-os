@@ -19,6 +19,7 @@ Matrix = require('./lib');
 
 // Config - Envs are handled here
 Matrix.config = require('./config');
+log('ENV:'.grey, process.env['NODE_ENV'].blue , 'API:'.grey, Matrix.apiServer.blue, 'MXSS:'.grey, Matrix.streamingServer.blue)
 debug('====== config ===vvv'.yellow)
 debug( Matrix.config , '\n');
 
