@@ -15,8 +15,12 @@ files.forEach(function(file) {
   // require localized to this file
   if ( fs.statSync(__dirname+'/'+file).isFile() ){
     f[file.slice(0,-3)] = require('./' + file);
+  } else if (fs.statSync(__dirname+'/'+file).isDirectory() ){
+    f[file] = require('./'+file+'/'+process.env['NODE_ENV'] || 'production');
   }
 });
+
+
 
 var configs = _.pick(process.env, [
   'ADMATRIX_API_SERVER',
@@ -58,6 +62,12 @@ if ( _.isUndefined(Matrix.user )){
   process.exit(1);
 }
 
+// overwrite from /env
+log(f);
+if ( _.has(f, 'env.url') ){
+  Matrix.streamingServer = f.env.url.streaming;
+  Matrix.apiServer = f.env.url.api;
+}
 
 f.version = JSON.parse( fs.readFileSync('./package.json') ).version;
 

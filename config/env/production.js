@@ -1,6 +1,6 @@
 module.exports = {
   url: {
-    api: 'http://localhost:1337',
-    update: ''
+    api: 'http://dev-demo.admobilize.com',
+    streaming: 'http://mxss.admobilize.com:80'
   },
 }
