@@ -1,7 +1,6 @@
 var f = {
   fakeApp:  process.env['START_APP']
 };
-var debug = debugLog('matrix');
 var fs = require('fs');
 
 var files = fs.readdirSync(__dirname);
@@ -15,25 +14,25 @@ files.forEach(function(file) {
   // require localized to this file
   if ( fs.statSync(__dirname+'/'+file).isFile() ){
     f[file.slice(0,-3)] = require('./' + file);
-  } else if (fs.statSync(__dirname+'/'+file).isDirectory() ){
-    f[file] = require('./'+file+'/'+process.env['NODE_ENV'] || 'production');
   }
 });
 
 
 
+
+
 var configs = _.pick(process.env, [
-  'ADMATRIX_API_SERVER',
-  'ADMATRIX_STREAMING_SERVER',
-  'ADMATRIX_CLIENT_ID',
-  'ADMATRIX_CLIENT_SECRET',
-  'ADMATRIX_DEVICE_ID',
-  'ADMATRIX_DEVICE_NAME',
-  'ADMATRIX_USER',
-  'ADMATRIX_PASSWORD',
-  // support matrix too, prioritize these
-  'MATRIX_API_SERVER',
-  'MATRIX_STREAMING_SERVER',
+  // 'ADMATRIX_API_SERVER',
+  // 'ADMATRIX_STREAMING_SERVER',
+  // 'ADMATRIX_CLIENT_ID',
+  // 'ADMATRIX_CLIENT_SECRET',
+  // 'ADMATRIX_DEVICE_ID',
+  // 'ADMATRIX_DEVICE_NAME',
+  // 'ADMATRIX_USER',
+  // 'ADMATRIX_PASSWORD',
+  // // support matrix too, prioritize these
+  // 'MATRIX_API_SERVER',
+  // 'MATRIX_STREAMING_SERVER',
   'MATRIX_CLIENT_ID',
   'MATRIX_CLIENT_SECRET',
   'MATRIX_DEVICE_ID',
@@ -48,26 +47,11 @@ configs = _.mapKeys(configs, function(v,k){
   return _.camelCase(k);
 })
 
-debug('ENV VARS\n'.green, configs);
 
 _.extend(Matrix, configs);
 
-if ( _.isUndefined(Matrix.deviceId )){
-  console.error('Matrix requires MATRIX_DEVICE_ID to be set')
-  process.exit(1);
-}
 
-if ( _.isUndefined(Matrix.user )){
-  console.error('Matrix registration requires MATRIX_USER to be set')
-  process.exit(1);
-}
 
-// overwrite from /env
-log(f);
-if ( _.has(f, 'env.url') ){
-  Matrix.streamingServer = f.env.url.streaming;
-  Matrix.apiServer = f.env.url.api;
-}
 
 f.version = JSON.parse( fs.readFileSync('./package.json') ).version;
 

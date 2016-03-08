@@ -2,30 +2,56 @@
 _ = require('lodash');
 async = require('async');
 
+log = console.log;
+warn = console.log;
+error = console.error;
+
+Matrix = {};
+
+// setup debug before lib loading
+var envSettings = getEnvSettings();
+if ( envSettings.debug === true && _.isUndefined(process.env['DEBUG'])){
+  process.env['DEBUG'] = '*,-engine*'
+}
+
 // for debug messages
 debugLog = require('debug');
 var debug = debugLog('matrix');
 
-log = console.log;
-warn = console.log;
-error = console.error;
+// Core
+Matrix = require('./lib');
+
+// populate keys from settings after requiring libs
+parseEnvSettings(envSettings);
+
+
+// Config - Envs are handled here
+Matrix.config = require('./config');
+debug('Debug:', process.env['DEBUG']);
+
+debug('====== config ===vvv'.yellow)
+debug( Matrix.config , '\n');
+
+var reqKeys = ['user', 'deviceId', 'apiServer', 'streamingServer'];
+var foundKeys = _.intersection(_.keysIn(Matrix), reqKeys);
+if ( foundKeys.length < reqKeys.length ){
+  var missingKeys = _.xor(reqKeys, foundKeys);
+  _.each(missingKeys, function (k) {
+    console.error('Matrix Registration Requires %s'.red, _.kebabCase(k).yellow);
+  })
+  process.exit(1);
+}
+
+log('ENV:'.grey, Matrix.env.blue , 'API:'.grey, Matrix.apiServer.blue, 'MXSS:'.grey, Matrix.streamingServer.blue)
 
 var fs = require('fs');
 var events = require('events');
 var util = require('util');
 
-// Core
-Matrix = require('./lib');
-
-// Config - Envs are handled here
-Matrix.config = require('./config');
-log('ENV:'.grey, process.env['NODE_ENV'].blue , 'API:'.grey, Matrix.apiServer.blue, 'MXSS:'.grey, Matrix.streamingServer.blue)
-debug('====== config ===vvv'.yellow)
-debug( Matrix.config , '\n');
 
 // SDK
 api = require('admatrix-node-sdk');
-api.makeUrls( Matrix.config.apiServer);
+api.makeUrls( Matrix.apiServer);
 
 
 //Event Loop - Handles all events
@@ -222,3 +248,25 @@ process.on('uncaughtException', function(err) {
     onDestroy();
   }
 });
+
+
+// UTILITY
+function getEnvSettings(env){
+  var environmentSetting = env || process.env['NODE_ENV'] || 'production';
+  var validEnvList = require('fs').readdirSync('./config/env');
+
+  if ( _.intersection(environmentSetting, validEnvList).length > -1 ){
+    return require('./config/env/'+ environmentSetting + '.js');
+  }
+
+}
+
+function parseEnvSettings(envSettings){
+  if ( _.has(envSettings, 'url') ){
+    Matrix.streamingServer = envSettings.url.streaming;
+    Matrix.apiServer = envSettings.url.api;
+    Matrix.env = envSettings.name;
+  } else {
+    console.error('There is a problem with ENV', Matrix.env);
+  }
+}
