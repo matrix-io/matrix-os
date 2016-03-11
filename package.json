@@ -8,7 +8,7 @@
     "start": "nodemon app.js",
     "test": "mocha test/_runner.js",
     "pr": "open https://bitbucket.org/admobilize/admatrix/pull-request/new",
-    "deploy-image": "docker build --no-cache -t admobilize/matrix-os ."
+    "deploy-image": "rm db/pending.db apps/*.matrix; docker build --no-cache -t admobilize/matrix-os ."
   },
   "author": "Sean Canton <sean.canton@admobilize.com>",
   "contributors": [
