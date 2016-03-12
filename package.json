@@ -8,7 +8,7 @@
     "start": "nodemon app.js",
     "test": "mocha test/_runner.js",
     "pr": "open https://bitbucket.org/admobilize/admatrix/pull-request/new",
-    "deploy-image": "rm db/pending.db apps/*.matrix; docker build --no-cache -t admobilize/matrix-os ."
+    "deploy-image": "find apps -name '*.matrix' ! -name 'base.matrix' -type d -exec rm -r {} +; rm db/pending.db; docker build --no-cache -t admobilize/matrix-os ."
   },
   "author": "Sean Canton <sean.canton@admobilize.com>",
   "contributors": [
@@ -16,8 +16,8 @@
   ],
   "license": "ISC",
   "dependencies": {
-    "admatrix-node-sdk": "git+ssh://git@bitbucket.org/admobilize/admobilize-node-sdk.git",
-    "admobilize-eventfilter-sdk": "git+ssh://git@bitbucket.org/admobilize/matrix-eventfilter-sdk.git",
+    "admatrix-node-sdk": "https://bitbucket.org/admobilize/admobilize-node-sdk.git",
+    "admobilize-eventfilter-sdk": "https://bitbucket.org/admobilize/matrix-eventfilter-sdk.git",
     "async": "^1.4.0",
     "chai": "^3.2.0",
     "colors": "^1.1.2",
@@ -32,7 +32,7 @@
     "line-by-line": "^0.1.3",
     "lodash": "^3.10.0",
     "loudness": "^0.2.2",
-    "matrix-test-sensor": "git+ssh://git@bitbucket.org/admobilize/matrix-test-sensor.git",
+    "matrix-test-sensor": "https://bitbucket.org/admobilize/matrix-test-sensor.git",
     "mocha": "^2.3.4",
     "nedb": "https://github.com/matrix-io/nedb/tarball/master",
     "node-record-lpcm16": "^0.1.4",
