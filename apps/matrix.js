@@ -170,23 +170,6 @@ function initSensor(name, options, cb) {
 
   if ( name === 'camera' ){
     // pop into OpenCv
-    // var eyes = new OpenCv({cameraId:'test'});
-    //
-    // eyes.setConfiguration(options, function(err, a){
-    //
-    //   //test
-    //   var file = require('fs').readFileSync('/Users/god/Desktop/holly.jpg');
-    //   eyes.analyzeImage(file, function(err, d){
-    //     console.log('Image', err, d);
-    //   });
-    //   console.log('setConfig', err, a)
-    //   eyes.startCamera(0, function(err, b){
-    //     console.log('startCamera', err, b);
-    //     eyes.startContinuousDetection( function(err, c){
-    //       console.log('detect', err, c);
-    //     });
-    //   });
-    // });
   }
 
   // kick off sensor readers
@@ -202,6 +185,8 @@ function initSensor(name, options, cb) {
   // FIXME: Issue with app only storing one process at a time
   // console.log('sensor err >> looking into fix');
   var then = function(cb) {
+
+    // recieves from events/sensors
     process.on('message', function(m) {
       if (m.eventType === 'sensor-emit') {
         var result;
@@ -211,7 +196,7 @@ function initSensor(name, options, cb) {
         m = _.omit(m,'eventType');
         m.payload.type = m.sensor;
 
-        console.log('sensor', m.sensor, '->app'.blue, name, m);
+        console.log('sensor:', m.sensor, '-> app'.blue, name, m);
         // if there is no filter, don't apply
         if (filter.filters.length > 0){
           result = applyFilter(filter, m.payload);
@@ -275,7 +260,10 @@ var Matrix = {
   },
   mic: microphone,
   send: function(message) {
-    //console.log('[M]('+ appName +') ->', message);
+    console.log('[M]('+ appName +') send ->', message);
+    if ( _.isNull(message) ){
+      return console.error('null message from matrix.send')
+    }
     if (!message.hasOwnProperty('data')){
       message = { data: message };
     }

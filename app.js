@@ -70,7 +70,8 @@ Matrix.api = api;
 Matrix.api.makeUrls(Matrix.apiServer);
 
 //app processes, see lib/service/mananger
-Matrix.activeProcesses = [];
+Matrix.activeApplications = [];
+Matrix.activeSensors = [];
 
 //db - files stored in db
 var DataStore = require('nedb');
@@ -198,7 +199,6 @@ function onDestroy() {
       Matrix.service.manager.killAllApps,
       Matrix.service.manager.clearAppList,
       Matrix.service.manager.cleanLogs,
-
   ], function(err){
     if (err) error(err);
     console.log('Cleanup complete...');

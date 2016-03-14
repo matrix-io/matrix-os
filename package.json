@@ -32,7 +32,7 @@
     "line-by-line": "^0.1.3",
     "lodash": "^3.10.0",
     "loudness": "^0.2.2",
-    "matrix-test-sensor": "https://bitbucket.org/admobilize/matrix-test-sensor.git",
+    "matrix-monitor-sensor": "https://bitbucket.org/admobilize/matrix-monitor-sensor.git",
     "mocha": "^2.3.4",
     "nedb": "https://github.com/matrix-io/nedb/tarball/master",
     "node-record-lpcm16": "^0.1.4",
