@@ -205,7 +205,7 @@ function initSensor(name, options, cb) {
         }
 
         if (result !== false && !_.isUndefined(result)){
-          cb(null, result);
+          cb(result);
         }
 
       }
