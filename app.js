@@ -2,8 +2,15 @@
 _ = require('lodash');
 async = require('async');
 
-log = console.log;
+
+ulog = function(){
+  _.each(arguments, function(a){
+    console.log(require('util').inspect(a, {depth:null, colors:true}))
+  })
+};
+
 warn = console.log;
+log = console.log;
 error = console.error;
 
 Matrix = {};
@@ -13,10 +20,11 @@ var envSettings = getEnvSettings();
 if ( envSettings.debug === true && _.isUndefined(process.env['DEBUG'])){
   process.env['DEBUG'] = '*,-engine*'
 }
-
 // for debug messages
 debugLog = require('debug');
 var debug = debugLog('matrix');
+
+
 
 // Core
 Matrix = require('./lib');
@@ -141,8 +149,8 @@ async.series([
 
 
   // These are helpful when debugging
-  // log('========== vvv API vvv =========\n'.blue, api, "\n======== ^^^ API ^^^ =======".blue);
-  // log('========== vvv MATRIX vvv =========\n'.yellow, Matrix, "\n======== ^^^ MATRIX ^^^ =======".yellow);
+  // log('vvv API vvv \n'.blue, api, "\n^^^ API ^^^ ".blue);
+  // log('vvv MATRIX vvv \n'.yellow, Matrix, "\n^^^ MATRIX ^^^ ".yellow);
 
   //if START_APP is set
   if (Matrix.config.fakeApp) {

@@ -205,6 +205,7 @@ function initSensor(name, options, cb) {
         }
 
         if (result !== false && !_.isUndefined(result)){
+          // LORE: switched from err first to promise style
           cb(result);
         }
 
