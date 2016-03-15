@@ -5,24 +5,24 @@
   "dashboard": [
     [
       {
-        "sensors": "device-info",
+        "sensors": "device",
         "name": "Device Info",
         "help": "",
-        "display": "list-group",
+        "display": "list",
         "series": [ "os_hostname", "os_type", "os_arch" ]
       }
     ],
     [
-      { 
+      {
         "sensors": "monitor",
-        "name": "CPU", 
+        "name": "CPU",
         "help": "",
         "display": "digit",
         "series": [ "cpu,@.toFixed(2)" ]
       },
-      { 
+      {
         "sensors": "monitor",
-        "name": "Memory", 
+        "name": "Memory",
         "help": "",
         "display": "digit",
         "series": [ "memory,(@*100).toFixed(2)+'%'" ]
@@ -30,9 +30,9 @@
     ],
 
     [
-      { 
+      {
         "sensors": "monitor",
-        "name": "CPU", 
+        "name": "CPU",
         "help": "",
         "display": "line",
         "points": 30,
@@ -40,9 +40,9 @@
       }
     ],
     [
-      { 
+      {
         "sensors": "monitor",
-        "name": "Memory", 
+        "name": "Memory",
         "help": "",
         "display": "line",
         "points": 30,

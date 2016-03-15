@@ -7,10 +7,10 @@
     },
     "dashboard": [
         [{
-            "sensors": "device-info",
+            "sensors": "device",
             "name": "Device Info",
             "help": "",
-            "display": "list-group",
+            "display": "list",
             "type": "device",
             "series": ["os_platform:string", "os_hostname:string", "os_type:string", "os_arch:string"]
         }],

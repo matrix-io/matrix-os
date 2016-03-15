@@ -126,7 +126,7 @@ function interAppResponse( name, cb ){
       // debug('[M]->app'.blue, m, 'app-'+appName+'-message')
       // is global or app-specific
     if (m.type === 'trigger' || m.type === "app-message" || m.type === 'app-'+appName+'-message'){
-      console.log('[M]->app(msg)'.blue, m)
+      // console.log('[M]->app(msg)'.blue, m)
       if ( _.isString(name) ){
         // if an event name was specified in the on()
         if ( m.event == name ){
@@ -196,7 +196,7 @@ function initSensor(name, options, cb) {
         m = _.omit(m,'eventType');
         m.payload.type = m.sensor;
 
-        console.log('sensor:', m.sensor, '-> app'.blue, name, m);
+        // console.log('sensor:', m.sensor, '-> app'.blue, name, m);
         // if there is no filter, don't apply
         if (filter.filters.length > 0){
           result = applyFilter(filter, m.payload);
@@ -261,7 +261,7 @@ var Matrix = {
   },
   mic: microphone,
   send: function(message) {
-    console.log('[M]('+ appName +') send ->', message);
+    // console.log('[M]('+ appName +') send ->', message);
     if ( _.isNull(message) ){
       return console.error('null message from matrix.send')
     }
