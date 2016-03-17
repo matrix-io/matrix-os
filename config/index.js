@@ -37,7 +37,7 @@ var configs = _.pick(process.env, [
   'MATRIX_CLIENT_SECRET',
   'MATRIX_DEVICE_ID',
   'MATRIX_DEVICE_NAME',
-  'MATRIX_USER',
+  'MATRIX_USERNAME',
   'MATRIX_PASSWORD',
   'NODE_ENV'
 ]);
@@ -46,7 +46,6 @@ configs = _.mapKeys(configs, function(v,k){
   var k = k.replace('ADMATRIX','').replace('MATRIX','');
   return _.camelCase(k);
 })
-
 
 _.extend(Matrix, configs);
 
@@ -64,6 +63,7 @@ f.sensorRefresh = process.env['MATRIX_SENSOR_REFRESH'] || 2500;
 // not in yet
 f.sensorSockets = true;
 f.socketCheckDelay = 60000;
+f.envs = configs;
 
 
 // TODO: Figure out where file storage happens

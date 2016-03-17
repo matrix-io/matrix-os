@@ -35,12 +35,13 @@ parseEnvSettings(envSettings);
 
 // Config - Envs are handled here
 Matrix.config = require('./config');
+debug('Envs:', Matrix.config.envs);
 debug('Debug:', process.env['DEBUG']);
 
 debug('====== config ===vvv'.yellow)
-debug( Matrix.config , '\n');
+debug( _.omit(Matrix.config, 'envs') , '\n');
 
-var reqKeys = ['user', 'deviceId', 'apiServer', 'streamingServer'];
+var reqKeys = ['username', 'deviceId', 'apiServer', 'streamingServer'];
 var foundKeys = _.intersection(_.keysIn(Matrix), reqKeys);
 if ( foundKeys.length < reqKeys.length ){
   var missingKeys = _.xor(reqKeys, foundKeys);
@@ -123,6 +124,7 @@ async.series([
       // Matrix.token = token.clientToken;
       // Matrix.clientToken = token.clientToken;
       Matrix.deviceToken = token.deviceToken;
+      Matrix.userId = token.userId;
       // log('Client Token'.green, token.clientToken);
       debug('[API] -> Device Token'.green, token.deviceToken);
       cb(null);
@@ -143,7 +145,7 @@ async.series([
   },
   Matrix.service.stream.checkStreamingServer,
 ], function(err) {
-  if (err) error(err);
+  if (err) return error(err);
   log(Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
   Matrix.banner();
 
