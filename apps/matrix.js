@@ -276,7 +276,7 @@ var Matrix = {
       message.type = type;
     }
 
-    process.send({
+      process.send({
       type: 'app-emit',
       payload: message
     });
