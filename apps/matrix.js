@@ -39,7 +39,7 @@ function getStore(key){
   });
 }
 
-function setStore(){
+function setStore(key, value){
   var obj = {};
   obj[key] = value;
   AppStore.insert(obj);
