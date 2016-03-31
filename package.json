@@ -5,7 +5,7 @@
   "main": "app.js",
   "repository": "https://bitbucket.org/admobilize/admatrix",
   "scripts": {
-    "start": "NODE_ENV=dev DEBUG=*,-engine* nodemon",
+    "start": "NODE_ENV=dev DEBUG=*,-engine* nodemon --watch lib --watch config",
     "test": "mocha test/_runner.js",
     "pr": "open https://bitbucket.org/admobilize/admatrix/pull-request/new",
     "deploy-prep": "rm -r db/pending.db node_modules/admatrix-node-sdk node_modules/admobilize-eventfilter-sdk node_modules/matrix-monitor-sensor",
@@ -39,6 +39,7 @@
     "mocha": "^2.3.4",
     "nedb": "https://github.com/matrix-io/nedb/tarball/master",
     "node-record-lpcm16": "^0.1.4",
+    "npm-registry": "^0.1.13",
     "omxctrl": "^0.1.2",
     "portfinder": "^0.4.0",
     "ps-tree": "^1.0.0",
