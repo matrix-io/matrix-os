@@ -36,6 +36,7 @@
     "lodash": "^3.10.0",
     "loudness": "^0.2.2",
     "matrix-monitor-sensor": "https://bitbucket.org/admobilize/matrix-monitor-sensor.git",
+    "matrix-test-monitor-sensor": "^0.1.1",
     "mocha": "^2.3.4",
     "nedb": "https://github.com/matrix-io/nedb/tarball/master",
     "node-record-lpcm16": "^0.1.4",

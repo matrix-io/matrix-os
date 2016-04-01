@@ -265,20 +265,20 @@ var Matrix = {
     if ( _.isNull(message) ){
       return console.error('null message from matrix.send')
     }
-    if (!message.hasOwnProperty('data')){
-      message = { data: message };
-    }
+    // if (!message.hasOwnProperty('data')){
+    //   message = { data: message };
+    // }
 
-    message.data.time = Date.now();
+    message.time = Date.now();
 
     if(this.hasOwnProperty('dataType')) {
       var type = this.dataType;
       message.type = type;
     }
 
-      process.send({
-      type: 'app-emit',
-      payload: message
+    process.send({
+        type: 'app-emit',
+        payload: message
     });
   },
   type: function(type) {

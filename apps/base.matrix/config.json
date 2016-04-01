@@ -1,16 +1,16 @@
 {
     "name": "Monitor",
-    "version": "1.0.1",
+    "version": "1.0.0",
     "description": "Monitor your device metrics.",
     "configuration": {
         "foo": "var"
     },
     "dashboard": [
         [{
-            "sensors": "device",
+            "sensors": "device-info",
             "name": "Device Info",
             "help": "",
-            "display": "list",
+            "display": "list-group",
             "type": "device",
             "series": ["os_platform:string", "os_hostname:string", "os_type:string", "os_arch:string"]
         }],

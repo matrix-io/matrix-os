@@ -24,4 +24,4 @@ EXPOSE 80 80
 # Install Node modules
 
 # RUN node app.js
-CMD ["node", "app.js"]
+CMD ["node", "index.js"]
