@@ -2,7 +2,7 @@ var Mocha = require('mocha'),
   fs = require('fs'),
   path = require('path');
 _ = require('lodash');
-Matrix = require('../app').Matrix;
+Matrix = require('../index').Matrix;
 
 // Instantiate a Mocha instance.
 var mocha = new Mocha({ui: 'should'});
