@@ -11,7 +11,7 @@ setTimeout(function() {
     'os_platform': os.platform(),
     'os_arch': os.arch()
   });
-}, 1000);
+}, 5000);
 
 setInterval(function() {
   var loadavg = os.loadavg();
@@ -24,4 +24,4 @@ setInterval(function() {
       'cpu': avg,
       'memory': memory
   });
-}, 500);
+}, 1000);

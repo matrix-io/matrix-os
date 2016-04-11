@@ -220,10 +220,10 @@ function initSensor(name, options, cb) {
   return filter;
 }
 
-function sendConfig(){
+function sendConfig(config){
   process.send({
     type: 'app-config',
-    payload: Matrix.appConfig
+    payload: config || Matrix.config
   });
 }
 
@@ -271,7 +271,7 @@ var Matrix = {
 
     message.time = Date.now();
 
-    if(this.hasOwnProperty('dataType')) {
+    if( this.hasOwnProperty('dataType')) {
       var type = this.dataType;
       message.type = type;
     }
@@ -297,29 +297,38 @@ var Matrix = {
   },
   startApp: function(name){
     appName = name;
+    var yaml = require('js-yaml');
+    var fs = require('fs');
+
+
+    // TODO: Provide process with newest configuration via ENVS. Liberal Restarts
+
+    // WIP
     try {
-      Matrix.appConfig = JSON.parse( require('fs').readFileSync(__dirname + '/'+ name +'.matrix/config.json'));
+      Matrix.config = yaml.safeLoad( require('fs').readFileSync(__dirname + '/'+ name +'.matrix/config.yaml'));
     } catch(e){
-      return console.error(appName, 'invalid config.json');
+      return console.error(appName, 'invalid config.yaml', e);
     }
+    //
+    // Matrix.config = Matrix.appConfig.configuration;
 
-    Matrix.config = Matrix.appConfig.configuration;
+    // TODO: Update appConfig in fireBase with
 
-    // TODO: Make sure something can request app-config
-    if ( !Matrix.hasOwnProperty('appConfig')){
-      console.error('No Configuration Specified')
-    }
+
+
+
+    //TODO: Remove in favor of Firebase
     // sending config on socket open
     process.on('message', function(m){
       if (m.type === 'request-config'){
         sendConfig();
       } else if ( m.type === 'container-status'){
-
-          Matrix.pid = m.pid;
+        Matrix.pid = m.pid;
       }
     })
+    //TODO: Remove in favor of Firebase
     //send config on app start
-    sendConfig();
+    sendConfig(Matrix.config);
 
     return Matrix;
   },
