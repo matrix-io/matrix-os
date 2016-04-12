@@ -122,7 +122,14 @@ async.series([
     Matrix.service.token.get(function(err, token) {
       if (err) return cb(err);
       debug('[API] -> Token'.green, token);
-      cb(null);
+      Matrix.db.service.findOne({
+        token: { $exists: true }
+      }, function(err, t){
+        debug('User id', t.userId)
+        Matrix.userId = t.userId;
+        cb();
+      });
+      // cb(null);
     });
   },
   function checkUpdates(cb) {
@@ -201,9 +208,9 @@ function onDestroy() {
   //TODO: Implemenent cleanups
   // kill children apps
   async.series([
-      Matrix.service.manager.killAllApps,
-      Matrix.service.manager.clearAppList,
-      Matrix.service.manager.cleanLogs,
+    Matrix.service.manager.killAllApps,
+    Matrix.service.manager.clearAppList,
+    Matrix.service.manager.cleanLogs,
   ], function(err){
     if (err) error(err);
     console.log('Cleanup complete...');
