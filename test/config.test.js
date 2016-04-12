@@ -1,7 +1,9 @@
 describe('Configuration via Firebase', function(){
 
-  
-  it('should save an application configuration');
+
+  it('should save an application configuration', function(done){
+    Matrix.service.manager.
+  });
   it('should update a configuration based on local config.yaml');
   it('should provide a configuration to an application');
   it('should emit a `config-update` when config is updated');

@@ -125,11 +125,6 @@ widgets:
     display:
       - gauge
       - map
-
-  pooping:
-    hidden: true
-    type: pooper
-
   faceScanList:
     type: face
     layout: books

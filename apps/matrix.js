@@ -301,7 +301,7 @@ var Matrix = {
     var fs = require('fs');
 
 
-    // TODO: Provide process with newest configuration via ENVS. Liberal Restarts
+    // TODO: Provide process with newest configuration via File and ENVS. Liberal Restarts
 
     // WIP
     try {
@@ -309,15 +309,12 @@ var Matrix = {
     } catch(e){
       return console.error(appName, 'invalid config.yaml', e);
     }
-    //
-    // Matrix.config = Matrix.appConfig.configuration;
 
-    // TODO: Update appConfig in fireBase with
+    // make configuration available globally `Matrix.services.vehicle.engine`
+    _.each( _.keys(Matrix.config), function(k){
+        Matrix[k] = Matrix.config[k];
+    })
 
-
-
-
-    //TODO: Remove in favor of Firebase
     // sending config on socket open
     process.on('message', function(m){
       if (m.type === 'request-config'){

@@ -117,16 +117,11 @@ async.series([
       cb();
     });
   },
-  function getToken(cb) {
+  function populateToken(cb) {
     // check in with api server
     Matrix.service.token.get(function(err, token) {
       if (err) return cb(err);
-      // Matrix.token = token.clientToken;
-      // Matrix.clientToken = token.clientToken;
-      Matrix.deviceToken = token.deviceToken;
-      Matrix.userId = token.userId;
-      // log('Client Token'.green, token.clientToken);
-      debug('[API] -> Device Token'.green, token.deviceToken);
+      debug('[API] -> Token'.green, token);
       cb(null);
     });
   },
