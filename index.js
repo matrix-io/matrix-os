@@ -24,8 +24,6 @@ if ( envSettings.debug === true && _.isUndefined(process.env['DEBUG'])){
 debugLog = require('debug');
 var debug = debugLog('matrix');
 
-
-
 // Core
 Matrix = require('./lib');
 
@@ -128,6 +126,9 @@ async.series([
       Matrix.db.service.findOne({
         token: { $exists : true }
       }, function(err, t){
+        if (err) return console.error(err);
+        
+
         debug('[db]->Token', t)
         Matrix.userId = t.userId;
 
@@ -139,7 +140,8 @@ async.series([
               console.log("Reauthorizing...")
               //needs reauth
               Matrix.service.token.clear();
-              return Matrix.service.token.get(setupLocalUser);
+              Matrix.service.token.get(setupLocalUser);
+              return;
             }
             return console.log( err );
           }
