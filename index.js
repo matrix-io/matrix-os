@@ -119,18 +119,39 @@ async.series([
   },
   function populateToken(cb) {
     // check in with api server
-    Matrix.service.token.get(function(err, token) {
+    Matrix.service.token.get(setupLocalUser);
+
+
+    function setupLocalUser(err, token) {
       if (err) return cb(err);
       debug('[API] -> Token'.green, token);
       Matrix.db.service.findOne({
-        token: { $exists: true }
+        token: { $exists : true }
       }, function(err, t){
-        debug('User id', t.userId)
+        debug('[db]->Token', t)
         Matrix.userId = t.userId;
-        cb();
+
+        //validate token
+        var jwt = require('jsonwebtoken');
+        jwt.verify( token, Matrix.config.jwt.secret, function ( err, decoded ) {
+          if ( err ) {
+            if (err.name === "TokenExpiredError"){
+              console.log("Reauthorizing...")
+              //needs reauth
+              Matrix.service.token.clear();
+              return Matrix.service.token.get(setupLocalUser);
+            }
+            return console.log( err );
+          }
+          if ( decoded.d.uid === Matrix.userId ) {
+            debug('JWT Token Valid'.blue)
+            Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, token, cb)
+          } else {
+            cb();
+          }
+        });
       });
-      // cb(null);
-    });
+    }
   },
   function checkUpdates(cb) {
     return cb();
@@ -145,7 +166,10 @@ async.series([
     //   }
     // });
   },
-  Matrix.service.stream.checkStreamingServer,
+  function(cb){
+    Matrix.service.stream.checkStreamingServer(),
+    cb()
+  },
 ], function(err) {
   if (err) return error(err);
   log(Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);

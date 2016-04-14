@@ -58,6 +58,7 @@
 # App Information for Store
 name: testConfig
 version: 0
+apiVersion: 2
 description: The thing
 images:
   - http://someimage.com

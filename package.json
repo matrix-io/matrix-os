@@ -9,7 +9,8 @@
     "test": "mocha test/_runner.js",
     "pr": "open https://bitbucket.org/admobilize/admatrix/pull-request/new",
     "deploy-prep": "rm -r db/pending.db node_modules/admatrix-node-sdk node_modules/admobilize-eventfilter-sdk node_modules/matrix-monitor-sensor",
-    "deploy-image": "find apps -name '*.matrix' ! -name 'base.matrix' -type d -exec rm -r {} +; docker build --no-cache -t admobilize/matrix-os .;docker push admobilize/matrix-os"
+    "deploy-image": "find apps -name '*.matrix' ! -name 'base.matrix' -type d -exec rm -r {} +; docker build --no-cache -t admobilize/matrix-os .;docker push admobilize/matrix-os",
+    "local-setup": "cd node_modules;ln -s ../../matrix-firebase ./matrix-firebase; ln -s ../../matrix-app-config-helper ./matrix-app-config-helper;ln -s ../../admatrix-node-sdk ./admatrix-node-sdk cd .."
   },
   "author": "Sean Canton <sean.canton@admobilize.com>",
   "contributors": [
