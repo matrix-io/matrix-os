@@ -122,36 +122,32 @@ async.series([
 
     function setupLocalUser(err, token) {
       if (err) return cb(err);
-      debug('[API] -> Token'.green, token);
-      Matrix.db.service.findOne({
-        token: { $exists : true }
-      }, function(err, t){
-        if (err) return console.error(err);
-        
 
-        debug('[db]->Token', t)
-        Matrix.userId = t.userId;
+      // first auth throws object, subsequent throws strings
+      if (!_.isString(token)){
+        token = token.token;
+      }
+      debug('[API] -> Auth'.green, token);
 
-        //validate token
-        var jwt = require('jsonwebtoken');
-        jwt.verify( token, Matrix.config.jwt.secret, function ( err, decoded ) {
-          if ( err ) {
-            if (err.name === "TokenExpiredError"){
-              console.log("Reauthorizing...")
-              //needs reauth
-              Matrix.service.token.clear();
-              Matrix.service.token.get(setupLocalUser);
-              return;
-            }
-            return console.log( err );
+      //validate token
+      var jwt = require('jsonwebtoken');
+      jwt.verify( token, Matrix.config.jwt.secret, function ( err, decoded ) {
+        if ( err ) {
+          if (err.name === "TokenExpiredError"){
+            console.log("Reauthorizing...")
+            //needs reauth
+            Matrix.service.token.clear();
+            Matrix.service.token.get(setupLocalUser);
+            return;
           }
-          if ( decoded.d.uid === Matrix.userId ) {
-            debug('JWT Token Valid'.blue)
-            Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, token, cb)
-          } else {
-            cb();
-          }
-        });
+          return console.log( err );
+        }
+        if ( decoded.d.uid === Matrix.userId ) {
+          debug('JWT Token Valid'.blue)
+          Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, token, cb)
+        } else {
+          cb();
+        }
       });
     }
   },
