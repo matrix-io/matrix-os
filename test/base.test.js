@@ -38,7 +38,6 @@ describe('Matrix Base', function() {
 		this.timeout(15000);
 		it('should attach app event listeners', function(done){
 			Matrix.events.listeners('app-emit').should.have.lengthOf(1);
-			Matrix.events.listeners('app-config').should.have.lengthOf(1);
 			Matrix.events.listeners('app-log').should.have.lengthOf(1);
 			done();
 		});

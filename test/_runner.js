@@ -1,12 +1,14 @@
 var Mocha = require('mocha'),
   fs = require('fs'),
   path = require('path');
-_ = require('lodash');
-Matrix = require('../index').Matrix;
+  _ = require('lodash');
+  should = require('should')
+
 
 // Instantiate a Mocha instance.
-var mocha = new Mocha({ui: 'should'});
+var mocha = new Mocha();
 
+Matrix = require('../index.js').Matrix;
 var testDir = __dirname;
 
 // Add each .js file to the mocha instance
