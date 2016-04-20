@@ -6,7 +6,7 @@
   "repository": "https://bitbucket.org/admobilize/admatrix",
   "scripts": {
     "start": "NODE_ENV=dev DEBUG=*,-engine* nodemon --watch lib --watch config",
-    "test": "mocha test/_runner.js",
+    "test": "node test/_runner.js",
     "pr": "open https://bitbucket.org/admobilize/admatrix/pull-request/new",
     "deploy-prep": "rm -r db/pending.db node_modules/admatrix-node-sdk node_modules/admobilize-eventfilter-sdk node_modules/matrix-monitor-sensor",
     "deploy-image": "find apps -name '*.matrix' ! -name 'base.matrix' -type d -exec rm -r {} +; docker build --no-cache -t admobilize/matrix-os .;docker push admobilize/matrix-os",
@@ -44,6 +44,7 @@
     "npm-registry": "^0.1.13",
     "omxctrl": "^0.1.2",
     "portfinder": "^0.4.0",
+    "promise": "^7.1.1",
     "ps-tree": "^1.0.0",
     "request": "^2.61.0",
     "rimraf": "^2.5.0",

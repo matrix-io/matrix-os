@@ -105,84 +105,90 @@ Matrix.db = {
   })
 }
 
-// this is kind of an init
-async.series([
-  function checkApiServer(cb) {
-    require('http').get(Matrix.apiServer, function(res) {
-      cb(null);
-    }).on('error', function() {
-      error('No API Server Visible', Matrix.apiServer);
-      cb();
-    });
-  },
-  function populateToken(cb) {
-    // check in with api server
-    Matrix.service.token.get(setupLocalUser);
+// so tests know Matrix is done with
 
+Promise = require('promise');
 
-    function setupLocalUser(err, token) {
-      if (err) return cb(err);
-
-      // first auth throws object, subsequent throws strings
-      if (!_.isString(token)){
-        token = token.token;
-      }
-      debug('[API] -> Auth'.green, token);
-
-      //validate token
-      var jwt = require('jsonwebtoken');
-      jwt.verify( token, Matrix.config.jwt.secret, function ( err, decoded ) {
-        if ( err ) {
-          if (err.name === "TokenExpiredError"){
-            console.log("Reauthorizing...")
-            //needs reauth
-            Matrix.service.token.clear();
-            Matrix.service.token.get(setupLocalUser);
-            return;
-          }
-          return console.log( err );
-        }
-        if ( decoded.d.uid === Matrix.userId ) {
-          debug('JWT Token Valid'.blue)
-          Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, token, cb)
-        } else {
-          cb();
-        }
+  // this is kind of an init
+  async.series([
+    function checkApiServer(cb) {
+      require('http').get(Matrix.apiServer, function(res) {
+        cb(null);
+      }).on('error', function() {
+        error('No API Server Visible', Matrix.apiServer);
+        cb();
       });
+    },
+    function populateToken(cb) {
+      // check in with api server
+      Matrix.service.token.get(setupLocalUser);
+
+
+      function setupLocalUser(err, token) {
+        if (err) return cb(err);
+
+        // first auth throws object, subsequent throws strings
+        if (!_.isString(token)){
+          token = token.token;
+        }
+        debug('[API] -> Auth'.green, token);
+
+        //validate token
+        var jwt = require('jsonwebtoken');
+        jwt.verify( token, Matrix.config.jwt.secret, function ( err, decoded ) {
+          if ( err ) {
+            if (err.name === "TokenExpiredError"){
+              console.log("Reauthorizing...")
+              //needs reauth
+              Matrix.service.token.clear();
+              Matrix.service.token.get(setupLocalUser);
+              return;
+            }
+            return console.log( err );
+          }
+          if ( decoded.d.uid === Matrix.userId ) {
+            debug('JWT Token Valid'.blue)
+            Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, token, cb)
+          } else {
+            cb();
+          }
+        });
+      }
+    },
+    function checkUpdates(cb) {
+      return cb();
+      // warn('Updates not implemented on api yet');
+      // Matrix.api.device.checkUpdates(function(err, update) {
+      //   if (err) return cb(err);
+      //   // check version
+      //   if (update.version === Matrix.version) {
+      //     cb(null);
+      //   } else {
+      //     cb(null);
+      //   }
+      // });
+    },
+    function(cb){
+      Matrix.service.stream.checkStreamingServer(),
+      cb()
+    },
+  ], function(err) {
+    if (err) { reject(true); return error(err); }
+    log(Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
+    Matrix.banner();
+
+    // These are helpful when debugging
+    // log('vvv API vvv \n'.blue, api, "\n^^^ API ^^^ ".blue);
+    // log('vvv MATRIX vvv \n'.yellow, Matrix, "\n^^^ MATRIX ^^^ ".yellow);
+
+    //if START_APP is set
+    if (Matrix.config.fakeApp) {
+      Matrix.service.manager.start(Matrix.config.fakeApp);
     }
-  },
-  function checkUpdates(cb) {
-    return cb();
-    // warn('Updates not implemented on api yet');
-    // Matrix.api.device.checkUpdates(function(err, update) {
-    //   if (err) return cb(err);
-    //   // check version
-    //   if (update.version === Matrix.version) {
-    //     cb(null);
-    //   } else {
-    //     cb(null);
-    //   }
-    // });
-  },
-  function(cb){
-    Matrix.service.stream.checkStreamingServer(),
-    cb()
-  },
-], function(err) {
-  if (err) return error(err);
-  log(Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
-  Matrix.banner();
 
-
-  // These are helpful when debugging
-  // log('vvv API vvv \n'.blue, api, "\n^^^ API ^^^ ".blue);
-  // log('vvv MATRIX vvv \n'.yellow, Matrix, "\n^^^ MATRIX ^^^ ".yellow);
-
-  //if START_APP is set
-  if (Matrix.config.fakeApp) {
-    Matrix.service.manager.start(Matrix.config.fakeApp);
-  }
-});
+    //for tests
+    Matrix.events.emit('matrix-ready');
+  });
 
 
 Matrix.service.lifecycle.updateLastBootTime();

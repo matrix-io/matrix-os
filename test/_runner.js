@@ -1,31 +1,38 @@
-var Mocha = require('mocha'),
-  fs = require('fs'),
-  path = require('path');
-  _ = require('lodash');
-  should = require('should')
+var fs = require('fs'),
+path = require('path');
+_ = require('lodash');
+should = require('should');
 
-
-// Instantiate a Mocha instance.
+var Mocha = require('mocha');
 var mocha = new Mocha();
 
+log=console.log;
+
+// Instantiate a Mocha instance.
+
 Matrix = require('../index.js').Matrix;
-var testDir = __dirname;
 
-// Add each .js file to the mocha instance
-fs.readdirSync(testDir).filter(function(file) {
-  // Only keep the .js files
-  return file.substr(-7) === 'test.js';
+setTimeout(function(){
+  Matrix.events.on('matrix-ready', function(){
+    var testDir = __dirname;
 
-}).forEach(function(file) {
-  console.log(file);
-  mocha.addFile(
-    path.join(testDir, file)
-  );
-});
+    // Add each .js file to the mocha instance
+    fs.readdirSync(testDir).filter(function(file) {
+      // Only keep the .js files
+      return file.substr(-7) === 'test.js';
 
-// Run the tests.
-mocha.run(function(failures) {
-  process.on('exit', function() {
-    process.exit(failures);
-  });
-});
+    }).forEach(function(file) {
+      console.log(file);
+      mocha.addFile(
+        path.join(testDir, file)
+      );
+    });
+
+    // Run the tests.
+    mocha.run(function(failures) {
+      process.on('exit', function() {
+        process.exit(failures);
+      });
+    });
+  })
+}, 500 )
