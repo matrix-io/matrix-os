@@ -8,12 +8,15 @@ describe('Matrix Applications', function(){
       Matrix.service.manager.start('test', done);
     });
     describe('activeApplications', function(){
+      var appRecord;
+      before( function(){
+        appRecord = _.filter( Matrix.activeApplications, { name: 'test '});
+      })
       it('should save a reference to the name', function(done){
-        var appRecord = _.filter( Matrix.activeApplications, { name: 'test '});
         appRecord.length.should.be(1);
       })
       it('should save a reference to the process', function(done){
-
+        appRecord.should.have.property('process')
       })
       it('should save a reference to the configuration')
       it('should save a reference to the sensors')
