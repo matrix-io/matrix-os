@@ -4,10 +4,17 @@ describe('Matrix Applications', function(){
   describe('Lifecycle', function(){
     it('should be able to install an app')
     it('should be able to update an app')
-    it('should start an app by name');
+    it('should start an app by name', function(done){
+      Matrix.service.manager.start('test', done);
+    });
     describe('activeApplications', function(){
-      it('should save a reference to the process')
-      it('should save a reference to the name')
+      it('should save a reference to the name', function(done){
+        var appRecord = _.filter( Matrix.activeApplications, { name: 'test '});
+        appRecord.length.should.be(1);
+      })
+      it('should save a reference to the process', function(done){
+
+      })
       it('should save a reference to the configuration')
       it('should save a reference to the sensors')
     })
