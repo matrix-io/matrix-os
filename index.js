@@ -132,6 +132,7 @@ async.series([
       //validate token
       var jwt = require('jsonwebtoken');
       jwt.verify( token, Matrix.config.jwt.secret, function ( err, decoded ) {
+        debug('token'.blue, decoded)
         if ( err ) {
           if (err.name === "TokenExpiredError"){
             console.log("Reauthorizing...")
@@ -170,13 +171,13 @@ async.series([
   },
 ], function(err) {
   if (err) return error(err);
+  debug('vvv MATRIX vvv \n'.yellow, Matrix, "\n^^^ MATRIX ^^^ ".yellow);
   log(Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
   Matrix.banner();
 
 
   // These are helpful when debugging
   // log('vvv API vvv \n'.blue, api, "\n^^^ API ^^^ ".blue);
-  // log('vvv MATRIX vvv \n'.yellow, Matrix, "\n^^^ MATRIX ^^^ ".yellow);
 
   //if START_APP is set
   if (Matrix.config.fakeApp) {
