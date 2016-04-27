@@ -1,12 +1,26 @@
-debugLog = require('debug');
-Matrix = require('../lib');
+
 
 describe('Matrix Applications', function(){
   describe('Lifecycle', function(){
     it('should be able to install an app')
     it('should be able to update an app')
-    it('should start an app by name');
-    it('should save active apps in activeApplications')
+    it('should start an app by name', function(done){
+      Matrix.service.manager.start('test', done);
+    });
+    describe('activeApplications', function(){
+      var appRecord;
+      before( function(){
+        appRecord = _.filter( Matrix.activeApplications, { name: 'test '});
+      })
+      it('should save a reference to the name', function(done){
+        appRecord.length.should.be(1);
+      })
+      it('should save a reference to the process', function(done){
+        appRecord.should.have.property('process')
+      })
+      it('should save a reference to the configuration')
+      it('should save a reference to the sensors')
+    })
     it('should stop an app by name');
     it('should stop all apps');
     it('should be able to uninstall an app')
@@ -14,6 +28,20 @@ describe('Matrix Applications', function(){
 
   describe('Functional', function(){
     it('should be able to init a sensor');
+
+    // Matrix.init(['temperature', 'monitor'])
+    it('should be able to init multiple sensors');
+
+    // Matrix.init(['temperature', 'monitor'], { refresh: 10000 });
+    it('should share one option with multiple sensors');
+
+    // Matrix.init(['temperature', 'monitor'], {
+    //   temperature: { refresh: 30000 },
+    //   monitor: { refresh: 1000 }
+    // })
+    it('should send keyed options to multiple sensors');
+
+    //temperature.between(72,95)
     it('should be able to filter data');
     it('should be able to apply computer vision');
     it('should return filtered data in .then()');
@@ -23,7 +51,7 @@ describe('Matrix Applications', function(){
     it('should be able to recieve a targeted message');
     it('should be able to recieve a global message')
   });
-  
+
   describe('Encryption', function(){
     var testMessage = "Hello World";
     var encryptedMessageSansPrefix = "de58abe329032212f7055e";

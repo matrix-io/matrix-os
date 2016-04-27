@@ -164,60 +164,130 @@ function receiveHandler(cb) {
   });
 }
 
+function setupCVHandlers(cb){
+  process.on('message', function(m){
+    if(m.type=== 'cv-data'){
+
+    }
+  })
+}
+
 
 function initSensor(name, options, cb) {
   console.log('Initialize Sensor:'.blue , name);
 
+  var filter;
+
+  //TODO: Figure out how to dynamically add CV algo values here
   if ( name === 'camera' ){
     // pop into OpenCv
   }
 
+  var sensors = [];
   // kick off sensor readers
-  process.send({
-    type: 'sensor-init',
-    name: name,
-    options: options
-  });
+  if ( _.isArray(name)) {
+    sensors.concat(name)
+  } else {
+    sensors.push(name);
+  }
 
-  var filter = new EventFilter(name);
-
-  // then is a listener for messages from sensors
-  // FIXME: Issue with app only storing one process at a time
-  // console.log('sensor err >> looking into fix');
-  var then = function(cb) {
-
-    // recieves from events/sensors
-    process.on('message', function(m) {
-      if (m.eventType === 'sensor-emit') {
-        var result;
-        // console.log('applying filter:', filter.json());
-
-        //TODO: when sensors fail to deliver, fail here gracefully
-        m = _.omit(m,'eventType');
-        m.payload.type = m.sensor;
-
-        // console.log('sensor:', m.sensor, '-> app'.blue, name, m);
-        // if there is no filter, don't apply
-        if (filter.filters.length > 0){
-          result = applyFilter(filter, m.payload);
-        } else {
-          result = m.payload;
-        }
-
-        if (result !== false && !_.isUndefined(result)){
-          // LORE: switched from err first to promise style
-          cb(result);
-        }
-
-      }
-    });
+  var returnObj = function(){
+    console.warn(this, ' is a multi typed Matrix data object, please specify a child data souce using key-value notation ( obj.sensor or obj[\'sensor\'])')
+    return {};
   };
 
-  _.extend(filter, {
-    then: then
-  });
+  // handle many sensors
+  _.forEach(sensors, function (s) {
 
-  return filter;
+    // break down options by key if necessary
+    if ( options.hasOwnProperty(s) ){
+      var sensorOptions = options.s;
+    } else {
+      sensorOptions = options;
+    }
+
+    // kick off sensor init
+    process.send({
+      type: 'sensor-init',
+      name: s,
+      options: sensorOptions
+    });
+
+    // prepare local chaining filter
+    var filter = new EventFilter(s);
+
+    // then is a listener for messages from sensors
+    // FIXME: Issue with app only storing one process at a time
+    // console.log('sensor err >> looking into fix');
+    var then = function(cb) {
+
+      var result;
+      // recieves from events/sensors
+      process.on('message', function(m) {
+        if (m.eventType === 'sensor-emit') {
+          // TODO: filter multiple sensors
+          if ( m.sensor === s ){
+
+            //TODO: when sensors fail to deliver, fail here gracefully
+            m = _.omit(m,'eventType');
+            m.payload.type = m.sensor;
+
+            // console.log('sensor:', m.sensor, '-> app'.blue, name, m);
+            // if there is no filter, don't apply
+            if (filter.filters.length > 0){
+              result = applyFilter(filter, m.payload);
+            } else {
+              result = m.payload;
+            }
+
+            if (result !== false && !_.isUndefined(result)){
+              // LORE: switched from err first to promise style
+              // provides .then(function(data){})
+              cb(result);
+            }
+          }
+          // console.log('applying filter:', filter.json());
+
+
+        }
+
+        if (m.eventType === 'cv-data'){
+          _.omit( m, 'eventType' );
+
+          // Do filter
+          //TODO: Switch out format for unified object
+          if (filter.filters.length > 0){
+            result = applyFilter(filter, m.payload);
+          } else {
+            result = m.payload;
+          }
+
+          if (result !== false && !_.isUndefined(result)){
+            // LORE: switched from err first to promise style
+            // provides .then(function(data){})
+            cb(result);
+          }
+        }
+
+      });
+    };
+
+    _.extend(filter, {
+      then: then
+    });
+
+    if ( _.isArray(name)){
+
+      //overload function with error message above throwing if no key specified
+      returnObj[s] = filter;
+    } else {
+      // singles
+      returnObj = filter;
+    }
+  })
+
+
+  return returnObj;
 }
 
 function sendConfig(config){
@@ -269,12 +339,14 @@ var Matrix = {
     //   message = { data: message };
     // }
 
-    message.time = Date.now();
-
-    if( this.hasOwnProperty('dataType')) {
+    if( message.hasOwnProperty('dataType') && !_.has(message,'type') ) {
       var type = this.dataType;
       message.type = type;
+    } else {
+      return console.error('No TYPE specified in matrix.send')
     }
+
+    message.time = Date.now();
 
     process.send({
         type: 'app-emit',
