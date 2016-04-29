@@ -104,8 +104,9 @@ Matrix.db = {
     autoload: true
   })
 }
+var jwt = require('jsonwebtoken');
 
-  // this is kind of an init
+  // this is kind of an init flow
   async.series([
     function checkApiServer(cb) {
       require('http').get(Matrix.apiServer, function(res) {
@@ -120,6 +121,7 @@ Matrix.db = {
       Matrix.service.token.get(setupLocalUser);
 
 
+
       function setupLocalUser(err, token) {
         if (err) return cb(err);
 
@@ -130,8 +132,8 @@ Matrix.db = {
         debug('[API] -> Auth'.green, token);
 
         //validate token
-        var jwt = require('jsonwebtoken');
         jwt.verify( token, Matrix.config.jwt.secret, function ( err, decoded ) {
+          debug('decoded'.yellow, decoded)
           if ( err ) {
             if (err.name === "TokenExpiredError"){
               console.log("Reauthorizing...")
@@ -151,6 +153,21 @@ Matrix.db = {
         });
       }
     },
+    function processDeviceToken(cb){
+
+      log(Matrix.deviceToken, Matrix.config.jwt.secret)
+      var decoded = jwt.decode( Matrix.deviceToken )
+        debug('devicedecoded', decoded);
+        if ( decoded.d.uid !== Matrix.userId ){
+          cb('Device Token User ID does not match userId')
+        }
+        if ( decoded.d.did !== Matrix.deviceId ){
+          cb('Device Token Device Id does not match deviceId')
+        }
+        Matrix.deviceRecordId = decoded.d.dkey;
+        cb();
+
+    },
     function checkUpdates(cb) {
       return cb();
       // warn('Updates not implemented on api yet');
@@ -169,7 +186,7 @@ Matrix.db = {
       cb()
     },
   ], function(err) {
-    // debug('vvv MATRIX vvv \n'.yellow, Matrix, "\n^^^ MATRIX ^^^ ".yellow);
+    debug('vvv MATRIX vvv \n'.yellow, _.omit(Matrix, ['device','events','service','db']), "\n^^^ MATRIX ^^^ ".yellow);
     if (err) { error(err); }
     log(Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
     Matrix.banner();
@@ -182,6 +199,15 @@ Matrix.db = {
     //for tests
     Matrix.events.emit('matrix-ready');
   });
+
+  /*
+  ███    ███  █████  ████████ ██████  ██ ██   ██
+  ████  ████ ██   ██    ██    ██   ██ ██  ██ ██
+  ██ ████ ██ ███████    ██    ██████  ██   ███
+  ██  ██  ██ ██   ██    ██    ██   ██ ██  ██ ██
+  ██      ██ ██   ██    ██    ██   ██ ██ ██   ██
+  */
+
 
 
 Matrix.service.lifecycle.updateLastBootTime();

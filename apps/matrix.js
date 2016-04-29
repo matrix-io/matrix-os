@@ -9,7 +9,6 @@ require('colors');
 // var player = require('player');
 var microphone = require('node-record-lpcm16');
 var request = require('request');
-var config = require('./config.js');
 var lib = require('./lib');
 var EventFilter = require('admobilize-eventfilter-sdk').EventFilter;
 var applyFilter = require('admobilize-eventfilter-sdk').apply;
@@ -19,7 +18,6 @@ var _ = require('lodash');
 var DataStore = require('nedb');
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
-var AppStore = new DataStore({ filename: config.path.appStore, autoload: true });
 
 var appName = '';
 
@@ -73,115 +71,115 @@ var fileManager = {
       // are we doing this? yes, for streaming media
     },
     remove: function(filename, cb){
-      var assetPath = __dirname + '/' + appName + '.matrix/storage/';
-      fs.unlink(assetPath + filename, cb);
-    },
-    load: function(cb){
-      var assetPath = __dirname + '/' + appName + '.matrix/storage/';
-      //todo: handle async and sync based on usage
-      fs.readFile(assetPath + filename, cb);
-    },
-    list: function(cb){
-      fs.readdir(assetPath, function(err, files){
-        if (err) console.error(err);
-        cb(null, files);
-      });
-    }
+    var assetPath = __dirname + '/' + appName + '.matrix/storage/';
+    fs.unlink(assetPath + filename, cb);
+  },
+  load: function(cb){
+    var assetPath = __dirname + '/' + appName + '.matrix/storage/';
+    //todo: handle async and sync based on usage
+    fs.readFile(assetPath + filename, cb);
+  },
+  list: function(cb){
+    fs.readdir(assetPath, function(err, files){
+      if (err) console.error(err);
+      cb(null, files);
+    });
   }
+}
 
 var matrixDebug = false;
 
 // For listening to events from other apps
 function interAppNotification( appName, eventName, payload ){
-  if (arguments.length === 1){
-    // global form
-    process.send({
-      type: 'app-message',
-      payload: arguments[0]
-    });
-  } else if ( arguments.length === 2){
-    //app specific
-    process.send({
-      type: 'app-'+appName+'-message',
-      payload: arguments[1]
-    })
-  } else {
-    // app specific event namespaced
-    process.send({
-      type: 'app-'+appName+'-message',
-      event: eventName,
-      payload: payload
-    })
-  }
+if (arguments.length === 1){
+  // global form
+  process.send({
+    type: 'app-message',
+    payload: arguments[0]
+  });
+} else if ( arguments.length === 2){
+  //app specific
+  process.send({
+    type: 'app-'+appName+'-message',
+    payload: arguments[1]
+  })
+} else {
+  // app specific event namespaced
+  process.send({
+    type: 'app-'+appName+'-message',
+    event: eventName,
+    payload: payload
+  })
+}
 }
 
 // For Sending Messages to other Apps
 function interAppResponse( name, cb ){
-  if (_.isUndefined(cb)){
-    // for globals
-    cb = name;
-  }
+if (_.isUndefined(cb)){
+  // for globals
+  cb = name;
+}
 
-  process.on('message', function(m){
-      // debug('[M]->app'.blue, m, 'app-'+appName+'-message')
-      // is global or app-specific
-    if (m.type === 'trigger' || m.type === "app-message" || m.type === 'app-'+appName+'-message'){
-      // console.log('[M]->app(msg)'.blue, m)
-      if ( _.isString(name) ){
-        // if an event name was specified in the on()
-        if ( m.event == name ){
-          cb(m);
-        }
-        // no event name match, no fire listener
-      } else {
+process.on('message', function(m){
+    // debug('[M]->app'.blue, m, 'app-'+appName+'-message')
+    // is global or app-specific
+  if (m.type === 'trigger' || m.type === "app-message" || m.type === 'app-'+appName+'-message'){
+    // console.log('[M]->app(msg)'.blue, m)
+    if ( _.isString(name) ){
+      // if an event name was specified in the on()
+      if ( m.event == name ){
         cb(m);
       }
-
+      // no event name match, no fire listener
+    } else {
+      cb(m);
     }
 
-  });
+  }
+
+});
 }
 
 
 function receiveHandler(cb) {
-  console.log('util receive');
+console.log('util receive');
 
-  process.on('message', function(m) {
-    cb(null, m);
-  });
+process.on('message', function(m) {
+  cb(null, m);
+});
 
-  process.on('error', function(err) {
-    if (err) return cb(err);
-  });
+process.on('error', function(err) {
+  if (err) return cb(err);
+});
 
-  process.on('disconnect', function(w) {
-    console.log(appName, ': disconnect', w);
-  });
+process.on('disconnect', function(w) {
+  console.log(appName, ': disconnect', w);
+});
 
-  process.on('exit', function() {
-    //handle exit
-    console.log(appName, ': exit', arguments);
-  });
+process.on('exit', function() {
+  //handle exit
+  console.log(appName, ': exit', arguments);
+});
 }
 
 function setupCVHandlers(cb){
-  process.on('message', function(m){
-    if(m.type=== 'cv-data'){
+process.on('message', function(m){
+  if(m.type=== 'cv-data'){
 
-    }
-  })
+  }
+})
 }
 
 
 function initSensor(name, options, cb) {
-  console.log('Initialize Sensor:'.blue , name);
+console.log('Initialize Sensor:'.blue , name);
 
-  var filter;
+var filter;
 
-  //TODO: Figure out how to dynamically add CV algo values here
-  if ( name === 'camera' ){
-    // pop into OpenCv
-  }
+//TODO: Figure out how to dynamically add CV algo values here
+if ( name === 'face' ){
+  process.send({type:'ves-init', payload: name});
+} else {
 
   var sensors = [];
   // kick off sensor readers
@@ -212,50 +210,31 @@ function initSensor(name, options, cb) {
       name: s,
       options: sensorOptions
     });
+  });
+}
+// # sensor || CV
 
-    // prepare local chaining filter
-    var filter = new EventFilter(s);
+  // prepare local chaining filter
+  var filter = new EventFilter(name);
 
-    // then is a listener for messages from sensors
-    // FIXME: Issue with app only storing one process at a time
-    // console.log('sensor err >> looking into fix');
-    var then = function(cb) {
+  // then is a listener for messages from sensors
+  // FIXME: Issue with app only storing one process at a time
+  // console.log('sensor err >> looking into fix');
+  var then = function(cb) {
 
-      var result;
-      // recieves from events/sensors
-      process.on('message', function(m) {
-        if (m.eventType === 'sensor-emit') {
-          // TODO: filter multiple sensors
-          if ( m.sensor === s ){
+    var result;
+    // recieves from events/sensors
+    process.on('message', function(m) {
+      if (m.eventType === 'sensor-emit') {
+        // TODO: filter multiple sensors
+        if ( m.sensor === s ){
 
-            //TODO: when sensors fail to deliver, fail here gracefully
-            m = _.omit(m,'eventType');
-            m.payload.type = m.sensor;
+          //TODO: when sensors fail to deliver, fail here gracefully
+          m = _.omit(m,'eventType');
+          m.payload.type = m.sensor;
 
-            // console.log('sensor:', m.sensor, '-> app'.blue, name, m);
-            // if there is no filter, don't apply
-            if (filter.filters.length > 0){
-              result = applyFilter(filter, m.payload);
-            } else {
-              result = m.payload;
-            }
-
-            if (result !== false && !_.isUndefined(result)){
-              // LORE: switched from err first to promise style
-              // provides .then(function(data){})
-              cb(result);
-            }
-          }
-          // console.log('applying filter:', filter.json());
-
-
-        }
-
-        if (m.eventType === 'cv-data'){
-          _.omit( m, 'eventType' );
-
-          // Do filter
-          //TODO: Switch out format for unified object
+          // console.log('sensor:', m.sensor, '-> app'.blue, name, m);
+          // if there is no filter, don't apply
           if (filter.filters.length > 0){
             result = applyFilter(filter, m.payload);
           } else {
@@ -268,23 +247,45 @@ function initSensor(name, options, cb) {
             cb(result);
           }
         }
+        // console.log('applying filter:', filter.json());
 
-      });
-    };
 
-    _.extend(filter, {
-      then: then
+      }
+
+      if (m.eventType === 'cv-data'){
+        _.omit( m, 'eventType' );
+
+        // Do filter
+        //TODO: Switch out format for unified object
+        if (filter.filters.length > 0){
+          result = applyFilter(filter, m.payload);
+        } else {
+          result = m.payload;
+        }
+
+        if (result !== false && !_.isUndefined(result)){
+          // LORE: switched from err first to promise style
+          // provides .then(function(data){})
+          cb(result);
+        }
+      }
+
     });
+  }
 
-    if ( _.isArray(name)){
 
-      //overload function with error message above throwing if no key specified
-      returnObj[s] = filter;
-    } else {
-      // singles
-      returnObj = filter;
-    }
-  })
+  _.extend(filter, {
+    then: then
+  });
+
+  if ( _.isArray(name)){
+
+    //overload function with error message above throwing if no key specified
+    returnObj[s] = filter;
+  } else {
+    // singles
+    returnObj = filter;
+  }
 
 
   return returnObj;

@@ -25,3 +25,5 @@ setInterval(function() {
       'memory': memory
   });
 }, 1000);
+
+matrix.init('face')
