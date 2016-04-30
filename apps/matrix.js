@@ -225,6 +225,7 @@ if ( name === 'face' ){
     var result;
     // recieves from events/sensors
     process.on('message', function(m) {
+
       if (m.eventType === 'sensor-emit') {
         // TODO: filter multiple sensors
         if ( m.sensor === s ){
@@ -340,18 +341,36 @@ var Matrix = {
     //   message = { data: message };
     // }
 
-    if( message.hasOwnProperty('dataType') && !_.has(message,'type') ) {
-      var type = this.dataType;
-      message.type = type;
+    var type, msgObj = {};
+    if( this.hasOwnProperty('dataType') ) {
+      type = this.dataType;
     } else {
-      return console.error('No TYPE specified in matrix.send')
+      return console.error('No TYPE specified in matrix.send. Use matrix.type().send()')
+    }
+    //TODO: Ensure type conforms to config.dataTypes
+
+    if ( !Matrix.config.dataTypes.hasOwnProperty(type)){
+      console.log(type, 'not found in config datatypes');
+    } else {
+      var format = Matrix.config.dataTypes[type];
+      if ( (format === 'string' && _.isString(message)) ||
+      ( format === 'float' && _.isFloat(message) )      ||
+      ( format === 'int' && _.isInteger(message) ) ){
+        msgObj.value = message;
+      } else if ( format === 'object' && _.isPlainObject(message)  ){
+        msgObj = message;
+      } else {
+        console.log('Type', type, 'data not correctly formatted.')
+        console.log('Expecting:', format);
+        console.log('Recieved:', message);
+      }
     }
 
-    message.time = Date.now();
-
+    msgObj.time = Date.now();
+    msgObj.type = type;
     process.send({
         type: 'app-emit',
-        payload: message
+        payload: msgObj
     });
   },
   type: function(type) {
@@ -378,7 +397,7 @@ var Matrix = {
 
     // WIP
     try {
-      Matrix.config = yaml.safeLoad( require('fs').readFileSync(__dirname + '/'+ name +'.matrix/config.yaml'));
+      Matrix.config = JSON.parse( require('fs').readFileSync(__dirname + '/'+ name +'.matrix/config.json'));
     } catch(e){
       return console.error(appName, 'invalid config.yaml', e);
     }
@@ -398,7 +417,7 @@ var Matrix = {
     })
     //TODO: Remove in favor of Firebase
     //send config on app start
-    sendConfig(Matrix.config);
+    // sendConfig(Matrix.config);
 
     return Matrix;
   },

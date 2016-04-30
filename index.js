@@ -186,7 +186,8 @@ var jwt = require('jsonwebtoken');
       cb()
     },
   ], function(err) {
-    debug('vvv MATRIX vvv \n'.yellow, _.omit(Matrix, ['device','events','service','db']), "\n^^^ MATRIX ^^^ ".yellow);
+    debug('vvv MATRIX vvv \n'.yellow,
+    require('util').inspect( _.omit(Matrix, ['device','events','service','db']), { depth : 0} ), "\n^^^ MATRIX ^^^ ".yellow);
     if (err) { error(err); }
     log(Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
     Matrix.banner();
