@@ -366,6 +366,8 @@ var Matrix = {
           console.log('Expecting:', format);
           console.log('Recieved:', message);
         }
+      } else {
+        msgObj = message;
       }
     }
 
