@@ -352,17 +352,20 @@ var Matrix = {
     if ( !Matrix.config.dataTypes.hasOwnProperty(type)){
       console.log(type, 'not found in config datatypes');
     } else {
-      var format = Matrix.config.dataTypes[type];
-      if ( (format === 'string' && _.isString(message)) ||
-      ( format === 'float' && _.isFloat(message) )      ||
-      ( format === 'int' && _.isInteger(message) ) ){
-        msgObj.value = message;
-      } else if ( format === 'object' && _.isPlainObject(message)  ){
-        msgObj = message;
-      } else {
-        console.log('Type', type, 'data not correctly formatted.')
-        console.log('Expecting:', format);
-        console.log('Recieved:', message);
+      // support non-typed array declarations
+      if ( !_.isArray(dataTypes) ){
+        var format = Matrix.config.dataTypes[type];
+        if ( (format === 'string' && _.isString(message)) ||
+        ( format === 'float' && _.isFloat(message) )      ||
+        ( format === 'int' && _.isInteger(message) ) ){
+          msgObj.value = message;
+        } else if ( format === 'object' && _.isPlainObject(message)  ){
+          msgObj = message;
+        } else {
+          console.log('Type', type, 'data not correctly formatted.')
+          console.log('Expecting:', format);
+          console.log('Recieved:', message);
+        }
       }
     }
 
