@@ -349,12 +349,14 @@ var Matrix = {
     }
     //TODO: Ensure type conforms to config.dataTypes
 
-    if ( !Matrix.config.dataTypes.hasOwnProperty(type)){
+    // check config dataTypes for type (array or object lookup)
+    var dataTypes = Matrix.config.dataTypes;
+    if ( !dataTypes.hasOwnProperty(type) && dataTypes.indexOf(type) === -1){
       console.log(type, 'not found in config datatypes');
     } else {
       // support non-typed array declarations
       if ( !_.isArray(dataTypes) ){
-        var format = Matrix.config.dataTypes[type];
+        var format = dataTypes[type];
         if ( (format === 'string' && _.isString(message)) ||
         ( format === 'float' && _.isFloat(message) )      ||
         ( format === 'int' && _.isInteger(message) ) ){

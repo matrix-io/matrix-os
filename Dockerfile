@@ -5,7 +5,7 @@ MAINTAINER Sean Canton <sean.canton@admobilize.com>
 ADD . matrix/
 WORKDIR matrix/
 
-RUN npm install
+# RUN npm install
 
 ENV NODE_ENV production
 ENV NODE_VERSION 4.2
