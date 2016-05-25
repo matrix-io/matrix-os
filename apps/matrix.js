@@ -356,17 +356,35 @@ var Matrix = {
     } else {
       // support non-typed array declarations
       if ( !_.isArray(dataTypes) ){
-        var format = dataTypes[type];
-        if ( (format === 'string' && _.isString(message)) ||
-        ( format === 'float' && _.isFloat(message) )      ||
-        ( format === 'int' && _.isInteger(message) ) ){
-          msgObj.value = message;
-        } else if ( format === 'object' && _.isPlainObject(message)  ){
+        var re = require('matrix-app-config-helper').regex;
+        if ( _.isObject(dataTypes[type])){
+          // nested datatype structure
+          _.each( dataTypes[type], function(f, key){
+
+            // check that the data is formatted correctly
+            if (
+              (f.match(re.string) && _.isString(message[key])) ||
+              (f.match(re.integer) && _.isInteger(message[key])) ||
+              (f.match(re.float) && ( parseFloat( message[key] ) === message[key] )) ||
+              ( f.match(re.boolean) && _.isBoolean(message[key]) )
+            ){} else {
+              console.error(key,'not formatted correctly\n', type, message)
+            }
+          })
           msgObj = message;
         } else {
-          console.log('Type', type, 'data not correctly formatted.')
-          console.log('Expecting:', format);
-          console.log('Recieved:', message);
+          var format = dataTypes[type];
+          if ((format === 'string' && _.isString(message)) ||
+            (format === 'float' && _.isFloat(message)) ||
+            (format === 'int' && _.isInteger(message))) {
+            msgObj.value = message;
+          } else if (format === 'object' && _.isPlainObject(message)) {
+            msgObj = message;
+          } else {
+            console.log('Type', type, 'data not correctly formatted.')
+            console.log('Expecting:', format);
+            console.log('Recieved:', message);
+          }
         }
       } else {
         msgObj = message;
@@ -407,6 +425,10 @@ var Matrix = {
       Matrix.config = JSON.parse( require('fs').readFileSync(__dirname + '/'+ name +'.matrix/config.json'));
     } catch(e){
       return console.error(appName, 'invalid config.yaml', e);
+    }
+
+    if ( Matrix.config.name !== appName ){
+      return console.error(appName + '.matrix is not the same as config name:', Matrix.config.name );
     }
 
     // make configuration available globally `Matrix.services.vehicle.engine`

@@ -1,4 +1,6 @@
 
+# NOTE: When updating this, update config-basic in config-helper repo
+
 # App Information for Store
 name: monitor
 version: 1
@@ -6,8 +8,14 @@ configVersion: 2
 description: Matrix stats
 
 dataTypes:
-  - device
-  - monitor
+  device:
+    'os_hostname': string
+    'os_type': string
+    'os_platform': string
+    'os_arch': string
+  monitor:
+    cpu: float
+    memory: float
 
 # screens are comprised of widgets
 screens:
@@ -25,16 +33,18 @@ widgets:
     display: list-group
   cpuChart:
     type: monitor
-    data: cpu
+    key: cpu
     display: line
     label: CPU Chart
   cpu:
     type: monitor
-    data: cpu
+    key: cpu
     display: digit
     format: round
+    label: cpu
   memory:
     type: monitor
-    data: memory
+    key: memory
     display: digit
     format: round
+    label: memory
