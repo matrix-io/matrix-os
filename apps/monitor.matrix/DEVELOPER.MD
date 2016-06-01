@@ -3,8 +3,8 @@ Monitor CPU Load & Memory Usage on your device.
 
 ## OS Information
 ```
-{ 
-	type: 'device', 
+{
+	type: 'device',
 	data: {
 	  'os_hostname': 'mac.local',
 	  'os_type': 'Mac',
@@ -16,11 +16,11 @@ Monitor CPU Load & Memory Usage on your device.
 
 ## Statistical Information
 ```
-{ 
-	type: 'monitor', 
-	data: { 
-		'cpu': '1.4', 
-		'memory': '0.50' 
-	} 
+{
+	type: 'monitor',
+	data: {
+		'cpu': '1.4',
+		'memory': '0.50'
+	}
 }
 ```

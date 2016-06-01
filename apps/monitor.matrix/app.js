@@ -4,14 +4,14 @@ var emitter = new EventEmitter();
 var cpu = 0;
 var memory = 0;
 
-setTimeout(function() {
+setInterval(function() {
   matrix.type('device').send({
     'os_hostname': os.hostname(),
     'os_type': os.type(),
     'os_platform': os.platform(),
     'os_arch': os.arch()
   });
-}, 5000);
+}, 30000);
 
 setInterval(function() {
   var loadavg = os.loadavg();
@@ -24,4 +24,6 @@ setInterval(function() {
       'cpu': avg,
       'memory': memory
   });
-}, 1000);
+}, 5000);
+
+// matrix.init('face')

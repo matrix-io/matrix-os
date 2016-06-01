@@ -58,7 +58,7 @@
 # App Information for Store
 name: testConfig
 version: 0
-apiVersion: 2
+configVersion: 2
 description: The thing
 images:
   - http://someimage.com
@@ -82,14 +82,13 @@ configuration:
 
 
 dataTypes:
-  - test
-  - face
-  - power
-  - performance
-  - temperature
-  - video
-  - control
-  - speed
+  test: 'string'
+  face: 'object'
+  power: 'float'
+  performance: 'float'
+  temperature: 'float'
+  control: 'float'
+  speed: 'float'
 
 sensors:
   - camera

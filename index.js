@@ -104,12 +104,9 @@ Matrix.db = {
     autoload: true
   })
 }
+var jwt = require('jsonwebtoken');
 
-// so tests know Matrix is done with
-
-Promise = require('promise');
-
-  // this is kind of an init
+  // this is kind of an init flow
   async.series([
     function checkApiServer(cb) {
       require('http').get(Matrix.apiServer, function(res) {
@@ -124,6 +121,7 @@ Promise = require('promise');
       Matrix.service.token.get(setupLocalUser);
 
 
+
       function setupLocalUser(err, token) {
         if (err) return cb(err);
 
@@ -134,8 +132,8 @@ Promise = require('promise');
         debug('[API] -> Auth'.green, token);
 
         //validate token
-        var jwt = require('jsonwebtoken');
         jwt.verify( token, Matrix.config.jwt.secret, function ( err, decoded ) {
+          debug('decoded'.yellow, decoded)
           if ( err ) {
             if (err.name === "TokenExpiredError"){
               console.log("Reauthorizing...")
@@ -155,6 +153,21 @@ Promise = require('promise');
         });
       }
     },
+    function processDeviceToken(cb){
+
+      log(Matrix.deviceToken, Matrix.config.jwt.secret)
+      var decoded = jwt.decode( Matrix.deviceToken )
+        debug('devicedecoded', decoded);
+        if ( decoded.d.uid !== Matrix.userId ){
+          cb('Device Token User ID does not match userId')
+        }
+        if ( decoded.d.did !== Matrix.deviceId ){
+          cb('Device Token Device Id does not match deviceId')
+        }
+        Matrix.deviceRecordId = decoded.d.dkey;
+        cb();
+
+    },
     function checkUpdates(cb) {
       return cb();
       // warn('Updates not implemented on api yet');
@@ -173,13 +186,11 @@ Promise = require('promise');
       cb()
     },
   ], function(err) {
-    if (err) { reject(true); return error(err); }
+    debug('vvv MATRIX vvv \n'.yellow,
+    require('util').inspect( _.omit(Matrix, ['device','events','service','db']), { depth : 0} ), "\n^^^ MATRIX ^^^ ".yellow);
+    if (err) { error(err); }
     log(Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
     Matrix.banner();
-
-    // These are helpful when debugging
-    // log('vvv API vvv \n'.blue, api, "\n^^^ API ^^^ ".blue);
-    // log('vvv MATRIX vvv \n'.yellow, Matrix, "\n^^^ MATRIX ^^^ ".yellow);
 
     //if START_APP is set
     if (Matrix.config.fakeApp) {
@@ -189,6 +200,15 @@ Promise = require('promise');
     //for tests
     Matrix.events.emit('matrix-ready');
   });
+
+  /*
+  ███    ███  █████  ████████ ██████  ██ ██   ██
+  ████  ████ ██   ██    ██    ██   ██ ██  ██ ██
+  ██ ████ ██ ███████    ██    ██████  ██   ███
+  ██  ██  ██ ██   ██    ██    ██   ██ ██  ██ ██
+  ██      ██ ██   ██    ██    ██   ██ ██ ██   ██
+  */
+
 
 
 Matrix.service.lifecycle.updateLastBootTime();

@@ -1,0 +1,62 @@
+
+# NOTE: When updating this, update config-basic in config-helper repo
+
+# App Information for Store
+name: monitor
+version: 1
+configVersion: 2
+description: Matrix stats
+
+dataTypes:
+  device:
+    'os_hostname': string
+    'os_type': string
+    'os_platform': string
+    'os_arch': string
+  monitor:
+    cpu: float
+    memory: float
+
+# screens are comprised of widgets
+screens:
+  # Row 1
+  - - info
+  # Row 2
+  - - pieTest
+    - radarTest
+  - - cpuChart
+  # Row 3
+  - - cpu
+    - memory
+
+widgets:
+  info:
+    type: device
+    display: list-group
+  cpuChart:
+    type: monitor
+    key: cpu
+    display: line
+    label: CPU Chart
+  pieTest:
+    type: monitor
+    key: cpu
+    display: pie
+    label: CPU Cycles
+  radarTest:
+    type: monitor
+    key: cpu
+    display: radar
+    label: last CPU
+  cpu:
+    type: monitor
+    key: cpu
+    display: digit
+    format: round
+    label: cpu
+  memory:
+    type: monitor
+    key: memory
+    display: digit
+    format: round
+    label: memory

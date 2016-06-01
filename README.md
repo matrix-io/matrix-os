@@ -55,6 +55,11 @@ device-reboot - restart the device
 
 ## Application Lifecycle
 
+### Configuration
+On deployment, configuration is overwritten with `config.yaml`. Otherwise, Firebase is the source of configuration truth with a fall back to `config.yaml` for defaults.
+
+When an application runs, however, a `config.json` is written with the active config, and used for the application.
+
 ### Start
 Applications are managed by `/lib/service/manager.js`. Applications can be started by the CLI `matrix start` command or by providing a `START_APP` env variable with the name of the application. Each application is a discrete node process.
 
