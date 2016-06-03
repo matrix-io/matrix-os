@@ -4,6 +4,7 @@
 console.log('Matrix OS Application Library Loading...')
 
 require('colors');
+
 //needs sudo for audio commands disable until we figure this out
 // var loudness = require('loudness');
 // var player = require('player');
@@ -18,6 +19,11 @@ var _ = require('lodash');
 var DataStore = require('nedb');
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
+
+error = function(){
+  console.error('[(%s)]⁊', appName);
+  console.error.apply(null, arguments);
+}
 
 var appName = '';
 
@@ -57,7 +63,7 @@ var fileManager = {
     save: function(url, filename, cb){
       var assetPath = __dirname + '/' + appName + '.matrix/storage/';
       request.get(url, function(err, resp, body){
-        if (err) console.error(err);
+        if (err) error(err);
         try {
           fs.accessSync(assetPath)
         } catch (e) {
@@ -81,7 +87,7 @@ var fileManager = {
   },
   list: function(cb){
     fs.readdir(assetPath, function(err, files){
-      if (err) console.error(err);
+      if (err) error(err);
       cb(null, files);
     });
   }
@@ -121,13 +127,13 @@ if (_.isUndefined(cb)){
 }
 
 process.on('message', function(m){
-    // debug('[M]->app'.blue, m, 'app-'+appName+'-message')
+    console.log('[M]->app'.blue, m, 'app-'+appName+'-message')
     // is global or app-specific
   if (m.type === 'trigger' || m.type === "app-message" || m.type === 'app-'+appName+'-message'){
-    // console.log('[M]->app(msg)'.blue, m)
+    console.log('[M]->app(msg)'.blue, m)
     if ( _.isString(name) ){
       // if an event name was specified in the on()
-      if ( m.event == name ){
+      if ( m.eventName == name ){
         cb(m);
       }
       // no event name match, no fire listener
@@ -310,7 +316,7 @@ function doTrigger(group, payload){
 }
 
 var Matrix = {
-  name: function(name){ appName = name; },
+  name: function(name){ appName = name; return appName; },
   _: _,
   camera: lib.cv,
   request: request,
@@ -325,7 +331,7 @@ var Matrix = {
       // require('loudness').setVolume( volume, function(){});
       // var soundPlayer = new player( assetPath + file );
       // soundPlayer.play( function(err, played){
-      //   if (err) console.error(err);
+      //   if (err) error(err);
       //   console.log('played');
       // });
       // return soundPlayer;
@@ -335,7 +341,7 @@ var Matrix = {
   send: function(message) {
     // console.log('[M]('+ appName +') send ->', message);
     if ( _.isNull(message) ){
-      return console.error('null message from matrix.send')
+      return error('null message from matrix.send')
     }
     // if (!message.hasOwnProperty('data')){
     //   message = { data: message };
@@ -345,17 +351,24 @@ var Matrix = {
     if( this.hasOwnProperty('dataType') ) {
       type = this.dataType;
     } else {
-      return console.error('No TYPE specified in matrix.send. Use matrix.type().send()')
+      return error('No TYPE specified in matrix.send. Use matrix.type().send()')
     }
-    //TODO: Ensure type conforms to config.dataTypes
 
     // check config dataTypes for type (array or object lookup)
     var dataTypes = Matrix.config.dataTypes;
-    if ( !dataTypes.hasOwnProperty(type) && dataTypes.indexOf(type) === -1){
+
+    if ( !_.isPlainObject(dataTypes) || _.isEmpty(dataTypes) ) {
+      return error('matrix.send used without dataTypes defined in config')
+    }
+
+    /* TYPES WHICH ARE UNDEFINED IN CONFIG SHALL NOT PASS         .
+       Only pass config.dataType defined types                 \^/|
+       TODO: depreciate when dynamic schema works again       _/ \|_*/
+
+    if ( !dataTypes.hasOwnProperty(type) ){
       console.log(type, 'not found in config datatypes');
     } else {
-      // support non-typed array declarations
-      if ( !_.isArray(dataTypes) ){
+
         var re = require('matrix-app-config-helper').regex;
         if ( _.isObject(dataTypes[type])){
           // nested datatype structure
@@ -368,11 +381,13 @@ var Matrix = {
               (f.match(re.float) && ( parseFloat( message[key] ) === message[key] )) ||
               ( f.match(re.boolean) && _.isBoolean(message[key]) )
             ){} else {
-              console.error(key,'not formatted correctly\n', type, message)
+              error(key,'not formatted correctly\n', type, message)
             }
           })
           msgObj = message;
         } else {
+
+          // not defined yet, TODO: enable this flow later
           var format = dataTypes[type];
           if ((format === 'string' && _.isString(message)) ||
             (format === 'float' && _.isFloat(message)) ||
@@ -386,9 +401,7 @@ var Matrix = {
             console.log('Recieved:', message);
           }
         }
-      } else {
-        msgObj = message;
-      }
+
     }
 
     msgObj.time = Date.now();
@@ -424,7 +437,7 @@ var Matrix = {
     try {
       Matrix.config = JSON.parse( require('fs').readFileSync(__dirname + '/'+ name +'.matrix/config.json'));
     } catch(e){
-      return console.error(appName, 'invalid config.yaml', e);
+      return error(appName, 'invalid config.yaml', e);
     }
 
     if ( Matrix.config.name !== appName ){

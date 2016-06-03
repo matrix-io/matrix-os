@@ -7,7 +7,11 @@ version: 1
 configVersion: 2
 description: Matrix stats
 
+configuration:
+  refresh: 1000
+
 dataTypes:
+  test: integer
   device:
     'os_hostname': string
     'os_type': string
@@ -19,13 +23,19 @@ dataTypes:
 
 # screens are comprised of widgets
 screens:
+
   # Row 1
-  - - info
-  # Row 2
+  - - buttonTest
+    - buttonsTest
+  #  - buttonOut
+  #
   - - pieTest
     - radarTest
-  - - cpuChart
-  # Row 3
+    - polarTest
+    - cpuChart
+  # Row
+  - - info
+  # Row
   - - cpu
     - memory
 
@@ -38,6 +48,33 @@ widgets:
     key: cpu
     display: line
     label: CPU Chart
+  buttonTest:
+    label: Hacking Buttons
+    control: button
+    trigger: buttonInfo
+    value: Get Secret Information
+  buttonsTest:
+    label: Matrix Activation Buttons
+    control: button
+    map:
+      'amps+': buttonUp
+      'amps-': buttonDown
+      begin : buttonStart
+      end : buttonStop
+      capture : buttonSample
+
+      'refresh+' : buttonSlow
+      'refresh-' : buttonFast
+  buttonOut:
+    type: test
+    display: digit
+  switchTest:
+    control: switch
+  polarTest:
+    type: monitor
+    key: cpu
+    display: polar
+    label: polar bears
   pieTest:
     type: monitor
     key: cpu
