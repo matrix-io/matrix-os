@@ -25,14 +25,11 @@ dataTypes:
 screens:
 
   # Row 1
-  - - buttonTest
-    - buttonsTest
-  #  - buttonOut
-  #
-  - - pieTest
-    - radarTest
-    - polarTest
-    - cpuChart
+  - - cpuChart
+  - - gaugeChart
+  - - radarTest
+    - barChart
+  - - buttonsTest
   # Row
   - - info
   # Row
@@ -40,12 +37,17 @@ screens:
     - memory
 
 widgets:
+  gaugeChart:
+    type: monitor
+    display: gauge
+    key: cpu
+    label: Monitoring Gauge
   info:
     type: device
     display: list-group
   cpuChart:
     type: monitor
-    key: cpu
+    keys: cpu,memory
     display: line
     label: CPU Chart
   buttonTest:
@@ -65,6 +67,12 @@ widgets:
 
       'refresh+' : buttonSlow
       'refresh-' : buttonFast
+  barChart:
+    type: monitor
+    keys: cpu, memory
+    display: bar
+    label: Bar CHart
+
   buttonOut:
     type: test
     display: digit
@@ -82,7 +90,7 @@ widgets:
     label: CPU Cycles
   radarTest:
     type: monitor
-    key: cpu
+    keys: cpu,memory
     display: radar
     label: last CPU
   cpu:
