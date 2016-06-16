@@ -7,11 +7,12 @@ version: 1
 configVersion: 2
 description: Matrix stats
 
+# provided to MatrixOS runtime as Matrix.refresh
 configuration:
   refresh: 1000
 
+# these are defined for writing data to the data base
 dataTypes:
-  test: integer
   device:
     'os_hostname': string
     'os_type': string
@@ -25,21 +26,43 @@ dataTypes:
 screens:
 
   # Row 1
-  - - cpuChart
-  - - gaugeChart
-  - - radarTest
-    - barChart
   - - buttonsTest
-  # Row
+  # Row 2
+  - - buttonTest
+    - labelGroup
+    # Row 3
+  - - dropDown
+    - cpuChart
+  # Row 4
+  - - gaugeChart
+    - radarTest
+    - barChart
+  # Row 5
   - - info
-  # Row
+  # Row 6
   - - cpu
     - memory
 
 widgets:
+  dropDown:
+    # loads < dropdown-control > directive
+    control: dropdown
+    # maps to app events
+    map:
+      test1: doTest1
+      test2: doTest2
+    # label on widget
+    label: dropdown test
+  labelGroup:
+    type: device
+    # loads < labeled-group > directive
+    display: labeled-group
+    label: Label Group
   gaugeChart:
     type: monitor
+    # loads < gauge-chart-chartjs > directive
     display: gauge
+    # use this key for this widget data ( monitor.cpu )
     key: cpu
     label: Monitoring Gauge
   info:
@@ -52,12 +75,16 @@ widgets:
     label: CPU Chart
   buttonTest:
     label: Hacking Buttons
+    # loads < button-control > directive
     control: button
+    # Matrix.on('buttonInfo')
     trigger: buttonInfo
+    # Button Label
     value: Get Secret Information
   buttonsTest:
     label: Matrix Activation Buttons
     control: button
+    #loads many buttons, label: eventName
     map:
       'amps+': buttonUp
       'amps-': buttonDown
@@ -69,7 +96,9 @@ widgets:
       'refresh-' : buttonFast
   barChart:
     type: monitor
+    # multi-series keys
     keys: cpu, memory
+    # loads < bar-chart-chartjs >
     display: bar
     label: Bar CHart
 

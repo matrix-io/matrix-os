@@ -176,16 +176,31 @@ process.on('message', function(m){
 })
 }
 
+function initHandler(name, options, cb){
+  //TODO: find if this init is for a detection
+  if ( name.match(/(face|car|palm|thumb)/).length > 0 ){
+    process.send({type:'detection-init', payload: name});
+    return { then: function(cb){
+      process.on('message', function (data) {
+        if ( data.eventType === 'detection'){
+          // need some other sort of check here to route properly
+          cb(data);
+        }
+      })
+    }}
+  } else {
 
+    //TODO: Find if this init is for a sensor names
+    return initSensor(name,options,cb);
+  }
+
+}
+
+// name can be array or string
 function initSensor(name, options, cb) {
 console.log('Initialize Sensor:'.blue , name);
 
 var filter;
-
-//TODO: Figure out how to dynamically add CV algo values here
-if ( name === 'face' ){
-  process.send({type:'ves-init', payload: name});
-} else {
 
   var sensors = [];
   // kick off sensor readers
@@ -217,7 +232,6 @@ if ( name === 'face' ){
       options: sensorOptions
     });
   });
-}
 // # sensor || CV
 
   // prepare local chaining filter
@@ -234,7 +248,7 @@ if ( name === 'face' ){
 
       if (m.eventType === 'sensor-emit') {
         // TODO: filter multiple sensors
-        if ( m.sensor === s ){
+        if ( sensors.indexOf(m.sensor) > -1 ){
 
           //TODO: when sensors fail to deliver, fail here gracefully
           m = _.omit(m,'eventType');
@@ -259,7 +273,7 @@ if ( name === 'face' ){
 
       }
 
-      if (m.eventType === 'cv-data'){
+      if (m.eventType === 'detection'){
         _.omit( m, 'eventType' );
 
         // Do filter
@@ -369,6 +383,7 @@ var Matrix = {
       console.log(type, 'not found in config datatypes');
     } else {
 
+        //regex containing object
         var re = require('matrix-app-config-helper').regex;
         if ( _.isObject(dataTypes[type])){
           // nested datatype structure
@@ -417,7 +432,7 @@ var Matrix = {
     return this;
   },
   receive: receiveHandler,
-  init: initSensor,
+  init: initHandler,
   file: fileManager,
   emit: function(type, msg){
     process.send({

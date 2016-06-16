@@ -25,14 +25,18 @@ function restartMonitor (){
   }, delayTime );
 }
 
+matrix.init('face').then(function (data) {
+  console.log('FACE DETECTION', data);
+})
+
 matrix.on('buttonUp', function(){
   console.log('===========================', 'BUTTON!')
-  matrix.type('test').send(i++);
+  i++;
 })
 
 matrix.on('buttonDown', function(){
   console.log('===========================', 'BUTTON!')
-  matrix.type('test').send(i--);
+  i--;
 })
 
 matrix.on('buttonStop', function(){
@@ -48,6 +52,20 @@ matrix.on('buttonSample', function () {
   doMonitor();
 })
 
+matrix.on('doTest1', function(){
+  matrix.type('monitor').send({
+      'cpu': 20,
+      'memory': 50
+  });
+})
+
+
+matrix.on('doTest2', function(){
+  matrix.type('monitor').send({
+      'cpu': 60,
+      'memory': 100
+  });
+})
 
 matrix.on('buttonFast', function () { delayTime += 1000; restartMonitor(); })
 matrix.on('buttonSlow', function () { delayTime = Math.max(delayTime - 1000, 500); restartMonitor(); })

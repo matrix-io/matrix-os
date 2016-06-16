@@ -1,0 +1,60 @@
+/*
+ * Copyright 2016 <Admobilize>
+ * All rights reserved.
+ */
+
+syntax = "proto3";
+
+package matrix_hal;
+
+// Dummy lecture.
+message Dummy {
+  float value = 1;
+}
+
+// Basic Humidity lecture.
+message Humidity {
+  float humidity = 1;
+
+  float temp = 2;
+}
+
+// Basic Pressure lecture.
+message Pressure {
+  float press = 1;
+
+  float temp = 2;
+}
+
+// Basic Pressure lecture.
+message IMU {
+  //Vertical axis (yaw)
+  float yaw = 1;
+
+  //Lateral axis (pitch)
+  float pitch = 2;
+
+  //Longitudinal axis (roll)
+  float roll = 3;
+}
+
+// Value for a led.
+message LedValue {
+  uint32 red = 1;
+  uint32 green = 2;
+  uint32 blue = 3;
+  uint32 white = 4;
+}
+
+message EverloopImage {
+  repeated LedValue led = 1;
+}
+
+// Basic sensors snap
+message Snap {
+  IMU imu = 1;
+
+  Pressure press = 2;
+
+  Humidity hum = 3;
+}

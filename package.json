@@ -48,6 +48,7 @@
     "omxctrl": "^0.1.2",
     "portfinder": "^0.4.0",
     "promise": "^7.1.1",
+    "protobufjs": "^5.0.1",
     "ps-tree": "^1.0.0",
     "request": "^2.72.0",
     "rimraf": "^2.5.2",
