@@ -11,14 +11,16 @@ require('colors');
 var microphone = require('node-record-lpcm16');
 var request = require('request');
 var lib = require('./lib');
-var EventFilter = require('admobilize-eventfilter-sdk').EventFilter;
-var applyFilter = require('admobilize-eventfilter-sdk').apply;
+var EventFilter = require('matrix-eventfilter-sdk').EventFilter;
+var applyFilter = require('matrix-eventfilter-sdk').apply;
 var request = require('request');
 var fs = require('fs');
-var _ = require('lodash');
+_ = require('lodash');
 var DataStore = require('nedb');
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
+
+process.setMaxListeners(50);
 
 error = function(){
   console.error('[(%s)]⁊', appName);
@@ -334,6 +336,7 @@ var Matrix = {
   _: _,
   camera: lib.cv,
   request: request,
+  led: require('./lib/led'),
   audio: {
     say: function(msg){
       console.warn('say() is not implemented yet')
@@ -434,12 +437,7 @@ var Matrix = {
   receive: receiveHandler,
   init: initHandler,
   file: fileManager,
-  emit: function(type, msg){
-    process.send({
-      type: type,
-      payload: msg
-    })
-  },
+  emit: interAppNotification,
   startApp: function(name){
     appName = name;
     var yaml = require('js-yaml');

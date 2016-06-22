@@ -33,11 +33,11 @@ parseEnvSettings(envSettings);
 
 // Config - Envs are handled here
 Matrix.config = require('./config');
-debug('Envs:', Matrix.config.envs);
+// debug('Envs:', Matrix.config.envs);
 debug('Debug:', process.env['DEBUG']);
 
 debug('====== config ===vvv'.yellow)
-debug( _.omit(Matrix.config, 'envs') , '\n');
+debug( _.omit(Matrix.config, ['envs', 'username','password']) , '\n');
 
 var reqKeys = ['username', 'deviceId', 'apiServer', 'streamingServer'];
 var foundKeys = _.intersection(_.keysIn(Matrix), reqKeys);
@@ -57,8 +57,7 @@ var util = require('util');
 
 
 // SDK
-api = require('admatrix-node-sdk');
-api.makeUrls( Matrix.apiServer);
+api = require('matrix-node-sdk');
 
 
 //Event Loop - Handles all events
@@ -71,6 +70,8 @@ Matrix.events.on('addListener', function(name) {
 
 //Initialize Listeners - Code goes here
 Matrix.event.init();
+Matrix.service.init();
+Matrix.device.init();
 
 // Node-SDK - Use for API Server Communication
 Matrix.api = api;
@@ -187,7 +188,7 @@ var jwt = require('jsonwebtoken');
     },
   ], function(err) {
     debug('vvv MATRIX vvv \n'.yellow,
-    require('util').inspect( _.omit(Matrix, ['device','events','service','db']), { depth : 0} ), "\n^^^ MATRIX ^^^ ".yellow);
+    require('util').inspect( _.omit(Matrix, ['device','password','username','events','service','db']), { depth : 0} ), "\n^^^ MATRIX ^^^ ".yellow);
     if (err) { error(err); }
     log(Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
     Matrix.banner();

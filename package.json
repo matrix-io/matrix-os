@@ -8,10 +8,10 @@
     "start": "NODE_ENV=dev DEBUG=*,-engine* nodemon --watch lib --watch config",
     "test": "node test/_runner.js",
     "pr": "open https://bitbucket.org/admobilize/admatrix/pull-request/new",
-    "deploy-clear": "sudo rm -r db node_modules/matrix-firebase node_modules/matrix-app-config-helper node_modules/admatrix-node-sdk node_modules/admobilize-eventfilter-sdk",
-    "deploy-copy": "cd node_modules; cp -r ../../matrix-firebase ./matrix-firebase; cp -r ../../matrix-app-config-helper ./matrix-app-config-helper; cp -r ../../admobilize-node-sdk ./admatrix-node-sdk; cp -r ../../admobilize-eventfilter-sdk ./admobilize-eventfilter-sdk; cd ..;",
-    "deploy-image": "find apps -name '*.matrix' ! -name 'base.matrix' -type d -exec rm -r {} +; docker build --no-cache -t admobilize/matrix-os .;docker push admobilize/matrix-os",
-    "local-setup": "cd node_modules; ln -s ../../matrix-firebase ./matrix-firebase; ln -s ../../matrix-app-config-helper ./matrix-app-config-helper; ln -s ../../admobilize-node-sdk ./admatrix-node-sdk; ln -s ../../admobilize-eventfilter-sdk ./admobilize-eventfilter-sdk; cd .."
+    "deploy-clear": "sudo rm -r db node_modules/matrix-firebase node_modules/matrix-app-config-helper node_modules/matrix-node-sdk node_modules/admobilize-eventfilter-sdk",
+    "deploy-copy": "cd node_modules; cp -r ../../matrix-firebase ./matrix-firebase; cp -r ../../matrix-app-config-helper ./matrix-app-config-helper; cp -r ../../matrix-node-sdk ./matrix-node-sdk; cp -r ../../matrix-eventfilter-sdk ./matrix-eventfilter-sdk; cd ..;",
+    "deploy-image": "find apps -name '*.matrix' ! -name 'monitor.matrix' -type d -exec rm -r {} +; docker build --no-cache -t matrix/matrix-os .;docker push admobilize/matrix-os",
+    "local-setup": "cd node_modules; ln -s ../../matrix-firebase ./matrix-firebase; ln -s ../../matrix-app-config-helper ./matrix-app-config-helper; ln -s ../../matrix-node-sdk ./matrix-node-sdk; ln -s ../../matrix-eventfilter-sdk ./matrix-eventfilter-sdk; cd .."
   },
   "author": "Sean Canton <sean.canton@admobilize.com>",
   "contributors": [
@@ -19,8 +19,6 @@
   ],
   "license": "ISC",
   "dependencies": {
-    "admatrix-node-sdk": "https://bitbucket.org/admobilize/admobilize-node-sdk.git",
-    "admobilize-eventfilter-sdk": "https://bitbucket.org/admobilize/matrix-eventfilter-sdk.git",
     "async": "^1.4.0",
     "chai": "^3.5.0",
     "colors": "^1.1.2",
@@ -39,7 +37,9 @@
     "lodash": "^4.12.0",
     "loudness": "^0.2.2",
     "matrix-app-config-helper": "https://bitbucket.org/admobilize/matrix-app-config-helper.git",
+    "matrix-eventfilter-sdk": "https://bitbucket.org/admobilize/matrix-eventfilter-sdk.git",
     "matrix-firebase": "https://github.com/matrix-io/matrix-firebase.git",
+    "matrix-node-sdk": "https://github.com/matrix-io/matrix-node-sdk.git",
     "matrix-test-monitor-sensor": "^0.1.1",
     "mocha": "^2.4.5",
     "nedb": "https://github.com/matrix-io/nedb/tarball/master",
@@ -56,6 +56,7 @@
     "socket.io": "^1.4.5",
     "socket.io-client": "^1.4.5",
     "tar": "^2.2.0",
+    "tinycolor2": "^1.3.0",
     "unzip": "^0.1.11",
     "winston": "^1.0.1",
     "winston-logentries": "^1.1.0"
