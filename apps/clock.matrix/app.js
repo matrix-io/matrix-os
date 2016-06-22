@@ -1,3 +1,5 @@
+var i = 0;
+
 setInterval(function(){
   var time = new Date();
   var h = time.getHours();
@@ -9,8 +11,8 @@ setInterval(function(){
   h = ( h > 12 ) ? h - 12 : h;
 
   var hourLED = {
-    // translate hours (12) to angle (360)
-    angle: (h * 30),
+    // translate hours (12) + minutes (0-60 = 0-1 ) to angle (360)
+    angle: (h + ( m / 60 ) + ( s/3600 )) * 30,
     color: 'darkred',
     darken: 50,
     blend: true
@@ -18,17 +20,20 @@ setInterval(function(){
 
   var minuteLED = {
     // translate minutes ( 60 ) to angle ( 360 )
-    angle: m * 6,
-    color: 'green'
+    angle: ( m + (s/60) + ( ms/60000 ) ) * 6,
+    color: 'green',
+    blend: true
   };
 
   var secondLED = {
     // translate seconds (60) to angle (360)
-    arc: (s + (ms/1000)) * 6,
-    color: 'indigo',
-    blend: true
+    angle: (s + (ms/1000)) * 6,
+    color: 'darkblue',
+    blend: true,
+    spin: i
   };
 
-  matrix.led(['white', secondLED, minuteLED, hourLED ]);
+  i = ( i < 360 ) ? i + 1 : 0;
 
+  matrix.led([ secondLED, minuteLED, hourLED ]);
 }, 50)
