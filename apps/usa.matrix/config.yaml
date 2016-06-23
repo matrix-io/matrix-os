@@ -1,0 +1,6 @@
+name: spinner
+version: 1
+configVersion: 2
+description: Matrix stats
+widgets:
+  poop:

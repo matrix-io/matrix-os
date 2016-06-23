@@ -14,7 +14,6 @@ setInterval(function(){
     // translate hours (12) + minutes (0-60 = 0-1 ) to angle (360)
     angle: (h + ( m / 60 ) + ( s/3600 )) * 30,
     color: 'darkred',
-    darken: 50,
     blend: true
   };
 

@@ -109,7 +109,9 @@ var jwt = require('jsonwebtoken');
 
   // this is kind of an init flow
   async.series([
+
     function checkApiServer(cb) {
+      Matrix.device.led.loader();
       require('http').get(Matrix.apiServer, function(res) {
         cb(null);
       }).on('error', function() {
@@ -187,6 +189,8 @@ var jwt = require('jsonwebtoken');
       cb()
     },
   ], function(err) {
+    Matrix.device.led.stopLoader();
+    Matrix.device.led.clear();
     debug('vvv MATRIX vvv \n'.yellow,
     require('util').inspect( _.omit(Matrix, ['device','password','username','events','service','db']), { depth : 0} ), "\n^^^ MATRIX ^^^ ".yellow);
     if (err) { error(err); }
@@ -260,6 +264,7 @@ function onDestroy() {
     Matrix.service.manager.killAllApps,
     Matrix.service.manager.clearAppList,
     Matrix.service.manager.cleanLogs,
+    Matrix.device.led.clear
   ], function(err){
     if (err) error(err);
     console.log('Cleanup complete...');

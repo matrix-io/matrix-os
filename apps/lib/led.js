@@ -21,14 +21,19 @@ module.exports = function ( c ) {
   }
 
   // init an empty array
-  var tcColors = Array( 35 );
+  var colorLayers = [];
 
   // colors array prepared
   _.each( colors, function ( color, i ) {
     // console.log('start>>>', color, i)
+    var tcColors = Array( 35 );
 
     if ( _.isPlainObject( color ) ) {
       // shape
+      if ( _.has( color, 'spin')){
+        color.color = tc(color.color).spin(color.spin);
+      }
+
       if ( _.has( color, 'arc' ) ) {
         // draw arc degrees to lights 360 / 10 = 36
         var arcArray = _.times( Math.floor(color.arc / 10), function(){ return color.color } );
@@ -51,9 +56,7 @@ module.exports = function ( c ) {
         // draw angle
         // 24.75
 
-        if ( _.has( color, 'spin')){
-          color.color = tc(color.color).spin(color.spin);
-        }
+
 
         color.angle = ( color.angle < 360 ) ? color.angle : color.angle % 360;
         var point = 35 * ( color.angle / 360 )
@@ -84,10 +87,27 @@ module.exports = function ( c ) {
       tcColors[ i ] = color;
     }
 
+    // make every color a tc color
+    tcColors = _.map(tcColors, function (c) {
+      return tc(c);
+    });
+
+    //wrap end to beginning
+    var tcLayers = _.chunk( tcColors, 35 )
+
+    printLights(tcColors);
+
+    // push wrapping layers to compose matrix
+    _.each(tcLayers, function(t){
+      colorLayers.push( t );
+    })
+
     // console.log('end', tcColors, tcColors.length);
   })
 
-  setTCColors(tcColors);
+  composeLayers(colorLayers);
+
+  // setTCColors(tcColors);
 
   return function subMethods( tcColors ) {
     var self = this;
@@ -115,12 +135,30 @@ function setTCColors( colors ) {
   _.each(colors, function(c){
     tcColors.push( tc(c) );
   })
-  // wrap around extra
-  // if (tcColors.length > 36 && tcColors[35].isValid()){
-  //   tcColors[0] = tcColors[35];
-  // }
 
   emitColorRing( tcColors );
+}
+
+function composeLayers(layers){
+
+  // uncomment to debug layering
+  // console.log('== compStart vv');
+  var i = 0;
+  var final = _.reduce(layers, function (r, v) {
+    // console.log( i++, printLights(v));
+    // combine matrix of points
+    _.each(v, function (c, i) {
+      if ( c.isValid()){
+        r[i] = c;
+      }
+    });
+
+    return r;
+  },[])
+
+  // console.log('=---= compDone');
+  console.log('C :'.grey, printLights(final));
+  emitColorRing(final);
 }
 
 //TC Colors to CMD
@@ -128,6 +166,9 @@ function emitColorRing( colors ) {
   // console.log('EMIT>>>>', colors, colors.length)
   // printColors(colors);
   colors = _.map(colors, function(c){
+    if ( _.isUndefined(c)){
+      return { r:0, g:0, b:0, a:0 };
+    }
     return c.toRgb();
   })
 
@@ -145,4 +186,16 @@ function printColors( tcColors ){
   _.each(tcColors, function(c){
     console.log(c.getOriginalInput());
   })
+}
+
+function printLights( tcColors ){
+  return _.reduce( tcColors, function(r, c){
+    if ( _.isUndefined(c) || c.getBrightness() === 0 ){
+      return r + ' '
+    } else if ( c.isLight() ) {
+      return r + ':';
+    } else {
+      return r + '.'.grey;
+    }
+  }, '');
 }
