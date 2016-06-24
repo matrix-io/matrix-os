@@ -264,7 +264,7 @@ function onDestroy() {
     Matrix.service.manager.killAllApps,
     Matrix.service.manager.clearAppList,
     Matrix.service.manager.cleanLogs,
-    Matrix.device.led.clear
+    // Matrix.device.led.clear
   ], function(err){
     if (err) error(err);
     console.log('Cleanup complete...');
