@@ -33,6 +33,7 @@ setTimeout(function(){
       process.on('exit', function() {
         process.exit(failures);
       });
+      Matrix.haltTheMatrix();
     });
   })
 }, 500 )

@@ -440,17 +440,12 @@ var Matrix = {
   emit: interAppNotification,
   startApp: function(name){
     appName = name;
-    var yaml = require('js-yaml');
-    var fs = require('fs');
 
-
-    // TODO: Provide process with newest configuration via File and ENVS. Liberal Restarts
-
-    // WIP
+    // Config is written as JSON by MOS -
     try {
       Matrix.config = JSON.parse( require('fs').readFileSync(__dirname + '/'+ name +'.matrix/config.json'));
     } catch(e){
-      return error(appName, 'invalid config.yaml', e);
+      return error(appName, 'invalid config.json', e);
     }
 
     if ( Matrix.config.name !== appName ){
@@ -462,7 +457,7 @@ var Matrix = {
         Matrix[k] = Matrix.config[k];
     })
 
-    // sending config on socket open
+    // generic message handlers
     process.on('message', function(m){
       if (m.type === 'request-config'){
         sendConfig();
@@ -470,9 +465,6 @@ var Matrix = {
         Matrix.pid = m.pid;
       }
     })
-    //TODO: Remove in favor of Firebase
-    //send config on app start
-    // sendConfig(Matrix.config);
 
     return Matrix;
   },
