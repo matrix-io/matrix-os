@@ -2,12 +2,15 @@ FROM node:5.12
 
 MAINTAINER Sean Canton <sean.canton@admobilize.com>
 
-ADD . matrix/
-WORKDIR matrix/
+RUN apt-get update && apt-get install -yq libzmq3-dev \
+  && apt-get clean && rm -rf /var/tmp/*
 
+COPY . /matrix
+RUN chmod +x /matrix/docker-entrypoint.sh
+
+WORKDIR matrix/
 RUN npm install
 
 EXPOSE 80
-
-# RUN node app.js
-CMD ["node", "index.js"]
+ENTRYPOINT ["/matrix/docker-entrypoint.sh"]
+CMD ["node"]

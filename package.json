@@ -59,6 +59,7 @@
     "tinycolor2": "^1.3.0",
     "unzip": "^0.1.11",
     "winston": "^1.0.1",
-    "winston-logentries": "^1.1.0"
+    "winston-logentries": "^1.1.0",
+    "zmq": "^2.15.3"
   }
 }
