@@ -276,6 +276,14 @@ The above command will:
 
 This flow can play nice with say, MXSS also running in the same machine. More about that soon.
 
+### IMPORTANT
+Make sure you updated your submodules, otherwise protocol buffer definitions may not be
+available: 
+
+```
+git submodule update --init
+```
+
 ## Maintainers
 
 Sean Canton <sean.canton@admobilize.com>
