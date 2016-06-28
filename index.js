@@ -318,3 +318,7 @@ function parseEnvSettings(envSettings){
     console.error('There is a problem with ENV', Matrix.env);
   }
 }
+
+Matrix.haltTheMatrix = function(){
+  onDestroy();
+}

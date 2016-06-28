@@ -8,10 +8,10 @@
     "start": "nodemon --watch lib --watch config",
     "test": "node test/_runner.js",
     "pr": "open https://bitbucket.org/admobilize/admatrix/pull-request/new",
-    "deploy-clear": "sudo rm -r db node_modules/matrix-firebase node_modules/matrix-app-config-helper node_modules/matrix-node-sdk node_modules/admobilize-eventfilter-sdk",
-    "deploy-copy": "cd node_modules; cp -r ../../matrix-firebase ./matrix-firebase; cp -r ../../matrix-app-config-helper ./matrix-app-config-helper; cp -r ../../matrix-node-sdk ./matrix-node-sdk; cp -r ../../matrix-eventfilter-sdk ./matrix-eventfilter-sdk; cd ..;",
+    "deploy-clear": "sudo rm -r db node_modules/matrix-firebase node_modules/matrix-app-config-helper node_modules/matrix-node-sdk node_modules/matrix-eventfilter",
+    "deploy-copy": "cd node_modules; cp -r ../../matrix-firebase ./matrix-firebase; cp -r ../../matrix-app-config-helper ./matrix-app-config-helper; cp -r ../../matrix-node-sdk ./matrix-node-sdk; cp -r ../../matrix-eventfilter ./matrix-eventfilter; cd ..;",
     "deploy-image": "find apps -name '*.matrix' ! -name 'monitor.matrix' -type d -exec rm -r {} +; docker build --no-cache -t matrix/matrix-os .;docker push admobilize/matrix-os",
-    "local-setup": "cd node_modules; ln -s ../../matrix-firebase ./matrix-firebase; ln -s ../../matrix-app-config-helper ./matrix-app-config-helper; ln -s ../../matrix-node-sdk ./matrix-node-sdk; ln -s ../../matrix-eventfilter-sdk ./matrix-eventfilter-sdk; cd .."
+    "local-setup": "cd node_modules; ln -s ../../matrix-firebase ./matrix-firebase; ln -s ../../matrix-app-config-helper ./matrix-app-config-helper; ln -s ../../matrix-node-sdk ./matrix-node-sdk; ln -s ../../matrix-eventfilter ./matrix-eventfilter; cd .."
   },
   "author": "Sean Canton <sean.canton@admobilize.com>",
   "contributors": [
@@ -42,6 +42,7 @@
     "matrix-node-sdk": "https://github.com/matrix-io/matrix-node-sdk.git",
     "matrix-test-monitor-sensor": "^0.1.1",
     "mocha": "^2.4.5",
+    "mv": "^2.1.1",
     "nedb": "https://github.com/matrix-io/nedb/tarball/master",
     "node-record-lpcm16": "^0.1.4",
     "npm-registry": "^0.1.13",
