@@ -10,6 +10,7 @@ log=console.log;
 
 // Instantiate a Mocha instance.
 
+process.env.NODE_ENV = 'dev';
 Matrix = require('../index.js').Matrix;
 
 setTimeout(function(){
