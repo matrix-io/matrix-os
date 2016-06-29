@@ -8,7 +8,11 @@ matrix.send({foo:2})
 matrix.emit('foo')
 
 //send app specific message
-matrix.emit('otherapp', 'foo')
+matrix.emit('otherapp', 'otherfoo')
 
 //send namespaced message
-matrix.emit('otherapp','nameofevent', 'foo')
+matrix.emit('otherapp','nameofevent', 'namedfoo')
+
+
+console.log('Finished!')
+process.exit();

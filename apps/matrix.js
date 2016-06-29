@@ -367,8 +367,12 @@ var Matrix = {
     var type, msgObj = {};
     if( this.hasOwnProperty('dataType') ) {
       type = this.dataType;
+
+      //reset variable for next send
+      delete this.dataType;
     } else {
-      return error('No TYPE specified in matrix.send. Use matrix.type().send()')
+      type = appName;
+      // return error('No TYPE specified in matrix.send. Use matrix.type().send()')
     }
 
     // check config dataTypes for type (array or object lookup)
@@ -382,8 +386,11 @@ var Matrix = {
        Only pass config.dataType defined types                 \^/|
        TODO: depreciate when dynamic schema works again       _/ \|_*/
 
-    if ( !dataTypes.hasOwnProperty(type) ){
+    if ( !dataTypes.hasOwnProperty(type) && type !== appName ){
       console.log(type, 'not found in config datatypes');
+    } else if ( type === appName ){
+      // no .type() used
+      msgObj = message;
     } else {
 
         //regex containing object
@@ -419,8 +426,7 @@ var Matrix = {
             console.log('Recieved:', message);
           }
         }
-
-    }
+      }
 
     msgObj.time = Date.now();
     msgObj.type = type;
@@ -428,6 +434,7 @@ var Matrix = {
         type: 'app-emit',
         payload: msgObj
     });
+
   },
   type: function(type) {
     //set type, return this
@@ -472,7 +479,10 @@ var Matrix = {
   debug: matrixDebug,
   notify: interAppNotification,
   on: interAppResponse,
-  trigger: doTrigger
+  trigger: doTrigger,
+  static: function(){
+    console.warn('static not implmented uyet')
+  }
 }
 
 module.exports = Matrix;

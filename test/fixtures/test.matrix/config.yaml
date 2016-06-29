@@ -1,0 +1,7 @@
+name: test
+dataTypes:
+  testType:
+    foo: integer
+description: none
+configVersion: 2
+keywords: test
