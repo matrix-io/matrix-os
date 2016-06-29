@@ -39,7 +39,7 @@ debug('Debug:', process.env['DEBUG']);
 debug('====== config ===vvv'.yellow)
 debug( _.omit(Matrix.config, ['envs', 'username','password']) , '\n');
 
-var reqKeys = ['username', 'deviceId', 'apiServer', 'streamingServer'];
+var reqKeys = ['deviceId', 'apiServer', 'streamingServer'];
 var foundKeys = _.intersection(_.keysIn(Matrix), reqKeys);
 if ( foundKeys.length < reqKeys.length ){
   var missingKeys = _.xor(reqKeys, foundKeys);
@@ -56,10 +56,6 @@ var events = require('events');
 var util = require('util');
 
 
-// SDK
-api = require('matrix-node-sdk');
-
-
 //Event Loop - Handles all events
 Matrix.events = new events.EventEmitter();
 // seems like a fair number
@@ -70,11 +66,14 @@ Matrix.events.on('addListener', function(name) {
 
 //Initialize Listeners - Code goes here
 Matrix.event.init();
+
+//@TODO where is this this defined ??
 Matrix.service.init();
 Matrix.device.init();
 
 // Node-SDK - Use for API Server Communication
-Matrix.api = api;
+// SDK
+Matrix.api = require('matrix-node-sdk');
 Matrix.api.makeUrls(Matrix.apiServer);
 
 //app processes, see lib/service/mananger
@@ -120,56 +119,36 @@ var jwt = require('jsonwebtoken');
       });
     },
     function populateToken(cb) {
-      // check in with api server
-      Matrix.service.token.get(setupLocalUser);
-
-
-
-      function setupLocalUser(err, token) {
+      // Fetches device token from service and stores to local DB
+      
+      Matrix.service.auth.authenticate(function setupDeviceToken(err, token) {
         if (err) return cb(err);
 
-        // first auth throws object, subsequent throws strings
-        if (!_.isString(token)){
-          token = token.token;
-        }
-        debug('[API] -> Auth'.green, token);
+        debug('PopulateToken - OK>'.green, token);
 
-        //validate token
-        jwt.verify( token, Matrix.config.jwt.secret, function ( err, decoded ) {
-          debug('decoded'.yellow, decoded)
-          if ( err ) {
-            if (err.name === "TokenExpiredError"){
-              console.log("Reauthorizing...")
-              //needs reauth
-              Matrix.service.token.clear();
-              Matrix.service.token.get(setupLocalUser);
-              return;
-            }
-            return console.log( err );
-          }
-          if ( decoded.d.uid === Matrix.userId ) {
-            debug('JWT Token Valid'.blue)
-            Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, token, cb)
-          } else {
-            cb();
-          }
-        });
-      }
-    },
-    function processDeviceToken(cb){
+        var decoded = jwt.decode(token);
+        debug('PopulateToken - decoded>'.yellow, decoded);
 
-      log(Matrix.deviceToken, Matrix.config.jwt.secret)
-      var decoded = jwt.decode( Matrix.deviceToken )
-        debug('devicedecoded', decoded);
-        if ( decoded.d.uid !== Matrix.userId ){
-          cb('Device Token User ID does not match userId')
+        if ( decoded.d.did !== Matrix.deviceId ) {
+          cb('Device Token Device Id does not match deviceId');
         }
-        if ( decoded.d.did !== Matrix.deviceId ){
-          cb('Device Token Device Id does not match deviceId')
-        }
+
+        Matrix.deviceToken = token;
         Matrix.deviceRecordId = decoded.d.dkey;
-        cb();
-
+        Matrix.userId = decoded.d.uid;
+        debug('processDeviceToken - Matrix.userId>'.green, Matrix.userId);
+        debug('processDeviceToken - Matrix.deviceRecordId>'.green, Matrix.deviceRecordId);
+        // Where do we do this ??
+        /**
+        Matrix.db.service.update(
+          {deviceId: deviceRecordId}, 
+          {
+            deviceToken: token
+            ...
+          });
+        **/
+        Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, Matrix.deviceToken, cb);
+      });
     },
     function checkUpdates(cb) {
       return cb();
@@ -185,6 +164,7 @@ var jwt = require('jsonwebtoken');
       // });
     },
     function(cb){
+      debug('Checking MXSS');
       Matrix.service.stream.checkStreamingServer(),
       cb()
     },
@@ -328,7 +308,9 @@ function getEnvSettings(env){
 }
 
 function parseEnvSettings(envSettings){
-  if ( _.has(envSettings, 'url') ){
+  Matrix.deviceId = envSettings.deviceId;
+  Matrix.deviceSecret = envSettings.deviceSecret;
+  if ( _.has(envSettings, 'url') ) {
     Matrix.streamingServer = envSettings.url.streaming;
     Matrix.apiServer = envSettings.url.api;
     Matrix.env = envSettings.name;

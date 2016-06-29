@@ -22,6 +22,7 @@ services:
       # Reinstall all modules when running docker-entrypoint.sh, helps in avoiding
       # ugly bugs related with bad node_modules
       NODE_ENV: docker
+      DEBUG: matrix
       REINSTALL_NODE_MODULES: 1
     env_file:
       # Define a .env file containing the following environment variables
@@ -31,8 +32,8 @@ services:
       #   - MATRIX_STREAMING_SERVER=<your pick here>
       #     * development server is available @ http://dev-mxss.admobilize.com:80
       #     * local running MXSS can be addressed by setting mxss:80
-      #   - DEVICE_ID=<your device id>
-      #   - DEVICE_SECRET=<your device secret>
+      #   - MATRIX_DEVICE_ID=<your device id>
+      #   - MATRIX_DEVICE_SECRET=<your device secret>
       #
       # NOTE 1: it is rude to commit this file as it will overwrite other people devel 
       #         settings
