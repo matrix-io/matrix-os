@@ -5,7 +5,7 @@ version: '2'
 services:
   mos:
     build: .
-    command: nodemon index.js
+    command: node index.js
     networks:
       - matrixos
     ports:
@@ -14,16 +14,21 @@ services:
       # Mount current directory under /matrix in the container so you can edit code
       # locally and have the changes available inside a running container
       - ./:/matrix
+      # - ./../matrix-node-sdk/:/matrix/node_modules/matrix-node-sdk
+      # - ./../matrix-eventfilter/:/matrix/node_modules/matrix-eventfilter
+      # - ./../matrix-app-config-helper/:/matrix/node_modules/matrix-app-config-helper
+      # - ./../matrix-firebase/:/matrix/node_modules/matrix-firebase
+
     # @TODO (Sean) Please review which device mappings make sense for OSX here, we then
     # review Linux
     # devices:
-    #  - "/dev/ttyUSB0:/dev/ttyUSB0"     
+    #  - "/dev/ttyUSB0:/dev/ttyUSB0"
     environment:
       # Reinstall all modules when running docker-entrypoint.sh, helps in avoiding
       # ugly bugs related with bad node_modules
       NODE_ENV: docker
-      DEBUG: matrix
-      REINSTALL_NODE_MODULES: 1
+      DEBUG: '*,-engine'
+      REINSTALL_NODE_MODULES: 0
     env_file:
       # Define a .env file containing the following environment variables
       # and tweak those according to your current development needs:
@@ -35,7 +40,7 @@ services:
       #   - MATRIX_DEVICE_ID=<your device id>
       #   - MATRIX_DEVICE_SECRET=<your device secret>
       #
-      # NOTE 1: it is rude to commit this file as it will overwrite other people devel 
+      # NOTE 1: it is rude to commit this file as it will overwrite other people devel
       #         settings
       # NOTE 2: there are zsh extensions to load these files automatically to your environment
       #         when you cd to a directory. Check the gist below for an example
