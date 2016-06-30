@@ -141,10 +141,10 @@ To exclude engine-io from the output, do
 
 ## Environment Variables
 ```
-ADMATRIX_API_SERVER http://dev-demo.admobilize.com -- points to admobilize-api server
-ADMATRIX_STREAMING_SERVER http://localhost:3000 - points to admatrix-streaming-server
-ADMATRIX_CLIENT_ID AdMobilizeClientID - assigned id
-ADMATRIX_CLIENT_SECRET AdMobilizeClientSecret - assigned secret
+MATRIX_API_SERVER http://dev-demo.admobilize.com -- points to admobilize-api server
+MATRIX_STREAMING_SERVER http://localhost:3000 - points to admatrix-streaming-server
+MATRIX_CLIENT_ID AdMobilizeClientID - assigned id
+MATRIX_CLIENT_SECRET AdMobilizeClientSecret - assigned secret
 ```
 
 ## Freescale Installation
@@ -253,6 +253,35 @@ ulog() - utility log, pretty prints object, no Logentries
 log() - logentries
 warn() - logentries
 error() - logentries
+```
+
+## Docker development workflow
+
+The repo includes a `docker-compose.yml` file. This file contains information to run a containerized version of the MatrixOS. Please make sure you are running either Linux or the native Docker app, and issue: 
+
+```
+docker-compose run --service-ports mos [optional command]
+``` 
+
+The above command will:
+
+  - Build the image that contains all required dependencies to run the MatrixOS.
+  - Mount the current directory inside `/matrix` dir inside the container, meaning
+    that changes performed on your local file system will show up inside the 
+    container as well. 
+  - Run `nodemon index.js` inside the container, exposing port 80 on your local machine. It
+    will also reinstall all your node_modules if `REINSTALL_NODE_MODULES: 1`. This is
+    useful in development as helps dealing with `node_modules` in different branches, and
+    avoids ugly bugs with hard-coded `node_modules` built in OSX that won't work on Linux.
+
+This flow can play nice with say, MXSS also running in the same machine. More about that soon.
+
+### IMPORTANT
+Make sure you updated your submodules, otherwise protocol buffer definitions may not be
+available: 
+
+```
+git submodule update --init
 ```
 
 ## Maintainers

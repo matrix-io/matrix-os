@@ -4,5 +4,7 @@ module.exports = {
     api: 'http://stage-demo.admobilize.com',
     streaming: 'http://stage-mxss.admobilize.com:80'
   },
-  debug: false
+  debug: false,
+
+  deviceSecret: process.env['MATRIX_DEVICE_SECRET'],
 }
