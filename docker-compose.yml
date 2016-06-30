@@ -7,7 +7,7 @@ services:
     build: .
     command: node index.js
     networks:
-      - matrixos
+      - default
     ports:
       - 80:80
     volumes:
@@ -47,7 +47,7 @@ services:
     build: .
     command: node index.js
     networks:
-      - matrixos
+      - default
     ports:
       - 80:80
     volumes:
@@ -67,4 +67,6 @@ services:
       - ./.env
 
 networks:
-  matrixos:
+  default:
+    external:
+      name: matrixos
