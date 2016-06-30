@@ -14,10 +14,10 @@ services:
       # Mount current directory under /matrix in the container so you can edit code
       # locally and have the changes available inside a running container
       - ./:/matrix
-      # - ./../matrix-node-sdk/:/matrix/node_modules/matrix-node-sdk
-      # - ./../matrix-eventfilter/:/matrix/node_modules/matrix-eventfilter
-      # - ./../matrix-app-config-helper/:/matrix/node_modules/matrix-app-config-helper
-      # - ./../matrix-firebase/:/matrix/node_modules/matrix-firebase
+      - ./../matrix-node-sdk/:/matrix/node_modules/matrix-node-sdk
+      - ./../matrix-eventfilter/:/matrix/node_modules/matrix-eventfilter
+      - ./../matrix-app-config-helper/:/matrix/node_modules/matrix-app-config-helper
+      - ./../matrix-firebase/:/matrix/node_modules/matrix-firebase
 
     # @TODO (Sean) Please review which device mappings make sense for OSX here, we then
     # review Linux

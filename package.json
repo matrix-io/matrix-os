@@ -5,7 +5,7 @@
   "main": "app.js",
   "repository": "https://bitbucket.org/admobilize/admatrix",
   "scripts": {
-    "start": "NODE_ENV=dev DEBUG=*,-engine* nodemon --watch lib --watch config",
+    "start": "nodemon --watch lib --watch config",
     "test": "node test/_runner.js",
     "pr": "open https://bitbucket.org/admobilize/admatrix/pull-request/new",
     "deploy-clear": "sudo rm -r db node_modules/matrix-firebase node_modules/matrix-app-config-helper node_modules/matrix-node-sdk node_modules/admobilize-eventfilter-sdk",
@@ -27,7 +27,7 @@
     "df": "^1.1.1",
     "engine.io-client": "^1.6.8",
     "firebase": "^2.4.2",
-    "fs-extra": "^0.22.1",
+    "fs-extra": "^0.30.0",
     "getmac": "^1.0.7",
     "grpc": "^0.14.1",
     "js-beautify": "^1.6.2",
