@@ -14,10 +14,6 @@ services:
       # Mount current directory under /matrix in the container so you can edit code
       # locally and have the changes available inside a running container
       - ./:/matrix
-      - ./../matrix-node-sdk/:/matrix/node_modules/matrix-node-sdk
-      - ./../matrix-eventfilter/:/matrix/node_modules/matrix-eventfilter
-      - ./../matrix-app-config-helper/:/matrix/node_modules/matrix-app-config-helper
-      - ./../matrix-firebase/:/matrix/node_modules/matrix-firebase
 
     # @TODO (Sean) Please review which device mappings make sense for OSX here, we then
     # review Linux
@@ -28,7 +24,7 @@ services:
       # ugly bugs related with bad node_modules
       NODE_ENV: docker
       DEBUG: '*,-engine'
-      REINSTALL_NODE_MODULES: 0
+      REINSTALL_NODE_MODULES: 1
     env_file:
       # Define a .env file containing the following environment variables
       # and tweak those according to your current development needs:
@@ -45,6 +41,29 @@ services:
       # NOTE 2: there are zsh extensions to load these files automatically to your environment
       #         when you cd to a directory. Check the gist below for an example
       #         https://gist.github.com/maciekrb/55c2d8f8dfddb8564c1ed926d605251d
+      - ./.env
+
+  mos_with_modules:
+    build: .
+    command: node index.js
+    networks:
+      - matrixos
+    ports:
+      - 80:80
+    volumes:
+      # Mount current directory under /matrix in the container so you can edit code
+      # locally and have the changes available inside a running container
+      - ./:/matrix
+      - ./../matrix-node-sdk/:/matrix/node_modules/matrix-node-sdk
+      - ./../matrix-eventfilter/:/matrix/node_modules/matrix-eventfilter
+      - ./../matrix-app-config-helper/:/matrix/node_modules/matrix-app-config-helper
+      - ./../matrix-firebase/:/matrix/node_modules/matrix-firebase
+
+    environment:
+      NODE_ENV: docker
+      DEBUG: '*,-engine'
+      REINSTALL_NODE_MODULES: 0
+    env_file:
       - ./.env
 
 networks:
