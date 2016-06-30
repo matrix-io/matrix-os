@@ -5,11 +5,15 @@ version: '2'
 services:
   mos:
     build: .
-    command: nodemon index.js
+    command: bash
     networks:
-      - matrixos
+      default:
+        aliases:
+          - mos
     ports:
       - 80:80
+    external_links:
+      - mxss:mxss
     volumes:
       # Mount current directory under /matrix in the container so you can edit code
       # locally and have the changes available inside a running container
@@ -23,7 +27,7 @@ services:
       # ugly bugs related with bad node_modules
       NODE_ENV: docker
       DEBUG: matrix
-      REINSTALL_NODE_MODULES: 1
+      REINSTALL_NODE_MODULES: 0
     env_file:
       # Define a .env file containing the following environment variables
       # and tweak those according to your current development needs:
@@ -43,4 +47,6 @@ services:
       - ./.env
 
 networks:
-  matrixos:
+  default:
+    external:
+      name: matrixos
