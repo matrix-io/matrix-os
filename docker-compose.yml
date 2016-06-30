@@ -10,6 +10,8 @@ services:
       - default
     ports:
       - 80:80
+    external_links:
+      - mxss:mxss
     volumes:
       # Mount current directory under /matrix in the container so you can edit code
       # locally and have the changes available inside a running container
