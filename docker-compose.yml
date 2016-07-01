@@ -3,6 +3,8 @@
 # instance or a remotely running instance, see env.MATRIX_STREAMING_SERVER
 version: '2'
 services:
+
+  # install modules and compile - single run
   mos:
     build: .
     command: node index.js
@@ -45,7 +47,8 @@ services:
       #         https://gist.github.com/maciekrb/55c2d8f8dfddb8564c1ed926d605251d
       - ./.env
 
-  mos_with_modules:
+  # default build. run mos first to install.
+  mos_dev:
     build: .
     command: node index.js
     networks:
@@ -60,7 +63,6 @@ services:
       - ./../matrix-eventfilter/:/matrix/node_modules/matrix-eventfilter
       - ./../matrix-app-config-helper/:/matrix/node_modules/matrix-app-config-helper
       - ./../matrix-firebase/:/matrix/node_modules/matrix-firebase
-
     environment:
       NODE_ENV: docker
       DEBUG: '*,-engine'
