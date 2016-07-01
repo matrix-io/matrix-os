@@ -95,4 +95,13 @@ describe('Matrix App API', function () {
     })
 
   })
+
+  describe('init()', function () {
+    it('will start a temperature sensor')
+    it('will start a humidity sensor')
+    it('will start a face detection')
+    it('will start a crowd detection')
+    it('will start a face recognition')
+    it('will start a vehicle count')
+  })
 });
