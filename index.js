@@ -120,7 +120,7 @@ var jwt = require('jsonwebtoken');
     },
     function populateToken(cb) {
       // Fetches device token from service and stores to local DB
-      
+
       Matrix.service.auth.authenticate(function setupDeviceToken(err, token) {
         if (err) return cb(err);
 
@@ -141,7 +141,7 @@ var jwt = require('jsonwebtoken');
         // Where do we do this ??
         /**
         Matrix.db.service.update(
-          {deviceId: deviceRecordId}, 
+          {deviceId: deviceRecordId},
           {
             deviceToken: token
             ...
@@ -207,7 +207,7 @@ module.exports = {
 //Triggered when the application is killed by a [CRTL+C] from keyboard
 process.on("SIGINT", function() {
   log("Matrix -- CRTL+C kill detected");
-  onKill();
+  process.exit(0);
 });
 
 //Triggered when the application is killed with a -15
