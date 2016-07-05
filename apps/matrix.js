@@ -268,6 +268,7 @@ var Matrix = {
   notify: interAppNotification,
   on: interAppResponse,
   trigger: doTrigger,
+  color: require('tinycolor2'),
   static: function(){
     console.warn('static not implmented uyet')
   }

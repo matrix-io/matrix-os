@@ -34,7 +34,7 @@ var configs = _.pick(process.env, [
   // 'MATRIX_API_SERVER',
   // 'MATRIX_STREAMING_SERVER',
   'MATRIX_CLIENT_ID',
-  'MATRIX_CLIENT_SECRET',
+  'MATRIX_DEVICE_SECRET',
   'MATRIX_DEVICE_ID',
   'MATRIX_DEVICE_NAME',
   'MATRIX_USERNAME',
@@ -46,6 +46,8 @@ configs = _.mapKeys(configs, function(v,k){
   var k = k.replace('ADMATRIX','').replace('MATRIX','');
   return _.camelCase(k);
 })
+
+log('>>>>', configs);
 
 _.extend(Matrix, configs);
 

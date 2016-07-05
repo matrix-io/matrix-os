@@ -25,7 +25,7 @@ debugLog = require('debug');
 var debug = debugLog('matrix');
 
 // Core
-Matrix = require('./lib');
+Matrix = require('./lib/index.js');
 
 // populate keys from settings after requiring libs
 parseEnvSettings(envSettings);
@@ -37,7 +37,7 @@ Matrix.config = require('./config');
 debug('Debug:', process.env['DEBUG']);
 
 debug('====== config ===vvv'.yellow)
-debug( _.omit(Matrix.config, ['envs', 'username','password']) , '\n');
+debug( Matrix.config, '\n');
 
 var reqKeys = ['deviceId', 'apiServer', 'streamingServer'];
 var foundKeys = _.intersection(_.keysIn(Matrix), reqKeys);
@@ -61,7 +61,7 @@ Matrix.events = new events.EventEmitter();
 // seems like a fair number
 Matrix.events.setMaxListeners(50);
 Matrix.events.on('addListener', function(name) {
-  log(name);
+  log('+ Event Listener', name);
 })
 
 //Initialize Listeners - Code goes here
