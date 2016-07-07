@@ -8,7 +8,7 @@ module.exports = function(name, options){
         if ( data.eventType === 'detection'){
           // TODO: need some other sort of check here to route properly
           // TODO: add filters, copy other then function
-          cb(data);
+          cb(data.payload);
         }
       })
     }}
@@ -70,6 +70,7 @@ var filter;
     // recieves from events/sensors
     process.on('message', function(m) {
 
+      console.log('message recieved by app process', m);
       if (m.eventType === 'sensor-emit') {
         // TODO: filter multiple sensors
         if ( sensors.indexOf(m.sensor) > -1 ){
@@ -95,9 +96,7 @@ var filter;
         // console.log('applying filter:', filter.json());
 
 
-      }
-
-      if (m.eventType === 'detection'){
+      } else if (m.eventType === 'detection'){
         _.omit( m, 'eventType' );
 
         // Do filter
@@ -108,11 +107,15 @@ var filter;
           result = m.payload;
         }
 
+        console.log('APP DETECT', result);
         if (result !== false && !_.isUndefined(result)){
           // LORE: switched from err first to promise style
           // provides .then(function(data){})
           cb(result);
         }
+      } else {
+        console.log('NO DETECT', result);
+        cb(m.payload);
       }
 
     });

@@ -21,12 +21,13 @@ module.exports = function ( c ) {
   }
 
   // init an empty array
+  // TODO allow users to pass layers as arguments
   var colorLayers = [];
 
   // colors array prepared
   _.each( colors, function ( color, i ) {
     // console.log('start>>>', color, i)
-    var tcColors = Array( 35 );
+    var tcColors = _.times('#000000', 35);
 
     if ( _.isPlainObject( color ) ) {
       // shape
@@ -57,7 +58,10 @@ module.exports = function ( c ) {
         // 24.75
 
 
-
+        if (color.angle < 0 ){
+          // spin it right round again, like a record
+          color.angle = 360 + color.angle;
+        }
         color.angle = ( color.angle < 360 ) ? color.angle : color.angle % 360;
         var point = 35 * ( color.angle / 360 )
         if ( color.blend === true ) {
@@ -105,28 +109,38 @@ module.exports = function ( c ) {
     // console.log('end', tcColors, tcColors.length);
   })
 
-  composeLayers(colorLayers);
+  // composeLayers(colorLayers);
 
   // setTCColors(tcColors);
 
-  return function subMethods( tcColors ) {
-    var self = this;
-    self.brighten = function ( bi ) {
-      _.each( tcColors, function ( c, i ) {
-        tcColors[ i ] = c.brighten( bi );
+  var subFn = {
+    brighten : function ( bi ) {
+      _.each( colorLayers, function ( c, i ) {
+        colorLayers[ i ] = c.brighten( bi );
       } )
-    };
+    },
 
-    self.darken = function ( di ) {
-      _.each( tcColors, function ( c, i ) {
-        tcColors[ i ] = c.darken( di );
+    darken : function ( di ) {
+      _.each( colorLayers, function ( c, i ) {
+        colorLayers[ i ] = c.darken( di );
       } )
-    };
+    },
 
-    setLED( tcColors );
-
-    return self;
+    rotate : function(steps){
+      var index = Math.round(steps/35);
+      for ( var i = 0; i <= index; i++){
+        _.each(colorLayers, function(a){
+          a.unshift(tc('#000000'));
+        });
+      }
+      return subFn;
+    },
+    render: function(){
+      composeLayers(colorLayers);
+    }
   }
+
+  return subFn;
 }
 
 // COLORS will be TC colors
@@ -139,6 +153,8 @@ function setTCColors( colors ) {
   emitColorRing( tcColors );
 }
 
+var composeMix = true;
+
 function composeLayers(layers){
 
   // uncomment to debug layering
@@ -146,9 +162,15 @@ function composeLayers(layers){
   var i = 0;
   var final = _.reduce(layers, function (r, v) {
     // console.log( i++, printLights(v));
-    // combine matrix of points
+    // combine matrix of points with next layer
     _.each(v, function (c, i) {
+      if ( composeMix === true){
+        if ( c.isValid()){
+
+        }
+      }
       if ( c.isValid()){
+        // straight replace
         r[i] = c;
       }
     });

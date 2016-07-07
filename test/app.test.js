@@ -2,7 +2,7 @@
 //
 describe.skip('Matrix Applications', function(){
   before(function(){
-    require('child_process').execSync('cp -r '+ __dirname + '/test.matrix/ '+ __dirname +'/../apps/test.matrix/');
+    require('child_process').execSync('cp -r '+ __dirname + '/fixtures/test.matrix/ '+ __dirname +'/../apps/test.matrix/');
     app = new Matrix.service.application.Application('test');
   })
 

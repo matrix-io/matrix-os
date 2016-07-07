@@ -29,9 +29,11 @@ screens:
   - - buttonsTest
   # Row 2
   - - buttonTest
-    - labelGroup
-    # Row 3
-  - - dropDown
+  # Row 3
+  - - info
+  # Row
+  - - labelGroup
+    - dropDown
     - cpuChart
   # Row 4
   - - gaugeChart
@@ -68,6 +70,7 @@ widgets:
   info:
     type: device
     display: list-group
+    label: Secret Information
   cpuChart:
     type: monitor
     keys: cpu,memory

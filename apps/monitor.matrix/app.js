@@ -83,13 +83,13 @@ function restartMonitor (){
 // matrix.on('buttonFast', function () { delayTime += 1000; restartMonitor(); })
 // matrix.on('buttonSlow', function () { delayTime = Math.max(delayTime - 1000, 500); restartMonitor(); })
 //
-// matrix.on('buttonInfo', function(){
-//   matrix.type('device').send({
-//     'os_hostname': os.hostname(),
-//     'os_type': os.type(),
-//     'os_platform': os.platform(),
-//     'os_arch': os.arch()
-//   });
-// })
+matrix.on('buttonInfo', function(){
+  matrix.type('device').send({
+    'os_hostname': os.hostname(),
+    'os_type': os.type(),
+    'os_platform': os.platform(),
+    'os_arch': os.arch()
+  });
+})
 
 // matrix.init('face')
