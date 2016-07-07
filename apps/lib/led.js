@@ -1,7 +1,7 @@
 var tc = require('tinycolor2');
 
 module.exports = function ( c ) {
-
+  // console.log('LED', c)
   //default
   var colors = c;
 
@@ -12,7 +12,7 @@ module.exports = function ( c ) {
 
   // fill
   if ( _.isString( c ) ) {
-    colors = _.times( 35, c );
+    colors = _.times( 35, i => c );
   }
 
   // interleave
@@ -30,26 +30,35 @@ module.exports = function ( c ) {
     var tcColors = _.times('#000000', 35);
 
     if ( _.isPlainObject( color ) ) {
+      // console.log('o>', color)
       // shape
       if ( _.has( color, 'spin')){
         color.color = tc(color.color).spin(color.spin);
       }
 
       if ( _.has( color, 'arc' ) ) {
+        //if not defined, off
+        color.color = color.color || 'black';
+
         // draw arc degrees to lights 360 / 10 = 36
-        var arcArray = _.times( Math.floor(color.arc / 10), function(){ return color.color } );
+        // => [ 'black', 'black', 'black', ]
+        // TODO: project degrees properly onto 35 lights
+        var arcArray = _.times(  Math.round(35 * ( color.arc / 360 )), function(){ return color.color } );
         _.each( arcArray, function(ac, i2){
-          var targetIndex = color.start + i2 || i2;
+          var targetIndex = Math.round(35 * ( color.start / 360 )) + i2 || i2;
+          // splice values into tcColor array
           tcColors[ targetIndex ] = ac;
-          color.end = targetIndex;
+          color.endIndex = targetIndex;
         })
+
+
 
         if ( color.blend === true ){
           // 245 = 24.5 - 24 = 0.5
           // draw next cell
           var blendAmt = ( color.arc / 10 ) - Math.floor(color.arc / 10);
           if ( blendAmt > 0 ){
-            tcColors[ color.end+1 ] = tc(color.color).darken(( 1-blendAmt ) * 25);
+            tcColors[ color.endIndex+1 ] = tc(color.color).darken(( 1-blendAmt ) * 25);
           }
         }
 
@@ -58,7 +67,7 @@ module.exports = function ( c ) {
         // 24.75
 
 
-        if (color.angle < 0 ){
+        if ( color.angle < 0 ){
           // spin it right round again, like a record
           color.angle = 360 + color.angle;
         }
@@ -81,16 +90,17 @@ module.exports = function ( c ) {
           var angleIndex = Math.round( point );
           tcColors[angleIndex] = color.color;
         }
-
-
-
       }
-
+    // is not an object
     } else {
-      // process color with tiny color
+      // console.log('>', color);
+      if ( _.isNumber(color) ){
+        color = '#' + _.repeat(6, color.toString(16));
+      }
       tcColors[ i ] = color;
     }
 
+    // console.log(tcColors);
     // make every color a tc color
     tcColors = _.map(tcColors, function (c) {
       return tc(c);
@@ -106,7 +116,7 @@ module.exports = function ( c ) {
       colorLayers.push( t );
     })
 
-    // console.log('end', tcColors, tcColors.length);
+    // console.log('end', tcColors[0], tcColors.length, colorLayers.length);
   })
 
   // composeLayers(colorLayers);
@@ -114,23 +124,32 @@ module.exports = function ( c ) {
   // setTCColors(tcColors);
 
   var subFn = {
+    // change this into objects to process during composition vs inline
     brighten : function ( bi ) {
       _.each( colorLayers, function ( c, i ) {
         colorLayers[ i ] = c.brighten( bi );
       } )
+      return subFn;
     },
 
     darken : function ( di ) {
+      var origValue = di;
       _.each( colorLayers, function ( c, i ) {
-        colorLayers[ i ] = c.darken( di );
+        _.each(c, function (co, i2){
+          var replacementColor = co.darken( replacementDarken );
+          colorLayers[ i ][i2] = replacementColor
+        })
       } )
+      return subFn;
     },
 
-    rotate : function(steps){
-      var index = Math.round(steps/35);
-      for ( var i = 0; i <= index; i++){
+    rotate : function(deg){
+      deg = deg % 360;
+      // OOO is important
+      var lights = Math.round(deg / (360/35));
+      for ( var i = 0; i <= lights; i++){
         _.each(colorLayers, function(a){
-          a.unshift(tc('#000000'));
+          a.unshift( tc('#000000') );
         });
       }
       return subFn;
@@ -161,6 +180,7 @@ function composeLayers(layers){
   // console.log('== compStart vv');
   var i = 0;
   var final = _.reduce(layers, function (r, v) {
+
     // console.log( i++, printLights(v));
     // combine matrix of points with next layer
     _.each(v, function (c, i) {
@@ -171,7 +191,8 @@ function composeLayers(layers){
       }
       if ( c.isValid()){
         // straight replace
-        r[i] = c;
+        // for shape shifting, write final value
+        r[i % 35] = c;
       }
     });
 
@@ -191,7 +212,12 @@ function emitColorRing( colors ) {
     if ( _.isUndefined(c)){
       return { r:0, g:0, b:0, a:0 };
     }
-    return c.toRgb();
+    var rgb = c.toRgb();
+    // make sure light goes on if it's on
+    rgb.r = ( rgb.r > 0 ) ? Math.min(16, rgb.r) : rgb.r;
+    rgb.g = ( rgb.g > 0 ) ? Math.min(16, rgb.g) : rgb.g;
+    rgb.b = ( rgb.b > 0 ) ? Math.min(16, rgb.b) : rgb.b;
+    return rgb;
   })
 
   // colors should be { r: g: b: }
