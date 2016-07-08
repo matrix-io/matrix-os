@@ -331,22 +331,18 @@ filters:
 
 services:
   vehicle:
-    engine: detection
+    engine: car
     engineParams:
       zones:
-      - exitZone:
-        - - 24
-          - 33
-        - - 24
-          - 42
-        - - 42
-          - 100
-        - - 100
-          - 110
+        exitZone:
+          x: 100
+          y: 100
+          width: 100
+          height: 200
       speedThresh : 45,
       nightMode: dynamic
   face:
-    engine: count
+    engine: face
     engineParams:
       minDwell : 1
       minHappy : 0.1

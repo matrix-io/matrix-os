@@ -64,10 +64,8 @@ Matrix.events.on('addListener', function(name) {
   log('+ Event Listener', name);
 })
 
-//Initialize Listeners - Code goes here
+//Initialize Listeners - see event/index.js
 Matrix.event.init();
-
-//@TODO where is this this defined ??
 Matrix.service.init();
 Matrix.device.init();
 
@@ -184,6 +182,11 @@ var jwt = require('jsonwebtoken');
 
     //for tests
     Matrix.events.emit('matrix-ready');
+
+    if (process.env.hasOwnProperty('REPL')){
+      const repl = require('repl');
+      repl.start('> ').context.Matrix = Matrix;
+    }
   });
 
   /*

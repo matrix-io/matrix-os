@@ -36,6 +36,19 @@ module.exports = function ( c ) {
         color.color = tc(color.color).spin(color.spin);
       }
 
+      if ( _.has(color, 'fade')){
+        var steps = color.fade || 10;
+        var stepPer = 100 / steps;
+        var start = color.start || 0;
+        for ( var i = 0; i < steps; i++){
+        var targetIndex = start - i;
+          if ( targetIndex < 0 ){
+            targetIndex = 35 + targetIndex;
+          }
+          tcColors[targetIndex] = tc(color.color).darken( stepPer * i );
+        }
+      }
+
       if ( _.has( color, 'arc' ) ) {
         //if not defined, off
         color.color = color.color || 'black';
@@ -136,8 +149,7 @@ module.exports = function ( c ) {
       var origValue = di;
       _.each( colorLayers, function ( c, i ) {
         _.each(c, function (co, i2){
-          var replacementColor = co.darken( replacementDarken );
-          colorLayers[ i ][i2] = replacementColor
+          colorLayers[ i ][i2] =co.darken( di );
         })
       } )
       return subFn;
@@ -172,7 +184,6 @@ function setTCColors( colors ) {
   emitColorRing( tcColors );
 }
 
-var composeMix = true;
 
 function composeLayers(layers){
 
@@ -184,15 +195,20 @@ function composeLayers(layers){
     // console.log( i++, printLights(v));
     // combine matrix of points with next layer
     _.each(v, function (c, i) {
+      composeMix = true;
       if ( composeMix === true){
         if ( c.isValid()){
-
+          if ( c.getBrightness() > 0 ){
+            r[i % 35] = tc.mix(r[i % 35], c, 50);
+          }
         }
-      }
-      if ( c.isValid()){
-        // straight replace
-        // for shape shifting, write final value
-        r[i % 35] = c;
+      } else {
+        if ( c.isValid()){
+          // straight replace
+          // for shape shifting, write final value
+          r[i % 35] = c;
+        }
+
       }
     });
 
