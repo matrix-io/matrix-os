@@ -1,27 +1,78 @@
-
-
-# MATRIX Device Container
+# MATRIX OS
 *stay in wonderland and I show you how deep the rabbit-hole goes...*
 
+# Alpha Intent
+MATRIX OS is not yet ready for wide public use. We want you to see what we're thinking about and learn from your feedback.
+
+### Documentation
+Look here for a non code-driven view.
+> http://matrix-io.github.io/matrix-documentation
+
 # Overview
-MatrixOS is a node application which provides a host for sensor libraries, computer vision software and Matrix applications. MatrixOS connects to the `matrix-streaming-server` to provide real-time, socket based information for clients.
+MATRIX OS is a platform for running applications on the MATRIX Creator. Many other hardware platforms will be supported.
 
-# Private repos
-Had to move `admatrix-node-sdk` and `admobilize-eventfilter-sdk` out of package.json for deployment reaosns.
+## MATRIX Applications
+MATRIX applications are built in JavaScript to logically connect sensor and computer vision data streams with outputs, such as LED lights, sending voltages, integrations and data for dashboards and analysis.
 
-Here is the mapping.
+An example application would recognize your face and unlock your front door. A security gesture could be added for a basic level of access control. A 2 factor QR Code provided over the phone or fingerprint reader could be integrated for the much more security.
+
+Using [configuration files](https://matrix-io.github.io/matrix-documentation/Configuration/examples/), an application end-user could customize an application for their specific use case. Adding API keys or custom phrases.
+
+#### Why JavaScript?
+Lots of people already know JavaScript, and there is a rich module ecosystem. Part of our goal is to put IoT into the hands of more people.
+
+#### What about MY language?
+Don't worry. We like other languages too, all it will need is a supporting SDK.
+
+#### Applications?
+ MATRIX Applications can be used in the traditional manner of an app, single user, single device. We believe swarming meshes of interconnected data streams will be a more common pattern. Most devices will use many applications at once, and many will operate entirely without direct manipulation by an end user. We have built [inter-app messaging protocols](https://matrix-io.github.io/matrix-documentation/API/cross-talk) to help this.
+
+#### Open Source
+We built MATRIX on top of open source software and we are releasing it for everyone to see under the hood and make contributions😎. We believe in open access to information, especially for the IoT space, where security and privacy are of the utmost importance.
+
+## Great, how do I use the thing over the internet?
+You will want to start by using the CLI to easily manage MATRIX OS on your MATRIX Creator. See https://github.com/matrix-io/matrix-cli
+
 ```
-"admatrix-eventfilter-sdk": "git+ssh://git@bitbucket.org:admobilize/admobilize-eventfilter-sdk.git",
-"admatrix-node-sdk": "git+ssh://git@bitbucket.org:admobilize/admobilize-node-sdk.git"
-"matrix-test-sensor": "//TODO"
+npm install -g matrix-cli
 ```
 
+# Developer Information
+The below is intended for developers working on this repository.
 
-# Authentication
-MatrixOS authentication is provided by `admatrix-node-sdk` using the device id and device secret.
+# First
 
-# Local Storage
-Device tokens and application state is saved on the local device via `nedb`.
+Clone repo and update protobufs
+```
+git clone https://github.com/matrix-io/matrix-os.git
+git submodule update --init
+```
+
+### Debugging
+
+Use `DEBUG=* node index.js` to see all debug messages.
+
+#### Debug categories
+
+` app, sensor, stream, matrix `
+
+**example:**
+To see output from socket streams and apps, do
+`DEBUG=app,stream`
+
+To exclude engine-io from the output, do
+`DEBUG=*,-engine*`
+
+## Environment Variables
+```
+MATRIX_API_SERVER http://dev-demo.admobilize.com -- points to admobilize-api server
+MATRIX_STREAMING_SERVER http://dev-mxss.admobilize.com:80 - points to admatrix-streaming-server
+```
+## Start your MATRIX OS with a monitor App
+
+```
+START_APP=monitor node index.js
+```
 
 # Globals
 ```
@@ -37,7 +88,7 @@ Matrix - is the primary global namespace.
 See below for more details
 
 ## Event Flow
-Events are at the core of MatrixOS.
+Events are at the core of MATRIX OS. This is how information is sent between the applications and the sockets.
 
 ```
 Events
@@ -48,15 +99,17 @@ app-message - Global Interapp Messaging
 app-{appName}-message - Targeted Interapp messaging
 sensor-init - initialize a sensor
 cli-message - incoming message from CLI
-trigger - incoming event from dashboard / inter device messaging
+trigger - incoming event from dashboard / cross messaging
 token-refresh - get a new token
 device-reboot - restart the device
 ```
 
+Every file in `Matrix.event` that has an init() will run that automatically. This is to populate the event listeners.
+
 ## Application Lifecycle
 
 ### Configuration
-On deployment, configuration is overwritten with `config.yaml`. Otherwise, Firebase is the source of configuration truth with a fall back to `config.yaml` for defaults.
+On `matrix deploy`, configuration is overwritten with `config.yaml`. Otherwise, Firebase is the source of configuration truth with a fall back to `config.yaml` for defaults.
 
 When an application runs, however, a `config.json` is written with the active config, and used for the application.
 
@@ -72,7 +125,7 @@ Starting an application does the following:
 1. Sets up listeners for inter-app routing
 
 ### Installation
-Applications are prompted to install on MatrixOS via infrastructure commands ( `cli-message` with `{type:'app-install'}` ). These commands include a URL which the Matrix downloads, conducts an `npm install` upon, and checks to make sure appropriate sensors are available (todo).
+Applications are prompted to install on MATRIX OS via infrastructure commands ( `cli-message` with `{type:'app-install'}` ). These commands include a URL which the Matrix downloads, conducts an `npm install` upon, and checks to make sure appropriate sensors are available (todo).
 
 ## App Messaging
 
@@ -96,6 +149,9 @@ Data from an app process is captured and routed into the event system as `app-em
 
 ## Socket Streaming Server Connection
 
+### Initial Connection
+The Streaming Server is contacted with a `deviceToken` parameter. Success = `auth-ok` message
+
 ### Register Device
 The first step in establishing a socket connection is to send a `device-register` socket message.
 
@@ -105,170 +161,20 @@ If no Streaming Server is visible, Matrix keeps trying with an ever-increasing d
 ### SocketEmit
 `SocketEmit` is a custom wrapper around the socket to provide channel and message capabilities. Please use this when you want to send something to the server.
 
-## Sensors
-Sensors are provided by node modules with following namespace:
-
-```
-matrix.sensor.{sensorModel}.{systemArchitecture}
-```
-
-So for a MX1174 sensor to be installed on an ARM board, one would install `matrix.sensor.mx1174.arm` to the matrix os with the CLI command `matrix install -s mx1174`.
-
-All sensor modules are written to a common specification, which allows them to interchange easily with matrix apps using sensor.type as the single point of reference.
-
-# Installation
-```
-git clone git@bitbucket.org:admobilize/admatrix.git
-cd admatrix
-npm install
-```
-# Running
-
-### Debugging
-
-Use `DEBUG=* nodemon` to see all debug messages.
-
-#### Debug categories
-
-` app, sensor, stream, matrix `
-
-**example:**
-To see output from socket streams and apps, do
-`DEBUG=app,stream nodemon`
-
-To exclude engine-io from the output, do
-`DEBUG=*,-engine* nodemon`
-
-## Environment Variables
-```
-MATRIX_API_SERVER http://dev-demo.admobilize.com -- points to admobilize-api server
-MATRIX_STREAMING_SERVER http://localhost:3000 - points to admatrix-streaming-server
-MATRIX_CLIENT_ID AdMobilizeClientID - assigned id
-MATRIX_CLIENT_SECRET AdMobilizeClientSecret - assigned secret
-```
-
-## Freescale Installation
-```
-# from local admatrix parent folder
-zip -r admatrix.zip admatrix/ -x *.git*
-scp admatrix.zip admatrix@192.168.1.129:~/
-
-# on device
-unzip admatrix.zip -d admatrix
-
-npm install -g node-gyp nodemon
-```
-
-## Raspberry Pi Installation
-```
-sudo apt-get install bluetooth bluez libbluetooth-dev libudev-dev
-sudo apt-get install libasound2-dev
-```
-
-## Rebuilds node-gyp
-
-```
-cd node_modules/adsensors && node-gyp rebuild
-cd ../ && npm rebuild
-```
-
-## Start your Application with a Test App
-
-```
-ADMATRIX_SENSOR_REFRESH=500 START_APP=test nodemon
-```
-
-## Permission Fixes for Audio & Sensors
-
-```
-# Audio Playback Fix for Sudo
-apt-get install jackd2
-sudo chmod 666 /sys/class/input/input4/enable
-
-# Accelerometer Permissions
-sudo chmod 666 /sys/class/input/input4/enable
-sudo usermod -a -G input admatrix
-
-# Magnometer Permissions
-sudo usermod -a -G i2c admatrix
-
-# Altimeter Permissions
-sudo chmod 777 /dev/spidev0.0
-
-# Install Sox For Linux
-sudo apt-get install sox libsox-fmt-all
-
-# Install Sox for mac
-brew install sox
-
-```
-
-## Prerequisite - AdSensors
-
-* Clone admobilize-adsensor repo
-* Copy admobilize-adsensor/node-adsensors/ contents into admatrix/node_modules/adsensors
-* `npm install` in admatrix/
-
-## MATRIX File System
-```
-Matrix
-|_device  - Everything having to do with the device
-| |_bluetooth          - ( init, createCharacteristic, createService )
-| |_daemon             - Start / Kill Processes ( Not Intended for Apps )
-| |_file               - File Reading / Writing Utilities
-| |_storage            - ( freespace(cb) ) Determine device storage capacity
-| |_wifi               - ( init )
-|_event  - Events are mainly for routing requests to services
-| |_api-socket-router  - Handle Messages To/From API
-| |_app-functional     - Handle Messages / Data from App
-| |_app-lifecycle      - Handle on, off, update, etc. messages from API
-| |_heartbeat          - Emitted on regular interval
-| |_sensors            - Listeners, Socket Server & Multi-Sensor Management
-| |_token              - Refresh Token Event
-| |_util               - Nothing yet
-|_service
-| |_auth               - ( authenticate ) refresh tokenss
-| |_filter             - (todo) Server side filtering + Database
-| |_heartbeat          - Actual Heartbeat Process
-| |_initialize         - Old Beacon Init
-| |_lifecycle          - Keeps track of last boot
-| |_logging            - See Custom Global Functions
-| |_manager            - App Management ( start, stop, install )
-| |_media              - Video / Image from Beacon
-| |_stream             - Connect with streaming server
-| |_token              - Persist / Retrieve Token
-```
-
-## Events
-(See)[https://docs.google.com/spreadsheets/d/131aFIKZRKLm8fIlFbYi-AnroEXMSJvxtpyujY18zcHk/edit?usp=sharing]
-
-
-## Developer Help
-
-Custom global functions
-
-```
-clog() - console.log shortcut, no logentries
-ulog() - utility log, pretty prints object, no Logentries
-log() - logentries
-warn() - logentries
-error() - logentries
-```
-
 ## Docker development workflow
 
-The repo includes a `docker-compose.yml` file. This file contains information to run a containerized version of the MatrixOS. Please make sure you are running either Linux or the native Docker app, and issue: 
+The repo includes a `docker-compose.yml` file. This file contains information to run a containerized version of the MATRIX OS. Please make sure you are running either Linux or the native Docker app, and issue:
 
 ```
 docker-compose run --service-ports mos [optional command]
-``` 
+```
 
 The above command will:
 
-  - Build the image that contains all required dependencies to run the MatrixOS.
+  - Build the image that contains all required dependencies to run the MATRIX OS.
   - Mount the current directory inside `/matrix` dir inside the container, meaning
-    that changes performed on your local file system will show up inside the 
-    container as well. 
+    that changes performed on your local file system will show up inside the
+    container as well.
   - Run `nodemon index.js` inside the container, exposing port 80 on your local machine. It
     will also reinstall all your node_modules if `REINSTALL_NODE_MODULES: 1`. This is
     useful in development as helps dealing with `node_modules` in different branches, and
@@ -276,13 +182,7 @@ The above command will:
 
 This flow can play nice with say, MXSS also running in the same machine. More about that soon.
 
-### IMPORTANT
-Make sure you updated your submodules, otherwise protocol buffer definitions may not be
-available: 
 
-```
-git submodule update --init
-```
 
 ## Maintainers
 
