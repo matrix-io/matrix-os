@@ -145,6 +145,8 @@ var jwt = require('jsonwebtoken');
             ...
           });
         **/
+
+        // Look at Firebase after Token is available
         Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, Matrix.deviceToken, cb);
       });
     },
