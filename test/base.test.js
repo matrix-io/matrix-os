@@ -24,14 +24,6 @@ describe('Matrix Base', function() {
       _.isUndefined(Matrix.deviceName).should.be.false;
       done();
     });
-    it('should have MATRIX_USER', function(done) {
-      _.isUndefined(Matrix.user).should.be.false;
-      done();
-    });
-    it('should have MATRIX_PASSWORD', function(done) {
-      _.isUndefined(Matrix.password).should.be.false;
-      done();
-    });
   });
 
 
