@@ -37,8 +37,6 @@ var configs = _.pick(process.env, [
   'MATRIX_DEVICE_SECRET',
   'MATRIX_DEVICE_ID',
   'MATRIX_DEVICE_NAME',
-  'MATRIX_USERNAME',
-  'MATRIX_PASSWORD',
   'NODE_ENV'
 ]);
 
@@ -52,7 +50,7 @@ log('>>>>', configs);
 _.extend(Matrix, configs);
 
 
-f.jwt = { secret : process.env.JWT_SECRET }
+f.jwt = { secret : process.env.JWT_PUBLIC_KEY }
 
 f.version = JSON.parse( fs.readFileSync('./package.json') ).version;
 
