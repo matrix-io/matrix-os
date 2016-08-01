@@ -172,6 +172,8 @@ var jwt = require('jsonwebtoken');
       cb()
     },
   ], function(err) {
+    if (err) debug(err);
+
     Matrix.device.led.stopLoader();
     Matrix.device.led.clear();
     debug('vvv MATRIX vvv \n'.yellow,
