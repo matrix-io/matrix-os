@@ -123,22 +123,42 @@ var jwt = require('jsonwebtoken');
         if (err) return cb(err);
 
         debug('PopulateToken - OK>'.green, token);
+        var payload = {};
 
-        var decoded = jwt.decode(token);
-        debug('PopulateToken - decoded>'.yellow, decoded);
-
-        if (!_.has(decoded, 'claims') || !_.has(decoded.claims, 'deviceToken') ||
-            decoded.claims.deviceToken !== true) {
+        var decodedToken = jwt.decode(token, {complete: true});
+        if (decodedToken === null) {
           return cb('Bad device token');
         }
+        else if (decodedToken.header.alg === 'HS256') {
+          // d structured tokens
+          debug('PopulateToken - HS256 decoded>'.yellow, decodedToken);
 
-        if ( decoded.claims.device.id !== Matrix.deviceId ) {
+          if (!_.has(decoded, 'd') || !_.has(decoded.d, 'did')) {
+            return cb('Bad device token');
+          }
+          payload.uid = decoded.d.uid;
+          payload.device = {id: decoded.d.did, key: decoded.d.dkey};
+        }
+        else if (decodedToken.header.alg === 'RS256') {
+          // new tokens
+          debug('PopulateToken - RS256 decoded>'.yellow, decodedToken);
+
+          if (!_.has(decoded, 'claims') || !_.has(decoded.claims, 'deviceToken') ||
+              decoded.claims.deviceToken !== true) {
+            return cb('Bad device token');
+          }
+          payload.uid = decoded.uid;
+          payload.device = {id: decoded.claims.device.id, key: decoded.claims.device.key};
+        }
+
+
+        if ( payload.device.id !== Matrix.deviceId ) {
           return cb('Device Token Device Id does not match deviceId');
         }
 
         Matrix.deviceToken = token;
-        Matrix.deviceRecordId = decoded.claims.device.key;
-        Matrix.userId = decoded.uid;
+        Matrix.deviceRecordId = payload.device.key;
+        Matrix.userId = payload.uid;
         debug('processDeviceToken - Matrix.userId>'.green, Matrix.userId);
         debug('processDeviceToken - Matrix.deviceRecordId>'.green, Matrix.deviceRecordId);
         // Where do we do this ??
