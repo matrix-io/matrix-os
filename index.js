@@ -127,18 +127,19 @@ var jwt = require('jsonwebtoken');
         var decoded = jwt.decode(token);
         debug('PopulateToken - decoded>'.yellow, decoded);
 
-        if (!_.has(decoded, 'claims') || !_.has(decoded.claims, 'deviceToken') ||
-            decoded.claims.deviceToken !== true) {
-          return cb('Bad device token');
-        }
+        // if (!_.has(decoded, 'claims') || !_.has(decoded.claims, 'deviceToken') ||
+        //     decoded.claims.deviceToken !== true) {
+        //   return cb('Bad device token');
+        // }
 
-        if ( decoded.claims.device.id !== Matrix.deviceId ) {
-          return cb('Device Token Device Id does not match deviceId');
-        }
+        // if ( decoded.claims.device.id !== Matrix.deviceId ) {
+        //   return cb('Device Token Device Id does not match deviceId');
+        // }
 
         Matrix.deviceToken = token;
-        Matrix.deviceRecordId = decoded.claims.device.key;
-        Matrix.userId = decoded.uid;
+        Matrix.deviceRecordId = decoded.d.dkey;
+        Matrix.userId = decoded.d.uid;
+
         debug('processDeviceToken - Matrix.userId>'.green, Matrix.userId);
         debug('processDeviceToken - Matrix.deviceRecordId>'.green, Matrix.deviceRecordId);
         // Where do we do this ??

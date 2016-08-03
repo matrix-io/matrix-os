@@ -50,7 +50,7 @@ log('>>>>', configs);
 _.extend(Matrix, configs);
 
 
-f.jwt = { secret : process.env.JWT_PUBLIC_KEY }
+f.jwt = { secret : process.env.JWT_SECRET }
 
 f.version = JSON.parse( fs.readFileSync('./package.json') ).version;
 
