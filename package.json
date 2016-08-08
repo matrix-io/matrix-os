@@ -3,7 +3,7 @@
   "version": "0.4.0",
   "description": "Core of the device layer for AdMobilize Matrix devices. Includes global component, npm install -g matrix-cli",
   "main": "app.js",
-  "repository": "https://bitbucket.org/admobilize/admatrix",
+  "repository": "http://github.com/matrix-io/matrix-os",
   "scripts": {
     "start": "nodemon --watch lib --watch config",
     "test": "node test/_runner.js",
