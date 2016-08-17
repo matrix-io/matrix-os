@@ -169,7 +169,9 @@ var jwt = require('jsonwebtoken');
     },
     function(cb){
       debug('Checking MXSS');
-      Matrix.service.stream.checkStreamingServer(),
+      if ( !process.env.hasOwnProperty('MATRIX_NOMXSS') ){
+        Matrix.service.stream.checkStreamingServer();
+      }
       cb()
     },
   ], function(err) {
