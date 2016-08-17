@@ -33,6 +33,7 @@
     "Matrix": true,
     "error": true,
     "log": true,
-    "warn": true
+    "warn": true,
+    "matrix": true
   }
 }

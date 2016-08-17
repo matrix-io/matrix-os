@@ -20,6 +20,10 @@ var DataStore = require('nedb');
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
 
+var D = require('debug')
+
+debug = undefined; 
+
 process.setMaxListeners(50);
 
 error = function(){
@@ -235,6 +239,9 @@ var Matrix = {
   emit: interAppNotification,
   startApp: function(name){
     appName = name;
+
+    // setup debug
+    debug = new D('')
 
     // Config is written as JSON by MOS -
     try {

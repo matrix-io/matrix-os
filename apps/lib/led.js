@@ -122,7 +122,7 @@ module.exports = function ( c ) {
     //wrap end to beginning
     var tcLayers = _.chunk( tcColors, 35 )
 
-    printLights(tcColors);
+    console.log(printLights(tcColors));
 
     // push wrapping layers to compose matrix
     _.each(tcLayers, function(t){
