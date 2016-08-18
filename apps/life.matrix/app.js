@@ -30,6 +30,14 @@ function rule90(input){
 
 matrix.init('gyroscope').then(function(data){
   console.log('WOOOOT', data);
+  var roll = Math.round(data.roll);
+  var pitch = Math.abs(Math.round(data.pitch));
+  var yaw = Math.abs(Math.round(data.yaw));
+  matrix.led({
+    angle: roll,
+    color: 'blue',
+    blend: true
+  }).render();
 })
 //
 // setInterval(function(){
