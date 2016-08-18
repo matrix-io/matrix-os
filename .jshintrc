@@ -24,6 +24,8 @@
   "laxcomma": true,
   "mocha": true,
   "node": true,
+  "-W058": true,
+  "-W003": true,
   "globals": {
     "angular": true,
     "app" : true,

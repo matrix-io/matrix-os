@@ -69,6 +69,9 @@ Matrix.event.init();
 Matrix.service.init();
 Matrix.device.init();
 
+// fire off the lights
+  Matrix.device.led.loader();
+
 // Node-SDK - Use for API Server Communication
 // SDK
 Matrix.api = require('matrix-node-sdk');
@@ -108,7 +111,6 @@ var jwt = require('jsonwebtoken');
   async.series([
 
     function checkApiServer(cb) {
-      Matrix.device.led.loader();
       require('http').get(Matrix.apiServer, function(res) {
         cb(null);
       }).on('error', function() {
@@ -175,7 +177,11 @@ var jwt = require('jsonwebtoken');
       cb()
     },
   ], function(err) {
-    if (err) debug(err);
+    if (err) {
+      Matrix.device.led.error();
+      haltTheMatrix();
+      return debug(err);
+    }
 
     Matrix.device.led.stopLoader();
     Matrix.device.led.clear();
@@ -252,7 +258,7 @@ function onKill() {
 */
 function onDestroy() {
   //TODO: Implemenent cleanups
-  // kill children apps
+  // kill children apps\
   async.series([
     Matrix.service.manager.killAllApps,
     Matrix.service.manager.clearAppList,

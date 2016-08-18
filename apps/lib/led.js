@@ -1,7 +1,10 @@
 var tc = require('tinycolor2');
 
+/*
+Usage: led( c ).render() -> Writes to STRIP. just LED will not work
+ */
+
 module.exports = function ( c ) {
-  // console.log('LED', c)
   //default
   var colors = c;
 

@@ -4,4 +4,6 @@ matrix = require('./../matrix.js')
 
 matrix.startApp(appName);
 
-require('./app.js');
+matrix.ready(function(){
+  require('./app.js');  
+})

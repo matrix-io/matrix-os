@@ -1,7 +1,14 @@
+var EventFilter = require('matrix-eventfilter').EventFilter;
+var applyFilter = require('matrix-eventfilter').apply;
+
 module.exports = function(name, options){
 
+  if (_.isUndefined(options)){
+    options = {};
+  }
+
   //TODO: find if this init is for a detection
-  if ( name.match(/(face|car|palm|thumb)/).length > 0 ){
+  if ( !_.isNull(name.match(/(face|car|palm|thumb)/)) ){
     process.send({type:'detection-init', payload: { name: name, options: options }});
     return { then: function(cb){
       process.on('message', function (data) {
@@ -24,7 +31,7 @@ module.exports = function(name, options){
 function initSensor(name, options) {
 console.log('Initialize Sensor:'.blue , name);
 
-var filter;
+var filter, sensorOptions;
 
   var sensors = [];
   // kick off sensor readers
@@ -43,8 +50,9 @@ var filter;
   _.forEach(sensors, function (s) {
 
     // break down options by key if necessary
+    // { gyro: {}, face: {} .... }
     if ( options.hasOwnProperty(s) ){
-      var sensorOptions = options.s;
+      sensorOptions = options.s;
     } else {
       sensorOptions = options;
     }
@@ -56,10 +64,11 @@ var filter;
       options: sensorOptions
     });
   });
-// # sensor || CV
+
+// # matrix.init(sensor || CV)
 
   // prepare local chaining filter
-  var filter = new EventFilter(name);
+  filter = new EventFilter(name);
 
   // then is a listener for messages from sensors
   // FIXME: Issue with app only storing one process at a time
@@ -70,7 +79,7 @@ var filter;
     // recieves from events/sensors
     process.on('message', function(m) {
 
-      console.log('message recieved by app process', m);
+      console.log('[M]->[m](%s):', name, m);
       if (m.eventType === 'sensor-emit') {
         // TODO: filter multiple sensors
         if ( sensors.indexOf(m.sensor) > -1 ){
@@ -113,6 +122,8 @@ var filter;
           // provides .then(function(data){})
           cb(result);
         }
+      } else if ( m.eventType === 'container-status') {
+        // ignore
       } else {
         console.log('NO DETECT', result);
         cb(m.payload);
