@@ -13,8 +13,6 @@ warn = console.log;
 log = console.log;
 error = console.error;
 
-Matrix = {};
-
 // setup debug before lib loading
 var envSettings = getEnvSettings();
 if ( envSettings.debug === true && _.isUndefined(process.env['DEBUG'])){
@@ -26,6 +24,9 @@ var debug = debugLog('matrix');
 
 // Core
 Matrix = require('./lib/index.js');
+
+// device components, led, gyro, etc
+Matrix.components = {};
 
 // populate keys from settings after requiring libs
 parseEnvSettings(envSettings);
@@ -70,7 +71,7 @@ Matrix.service.init();
 Matrix.device.init();
 
 // fire off the lights
-  Matrix.device.led.loader();
+Matrix.device.drivers.led.loader();
 
 // Node-SDK - Use for API Server Communication
 // SDK
@@ -178,13 +179,13 @@ var jwt = require('jsonwebtoken');
     },
   ], function(err) {
     if (err) {
-      Matrix.device.led.error();
+      Matrix.device.drivers.led.error();
       haltTheMatrix();
       return debug(err);
     }
 
-    Matrix.device.led.stopLoader();
-    Matrix.device.led.clear();
+    Matrix.device.drivers.led.stopLoader();
+    Matrix.device.drivers.led.clear();
     debug('vvv MATRIX vvv \n'.yellow,
     require('util').inspect( _.omit(Matrix, ['device','password','username','events','service','db']), { depth : 0} ), "\n^^^ MATRIX ^^^ ".yellow);
     if (err) { error(err); }
@@ -263,7 +264,7 @@ function onDestroy() {
     Matrix.service.manager.killAllApps,
     Matrix.service.manager.clearAppList,
     Matrix.service.manager.cleanLogs,
-    // Matrix.device.led.clear
+    // Matrix.device.drivers.clear
   ], function(err){
     if (err) error(err);
     console.log('Cleanup complete...');

@@ -65,6 +65,9 @@ f.sensorSockets = true;
 f.socketCheckDelay = 60000;
 f.envs = configs;
 
+// for device component info
+f.components = {};
+
 
 // TODO: Figure out where file storage happens
 f.paths = { root : __dirname };

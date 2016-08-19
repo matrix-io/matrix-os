@@ -218,6 +218,12 @@ vim -nb or :nbs from inside vim
 ^-d down stack
 ```
 
+## File Organization
+- `lib` - holds most of the code
+- `lib/device` - is for isolated device interaction utilities
+- `lib/device/drivers` - is for device components
+- `event` - events are setup and handled here
+- `service` - constructors, utilities, protocols, etc
 
 
 ## Maintainers
