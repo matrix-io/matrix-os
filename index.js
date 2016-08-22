@@ -1,8 +1,11 @@
+// Welcome to MatrixOS - A JavaScript environment for IoT Applications
+
 /* GLOBALS */
 _ = require('lodash');
 async = require('async');
 
 
+// Logging Utilities
 ulog = function(){
   _.each(arguments, function(a){
     console.log(require('util').inspect(a, {depth:null, colors:true}))
@@ -13,33 +16,33 @@ warn = console.log;
 log = console.log;
 error = console.error;
 
-// setup debug before lib loading
+// based on NODE_ENV, set sensible defaults
 var envSettings = getEnvSettings();
-if ( envSettings.debug === true && _.isUndefined(process.env['DEBUG'])){
-  process.env['DEBUG'] = '*,-engine*'
+// if NODE_ENV=dev then set sane debug
+if ( envSettings.debug === true && !_.has(process.env, 'DEBUG' ) ){
+  process.env.DEBUG = '*,-engine*';
 }
-// for debug messages
+
 debugLog = require('debug');
 var debug = debugLog('matrix');
 
-// Core
+// Core Library - Creates Matrix.device, Matrix.event, Matrix.service
 Matrix = require('./lib/index.js');
 
-// device components, led, gyro, etc
+// runtime reference for device components, led, gyro, etc
 Matrix.components = {};
 
-// populate keys from settings after requiring libs
+// Make globals from env settings for easy access
 parseEnvSettings(envSettings);
 
-
-// Config - Envs are handled here
+// Configuration besides env settings
 Matrix.config = require('./config');
-// debug('Envs:', Matrix.config.envs);
-debug('Debug:', process.env['DEBUG']);
 
+debug('Debug:', process.env.DEBUG);
 debug('====== config ===vvv'.yellow)
 debug( Matrix.config, '\n');
 
+// Check that servers and device Id exists.
 var reqKeys = ['deviceId', 'apiServer', 'streamingServer'];
 var foundKeys = _.intersection(_.keysIn(Matrix), reqKeys);
 if ( foundKeys.length < reqKeys.length ){
@@ -52,63 +55,52 @@ if ( foundKeys.length < reqKeys.length ){
 
 log('ENV:'.grey, Matrix.env.blue , 'API:'.grey, Matrix.apiServer.blue, 'MXSS:'.grey, Matrix.streamingServer.blue)
 
-var fs = require('fs');
 var events = require('events');
-var util = require('util');
 
-
-//Event Loop - Handles all events
+//Event Loop - Handles all events. Not to be confused with Matrix.event
 Matrix.events = new events.EventEmitter();
-// seems like a fair number
+// seems like a fair number for now, should cap at 10 apps running
 Matrix.events.setMaxListeners(50);
 Matrix.events.on('addListener', function(name) {
-  log('+ Event Listener', name);
+  debug('+ Event Listener', name);
 })
 
-//Initialize Listeners - see event/index.js
+//Initialize Libraries. Calls module.export.init() if exists.
 Matrix.event.init();
 Matrix.service.init();
 Matrix.device.init();
 
-// fire off the lights
+// start loading LED animation
 Matrix.device.drivers.led.loader();
 
 // Node-SDK - Use for API Server Communication
-// SDK
+// SDK is used mainly for AUTH
 Matrix.api = require('matrix-node-sdk');
 Matrix.api.makeUrls(Matrix.apiServer);
 
-//app processes, see lib/service/mananger
+//app process objects, see lib/service/mananger
 Matrix.activeApplications = [];
+//active sensors, see lib/device/sensor
 Matrix.activeSensors = [];
 
-//db - files stored in db
+//db - files stored in db/
 var DataStore = require('nedb');
 Matrix.db = {
-  config: new DataStore({
-    filename: Matrix.config.path.db.config,
-    autoload: true
-  }),
-  device: new DataStore({
-    filename: Matrix.config.path.db.device,
-    autoload: true
-  }),
-  user: new DataStore({
-    filename: Matrix.config.path.db.user,
-    autoload: true
-  }),
+  // used to save useful device state info
   service: new DataStore({
     filename: Matrix.config.path.db.service,
     autoload: true
   }),
+  // used to store unsent data
   pending: new DataStore({
     filename: Matrix.config.path.db.pending,
     autoload: true
   })
 }
+
 var jwt = require('jsonwebtoken');
 
-  // this is kind of an init flow
+  // init
   async.series([
 
     function checkApiServer(cb) {
@@ -145,15 +137,7 @@ var jwt = require('jsonwebtoken');
 
         debug('processDeviceToken - Matrix.userId>'.green, Matrix.userId);
         debug('processDeviceToken - Matrix.deviceRecordId>'.green, Matrix.deviceRecordId);
-        // Where do we do this ??
-        /**
-        Matrix.db.service.update(
-          {deviceId: deviceRecordId},
-          {
-            deviceToken: token
-            ...
-          });
-        **/
+
         Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, Matrix.deviceToken, cb);
       });
     },
@@ -181,7 +165,7 @@ var jwt = require('jsonwebtoken');
     if (err) {
       Matrix.device.drivers.led.error();
       haltTheMatrix();
-      return debug(err);
+      return error('Bad Matrix Initialization', err);
     }
 
     Matrix.device.drivers.led.stopLoader();
@@ -249,7 +233,6 @@ process.on("SIGQUIT", function() {
 */
 function onKill() {
   log("Matrix -- Application Closing...");
-  // Matrix.service.stream.close();
   onDestroy();
 }
 
