@@ -1,5 +1,4 @@
 # MATRIX OS
-*stay in wonderland and I show you how deep the rabbit-hole goes...*
 
 # Alpha Intent
 MATRIX OS is not yet ready for wide public use. We want you to see what we're thinking about and learn from your feedback.
