@@ -98,6 +98,10 @@ Matrix.db = {
   })
 }
 
+Matrix.device.malos.info(function(data){
+  console.log("DEVICE", data);
+})
+
 var jwt = require('jsonwebtoken');
 
   // init
