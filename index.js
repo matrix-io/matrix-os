@@ -145,6 +145,41 @@ var jwt = require('jsonwebtoken');
         Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, Matrix.deviceToken, cb);
       });
     },
+    function setupFirebaseListeners(cb){
+      // watch for app installs
+      // first pass is gets all apps
+
+      Matrix.service.firebase.app.getUserAppIds( function( appIds ){
+        debug('User Registered Apps:'.green, _.map( appIds, 'name' ).join(', '))
+
+          Matrix.service.firebase.app.watchUserApps( function( appId ){
+            if ( _.keys(appIds).indexOf(appId) === -1 ){
+              // new app install!
+              console.log('installing', appId)
+              Matrix.service.firebase.appstore.get(appId, function( appRecord ){
+                var app = appRecord;
+
+                var currId = app.meta.currentVersion;
+                var appName = app.meta.shortName;
+
+
+                var file = app.versions[currId].file;
+                var v = app.versions[currId].version;
+
+                Matrix.service.manager.install(file, appName, v, function(err){
+                  if (err) return error(err);
+                  console.log(appName, v, 'installed from', file);
+                })
+              })
+            }
+
+
+          });
+
+        cb();
+      })
+
+    },
     function checkUpdates(cb) {
       return cb();
       // warn('Updates not implemented on api yet');

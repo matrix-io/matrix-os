@@ -7,6 +7,7 @@
   "scripts": {
     "debug": "DEBUG=*,-engine*,-Component* NODE_ENV=dev node index.js",
     "local-debug": "DEBUG=*,-engine*,-Component* NODE_ENV=local node index.js",
+    "local": "NODE_ENV=local node index.js",
     "start": "nodemon --watch lib --watch config",
     "test": "node test/_runner.js",
     "pr": "open https://bitbucket.org/admobilize/admatrix/pull-request/new",
