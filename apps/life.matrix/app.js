@@ -28,7 +28,11 @@ function rule90(input){
   return rule[input];
 }
 
+
 setInterval(function(){
+
+
+
   var start = stage;
   start[-1] = 0;
   start[start.length] = 1;
@@ -44,59 +48,11 @@ setInterval(function(){
   // console.log(stage.join(''));
   var colors = _.map(stage,function(b){
     if (b === 1){
-      return '#000033'
+      return '#0000FF'
     } else {
-      return '#000011'
+      return '#000001'
     }
   });
 
-  matrix.led( _.take(colors, depth) );
+  matrix.led( _.take(colors, depth) ).render();
 }, 100);
-//
-// setInterval(function(){
-//   var start = stage;
-//   if ( _.has(start, '-1')){
-//     stage[start.length] = start[-1];
-//   }
-//   _.each(start, function(s, i){
-//     //dead
-//     if ( s === ' ' ){
-//       if ( start[i-1] === 'x' && start[i+1] === 'x' ){
-//         // make alive
-//         stage[i] = 'x';
-//         stage[i+1] = ' ';
-//         stage[i-1] = ' ';
-//       }
-//       //spontaneous generation
-//       // if ( start[i-1] === ' ' && start[i+1] === ' ' ){
-//       //   // make alive
-//       //   stage[i] = 'x';
-//       // }
-//     }
-//     // alive
-//     if ( s === 'x'){
-//       //no neighbors
-//       if ( start[i-1] === ' ' && start[i+1] === ' '){
-//         //stay
-//         stage[i] = 'x';
-//       }
-//       //one neighbor
-//       if ( start[i-1] === 'x' || start[i+1] === 'x'){
-//         //travel
-//         if ( start[i-1] === 'x' ){
-//           stage[i+1] = 'x';
-//           stage[i-1] = ' ';
-//         } else {
-//           stage[i-1] = 'x'
-//           stage[i+1] = ' '
-//         }
-//       }
-//       // two neighbors
-//       if ( start[i-1] === 'x' && start[i+1] === 'x'){
-//         stage[i] = ' ';
-//       }
-//     }
-//   })
-//   last = stage;
-//   console.log(stage.join(''));
-// }, 100)

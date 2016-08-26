@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package matrix_test;
+
+message Test {
+  boolean test = 0;
+}

@@ -20,6 +20,10 @@ var DataStore = require('nedb');
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
 
+var D = require('debug')
+
+debug = undefined;
+
 process.setMaxListeners(50);
 
 error = function(){
@@ -123,59 +127,59 @@ if (arguments.length === 1){
 
 // For Sending Messages to other Apps
 function interAppResponse( name, cb ){
-if (_.isUndefined(cb)){
-  // for globals
-  cb = name;
-}
-
-process.on('message', function(m){
-    console.log('[M]->app'.blue, m, 'app-'+appName+'-message')
-    // is global or app-specific
-  if (m.type === 'trigger' || m.type === "app-message" || m.type === 'app-'+appName+'-message'){
-    console.log('[M]->app(msg)'.blue, m)
-    if ( _.isString(name) ){
-      // if an event name was specified in the on()
-      if ( m.eventName == name ){
-        cb(m);
-      }
-      // no event name match, no fire listener
-    } else {
-      cb(m);
-    }
-
+  if (_.isUndefined(cb)){
+    // for globals
+    cb = name;
   }
 
-});
+  process.on('message', function(m){
+      console.log('[M]->app'.blue, m, 'app-'+appName+'-message')
+      // is global or app-specific
+    if (m.type === 'trigger' || m.type === "app-message" || m.type === 'app-'+appName+'-message'){
+      console.log('[M]->app(msg)'.blue, m)
+      if ( _.isString(name) ){
+        // if an event name was specified in the on()
+        if ( m.eventName == name ){
+          cb(m);
+        }
+        // no event name match, no fire listener
+      } else {
+        cb(m);
+      }
+
+    }
+
+  });
 }
 
 
 function receiveHandler(cb) {
-console.log('util receive');
+  console.log('util receive');
 
-process.on('message', function(m) {
-  cb(null, m);
-});
+  process.on('message', function(m) {
+    cb(null, m);
+  });
 
-process.on('error', function(err) {
-  if (err) return cb(err);
-});
+  process.on('error', function(err) {
+    if (err) return cb(err);
+  });
 
-process.on('disconnect', function(w) {
-  console.log(appName, ': disconnect', w);
-});
+  process.on('disconnect', function(w) {
+    console.log(appName, ': disconnect', w);
+  });
 
-process.on('exit', function() {
-  //handle exit
-  console.log(appName, ': exit', arguments);
-});
-}
-
-function setupCVHandlers(cb){
-process.on('message', function(m){
-  if(m.type=== 'cv-data'){
-
+  process.on('exit', function() {
+    //handle exit
+    console.log(appName, ': exit', arguments);
+  });
   }
-})
+
+  function setupCVHandlers(cb){
+  process.on('message', function(m){
+    if(m.type=== 'cv-data'){
+
+    }
+  })
 }
 
 
@@ -203,6 +207,7 @@ var Matrix = {
   camera: lib.cv,
   request: request,
   led: require('./lib/led'),
+  gyro: require('./lib/gyro'),
   audio: {
     say: function(msg){
       console.warn('say() is not implemented yet')
@@ -236,6 +241,9 @@ var Matrix = {
   startApp: function(name){
     appName = name;
 
+    // setup debug
+    debug = new D('')
+
     // Config is written as JSON by MOS -
     try {
       Matrix.config = JSON.parse( require('fs').readFileSync(__dirname + '/'+ name +'.matrix/config.json'));
@@ -248,8 +256,8 @@ var Matrix = {
     }
 
     // make configuration available globally `Matrix.services.vehicle.engine`
-    _.each( _.keys(Matrix.config), function(k){
-        Matrix[k] = Matrix.config[k];
+    _.each( _.keys(Matrix.config.settings), function(k){
+        Matrix[k] = Matrix.config.settings[k];
     })
 
     // generic message handlers
@@ -275,3 +283,14 @@ var Matrix = {
 }
 
 module.exports = Matrix;
+
+
+Matrix.ready = function(cb){
+  // handle ready
+  process.on('message', function(m){
+    if (m.eventType === "container-ready"){
+      console.log("Matrix OS Handlers Ready")
+      cb();
+    }
+  })
+}

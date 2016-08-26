@@ -184,6 +184,48 @@ The above command will:
 
 This flow can play nice with say, MXSS also running in the same machine. More about that soon.
 
+## On Device Debugging Workflow
+
+Put this in your `.zshrc`
+```
+alias mm='NODE_ENV=dev node index.js'
+alias mdm='NODE_ENV=dev node --debug-brk index.js'
+
+alias ms=__ms
+function __ms(){
+START_APP=$1 mm
+}
+alias mds=__mds
+function __mds(){
+START_APP=$1 mdm
+}
+```
+
+Highly recommend [node-vim-debugger](https://github.com/sidorares/node-vim-debugger). Three ssh sessions required.
+
+```
+mds monitor
+node-vim-inspector
+vim -nb or :nbs from inside vim
+```
+
+```
+:e filepath
+^-p to set a breakpoint
+^-c to continue
+^-n next
+^-i step in
+^-o step out
+^-u up stack
+^-d down stack
+```
+
+## File Organization
+- `lib` - holds most of the code
+- `lib/device` - is for isolated device interaction utilities
+- `lib/device/drivers` - is for device components
+- `event` - events are setup and handled here
+- `service` - constructors, utilities, protocols, etc
 
 
 ## Maintainers

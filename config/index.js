@@ -50,7 +50,7 @@ log('>>>>', configs);
 _.extend(Matrix, configs);
 
 
-f.jwt = { secret : process.env.JWT_PUBLIC_KEY }
+f.jwt = { secret : process.env.JWT_SECRET }
 
 f.version = JSON.parse( fs.readFileSync('./package.json') ).version;
 
@@ -64,6 +64,9 @@ f.sensorRefresh = process.env['MATRIX_SENSOR_REFRESH'] || 2500;
 f.sensorSockets = true;
 f.socketCheckDelay = 60000;
 f.envs = configs;
+
+// for device component info
+f.components = {};
 
 
 // TODO: Figure out where file storage happens

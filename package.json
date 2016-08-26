@@ -1,10 +1,13 @@
 {
   "name": "matrix-os",
-  "version": "0.4.0",
-  "description": "Core of the device layer for AdMobilize Matrix devices. Includes global component, npm install -g matrix-cli",
+  "version": "0.4.4",
+  "description": "Portal to device layer for AdMobilize Matrix devices. Includes global component, npm install -g matrix-cli",
   "main": "app.js",
-  "repository": "https://bitbucket.org/admobilize/admatrix",
+  "repository": "http://github.com/matrix-io/matrix-os",
   "scripts": {
+    "debug": "DEBUG=*,-engine*,-Component* NODE_ENV=dev node index.js",
+    "local-debug": "DEBUG=*,-engine*,-Component* NODE_ENV=local node index.js",
+    "local": "NODE_ENV=local node index.js",
     "start": "nodemon --watch lib --watch config",
     "test": "node test/_runner.js",
     "pr": "open https://bitbucket.org/admobilize/admatrix/pull-request/new",
@@ -13,7 +16,7 @@
     "deploy-image": "find apps -name '*.matrix' ! -name 'monitor.matrix' -type d -exec rm -r {} +; docker build --no-cache -t matrix/matrix-os .;docker push admobilize/matrix-os",
     "local-setup": "cd node_modules; ln -s ../../matrix-firebase ./matrix-firebase; ln -s ../../matrix-app-config-helper ./matrix-app-config-helper; ln -s ../../matrix-node-sdk ./matrix-node-sdk; ln -s ../../matrix-eventfilter ./matrix-eventfilter; cd ..",
     "ssh": "ssh pi@m",
-    "sync": "rsync -e ssh --progress -u package.json index.js pi@m:matrix-test/matrix-os/;rsync -ru -e ssh --progress lib config apps test pi@m:matrix-test/matrix-os",
+    "sync": "rsync -e ssh --progress -u package.json index.js pi@m:mos/;rsync -ru -e ssh --progress lib proto config apps test pi@m:mos",
     "device-diagnostics": "DEBUG=*,-engine* START_APP=monitor NODE_ENV=dev node index.js",
     "screensaver": "START_APP=life NODE_ENV=dev node index.js",
     "clock": "START_APP=clock NODE_ENV=dev node index.js"
@@ -59,6 +62,7 @@
     "request": "^2.72.0",
     "rimraf": "^2.5.2",
     "should": "^7.0.2",
+    "sinon": "^1.17.5",
     "socket.io": "^1.4.5",
     "socket.io-client": "^1.4.5",
     "tar": "^2.2.0",
