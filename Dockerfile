@@ -9,6 +9,8 @@ COPY . /matrix
 RUN chmod +x /matrix/docker-entrypoint.sh
 
 WORKDIR matrix/
+
+RUN rm -r node_modules
 RUN npm install
 
 EXPOSE 80
