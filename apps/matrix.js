@@ -6,9 +6,6 @@ console.log('Matrix OS Application Library Loading...')
 require('colors');
 
 //needs sudo for audio commands disable until we figure this out
-// var loudness = require('loudness');
-// var player = require('player');
-var microphone = require('node-record-lpcm16');
 var request = require('request');
 var lib = require('./lib');
 var EventFilter = require('matrix-eventfilter').EventFilter;
@@ -207,7 +204,6 @@ var Matrix = {
   camera: lib.cv,
   request: request,
   led: require('./lib/led'),
-  gyro: require('./lib/gyro'),
   audio: {
     say: function(msg){
       console.warn('say() is not implemented yet')
@@ -225,7 +221,6 @@ var Matrix = {
       // return soundPlayer;
     }
   },
-  mic: microphone,
   send: function(message){
     require('./lib/send.js').apply(Matrix, [message]);
   },
