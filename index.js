@@ -4,6 +4,7 @@
 _ = require('lodash');
 async = require('async');
 
+require('colors');
 
 // Logging Utilities
 ulog = function(){
@@ -20,7 +21,7 @@ error = console.error;
 var envSettings = getEnvSettings();
 // if NODE_ENV=dev then set sane debug
 if ( envSettings.debug === true && !_.has(process.env, 'DEBUG' ) ){
-  process.env.DEBUG = '*,-engine*';
+  process.env.DEBUG = '*,-engine*,-Component*';
 }
 
 debugLog = require('debug');
@@ -53,7 +54,7 @@ if ( foundKeys.length < reqKeys.length ){
   process.exit(1);
 }
 
-log('ENV:'.grey, Matrix.env.blue , 'API:'.grey, Matrix.apiServer.blue, 'MXSS:'.grey, Matrix.streamingServer.blue)
+debug('','ENV:'.grey, Matrix.env.blue , 'API:'.grey, Matrix.apiServer.blue, 'MXSS:'.grey, Matrix.streamingServer.blue)
 
 var events = require('events');
 
@@ -141,16 +142,26 @@ var jwt = require('jsonwebtoken');
 
         debug('processDeviceToken - Matrix.userId>'.green, Matrix.userId);
         debug('processDeviceToken - Matrix.deviceRecordId>'.green, Matrix.deviceRecordId);
-
-        Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, Matrix.deviceToken, cb);
+        cb();
       });
+    },
+    function(cb){
+      debug('Checking MXSS');
+      if ( !process.env.hasOwnProperty('MATRIX_NOMXSS') ){
+        Matrix.service.stream.initSocket(cb);
+      } else {
+        cb()
+      }
+    },
+    function firebaseInit(cb){
+      Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, Matrix.deviceToken, cb);
     },
     function setupFirebaseListeners(cb){
       // watch for app installs
       // first pass is gets all apps
 
       Matrix.service.firebase.app.getUserAppIds( function( appIds ){
-        debug('User Registered Apps:'.green, _.map( appIds, 'name' ).join(', '))
+        console.log('Installed Apps:'.green, _.map( appIds, 'name' ).join(', ').grey)
 
           Matrix.service.firebase.app.watchUserApps( function( appId ){
             if ( _.keys(appIds).indexOf(appId) === -1 ){
@@ -193,13 +204,6 @@ var jwt = require('jsonwebtoken');
       //   }
       // });
     },
-    function(cb){
-      debug('Checking MXSS');
-      if ( !process.env.hasOwnProperty('MATRIX_NOMXSS') ){
-        Matrix.service.stream.checkStreamingServer();
-      }
-      cb()
-    },
   ], function(err) {
     if (err) {
       Matrix.device.drivers.led.error();
@@ -209,9 +213,12 @@ var jwt = require('jsonwebtoken');
 
     Matrix.device.drivers.led.stopLoader();
     Matrix.device.drivers.led.clear();
-    debug('vvv MATRIX vvv \n'.yellow,
-    require('util').inspect( _.omit(Matrix, ['device','password','username','events','service','db']), { depth : 0} ), "\n^^^ MATRIX ^^^ ".yellow);
+    // debug('vvv MATRIX vvv \n'.yellow,
+    // require('util').inspect( _.omit(Matrix, ['device','password','username','events','service','db']), { depth : 0} ), "\n^^^ MATRIX ^^^ ".yellow);
     if (err) { error(err); }
+    if ( Matrix.registerOK ){
+      log('MXSS Connected:'.green, Matrix.streamingServer.grey)
+    }
     log(Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
     Matrix.banner();
 

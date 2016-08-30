@@ -44,8 +44,8 @@ configs = _.mapKeys(configs, function(v,k){
   var k = k.replace('ADMATRIX','').replace('MATRIX','');
   return _.camelCase(k);
 })
-
-log('>>>>', configs);
+// 
+// debug('ENVS >>>>'.blue, configs);
 
 _.extend(Matrix, configs);
 
