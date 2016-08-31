@@ -227,6 +227,14 @@ vim -nb or :nbs from inside vim
 - `event` - events are setup and handled here
 - `service` - constructors, utilities, protocols, etc
 
+## New Drivers from MALOS
+
+1. Duplicate a file from `lib/device/drivers` > `sensorname.js`
+2. Update proto in `proto/malos/driver.proto`
+3. Change read method in `sensorname.js` to point to proto message and field name
+4. Change logs and component in `sensorname.js` to point at new sensorname
+5. Update port number in `lib/device/port.js`
+6. Update sensorTypeList in `lib/device/sensor.js`
 
 ## Maintainers
 
