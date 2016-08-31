@@ -10,12 +10,16 @@ log=console.log;
 
 // Instantiate a Mocha instance.
 
-process.env.NODE_ENV = 'dev';
+process.env.NODE_ENV = 'local';
+process.env.DEBUG = '*';
 Matrix = require('../index.js').Matrix;
 
 setTimeout(function(){
+  log('timeout')
   Matrix.events.on('matrix-ready', function(){
     var testDir = __dirname;
+
+    log('ready')
 
     // Add each .js file to the mocha instance
     fs.readdirSync(testDir).filter(function(file) {
@@ -23,7 +27,7 @@ setTimeout(function(){
       return file.substr(-7) === 'test.js';
 
     }).forEach(function(file) {
-      console.log(file);
+      console.log('Test Loading', file);
       mocha.addFile(
         path.join(testDir, file)
       );

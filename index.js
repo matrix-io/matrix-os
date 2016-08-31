@@ -234,23 +234,24 @@ var jwt = require('jsonwebtoken');
       const repl = require('repl');
       repl.start('> ').context.Matrix = Matrix;
     }
+
+    Matrix.service.lifecycle.updateLastBootTime();
   });
 
-  /*
-  ███    ███  █████  ████████ ██████  ██ ██   ██
-  ████  ████ ██   ██    ██    ██   ██ ██  ██ ██
-  ██ ████ ██ ███████    ██    ██████  ██   ███
-  ██  ██  ██ ██   ██    ██    ██   ██ ██  ██ ██
-  ██      ██ ██   ██    ██    ██   ██ ██ ██   ██
-  */
-
-
-
-Matrix.service.lifecycle.updateLastBootTime();
 
 module.exports = {
   Matrix: Matrix
 }
+
+/*
+███    ███  █████  ████████ ██████  ██ ██   ██
+████  ████ ██   ██    ██    ██   ██ ██  ██ ██
+██ ████ ██ ███████    ██    ██████  ██   ███
+██  ██  ██ ██   ██    ██    ██   ██ ██  ██ ██
+██      ██ ██   ██    ██    ██   ██ ██ ██   ██
+*/
+
+
 
 // Process Level Event Listeners
 

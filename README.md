@@ -1,5 +1,4 @@
 # MATRIX OS
-*stay in wonderland and I show you how deep the rabbit-hole goes...*
 
 # Alpha Intent
 MATRIX OS is not yet ready for wide public use. We want you to see what we're thinking about and learn from your feedback.
@@ -18,11 +17,14 @@ An example application would recognize your face and unlock your front door. A s
 
 Using [configuration files](https://matrix-io.github.io/matrix-documentation/Configuration/examples/), an application end-user could customize an application for their specific use case. Adding API keys or custom phrases.
 
+### Layers
+Matrix OS communicates with the hardware via an interpretive layer.
+
 #### Why JavaScript?
 Lots of people already know JavaScript, and there is a rich module ecosystem. Part of our goal is to put IoT into the hands of more people.
 
 #### What about MY language?
-Don't worry. We like other languages too, all it will need is a supporting SDK.
+Don't worry. We like other languages too, all it will need is a supporting SDK. Coming soon.
 
 #### Applications?
  MATRIX Applications can be used in the traditional manner of an app, single user, single device. We believe swarming meshes of interconnected data streams will be a more common pattern. Most devices will use many applications at once, and many will operate entirely without direct manipulation by an end user. We have built [inter-app messaging protocols](https://matrix-io.github.io/matrix-documentation/API/cross-talk) to help this.
