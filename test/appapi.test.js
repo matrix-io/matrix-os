@@ -96,12 +96,37 @@ describe('Matrix App API', function () {
 
   })
 
-  describe('init()', function () {
-    it('will start a temperature sensor')
-    it('will start a humidity sensor')
-    it('will start a face detection')
-    it('will start a crowd detection')
-    it('will start a face recognition')
-    it('will start a vehicle count')
-  })
+
+  describe('Functional', function(){
+    describe('initialize sensors', function(){
+      it('sensors should be available in heartbeat')
+      it('sensors should be available in Matrix.activeSensors')
+    });
+
+    // Matrix.init(['temperature', 'monitor'])
+    it('should be able to init multiple sensors');
+
+    // Matrix.init(['temperature', 'monitor'], { refresh: 10000 });
+    it('should share one option with multiple sensors');
+
+    // Matrix.init(['temperature', 'monitor'], {
+    //   temperature: { refresh: 30000 },
+    //   monitor: { refresh: 1000 }
+    // })
+    it('should send keyed options to multiple sensors');
+
+    //temperature.between(72,95)
+    it('should be able to filter data');
+    it('should be able to apply computer vision');
+    it('should return filtered data in .then()');
+  });
+
+  describe('Inter-App Messaging', function(){
+    it('should be able to recieve a targeted message');
+    // matrix.emit('test-msg', 'test-data')
+    // matrix.on('test-msg')
+    it('should be able to recieve a global message')
+    //matrix.emit({ test: 'foo '})
+    // matrix.on(function(data))
+  });
 });

@@ -164,6 +164,7 @@ var jwt = require('jsonwebtoken');
         console.log('Installed Apps:'.green, _.map( appIds, 'name' ).join(', ').grey)
 
           Matrix.service.firebase.app.watchUserApps( function( appId ){
+            debug('Firebase->UserApps->(new)', appId )
             if ( _.keys(appIds).indexOf(appId) === -1 ){
               // new app install!
               console.log('installing', appId)
@@ -183,14 +184,25 @@ var jwt = require('jsonwebtoken');
                 })
               })
             }
-
-
           });
 
         cb();
       })
 
     },
+
+    function checkFirebaseInfo(cb){
+      Matrix.service.firebase.device.get( function(err, device){
+        if(err  || _.isNull(device) ) return cb('Bad Device Record');
+        debug('[fb]devices/>'.blue, device)
+        Matrix.service.firebase.user.checkDevice( Matrix.deviceId, function (err, device) {
+          if (err || _.isNull(device) ) return cb('Bad User Device Record');
+          debug('[fb]user/devices/deviceId>'.blue, device);
+          cb();
+        })
+      });
+    },
+
     function checkUpdates(cb) {
       return cb();
       // warn('Updates not implemented on api yet');
@@ -206,10 +218,13 @@ var jwt = require('jsonwebtoken');
     },
   ], function(err) {
     if (err) {
-      Matrix.device.drivers.led.error();
-      haltTheMatrix();
+      // Matrix.device.drivers.led.error();
+      Matrix.haltTheMatrix();
       return error('Bad Matrix Initialization', err);
     }
+
+    Matrix.service.firebase.device.goOnline();
+    Matrix.service.firebase.device.ping();
 
     Matrix.device.drivers.led.stopLoader();
     Matrix.device.drivers.led.clear();
@@ -258,7 +273,9 @@ module.exports = {
 //Triggered when the application is killed by a [CRTL+C] from keyboard
 process.on("SIGINT", function() {
   log("Matrix -- CRTL+C kill detected");
-  process.exit(0);
+  Matrix.service.firebase.device.goOffline(function(){
+    process.exit(0);
+  })
 });
 
 //Triggered when the application is killed with a -15
@@ -290,16 +307,19 @@ function onKill() {
 function onDestroy() {
   //TODO: Implemenent cleanups
   // kill children apps\
-  async.series([
-    Matrix.service.manager.killAllApps,
-    Matrix.service.manager.clearAppList,
-    Matrix.service.manager.cleanLogs,
-    // Matrix.device.drivers.clear
-  ], function(err){
-    if (err) error(err);
-    console.log('Cleanup complete...');
-    process.exit(0);
-  });
+  Matrix.service.firebase.device.ping();
+    Matrix.service.firebase.device.goOffline(function () {
+      async.series([
+        Matrix.service.manager.killAllApps,
+        Matrix.service.manager.clearAppList,
+        Matrix.service.manager.cleanLogs,
+        // Matrix.device.drivers.clear
+      ], function(err){
+        if (err) error(err);
+        console.log('Cleanup complete...');
+        process.exit(0);
+      });
+    })
 }
 
 // every 4 hours do this

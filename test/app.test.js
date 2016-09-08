@@ -12,16 +12,18 @@ describe.skip('Matrix Applications', function(){
   describe('Lifecycle', function(){
     it('should be able to install an app')
     it('should be able to update an app')
+    describe('start app', function(){
+
     it('should start an app by name', function(done){
       Matrix.service.manager.start('test', done);
     });
-    describe('activeApplications', function(){
+    describe('activeApplications management', function(){
       var appRecord;
       before( function(){
-        appRecord = _.filter( Matrix.activeApplications, { name: 'test'});
+        appRecord = _.find( Matrix.activeApplications, { name: 'test'});
       })
       it('should save a reference to the name', function(done){
-        appRecord.length.should.equal(1);
+        appRecord.name.should.equal('test');
         done();
       })
       it('should save a reference to the process', function(done){
@@ -36,35 +38,37 @@ describe.skip('Matrix Applications', function(){
         appRecord.should.have.property('sensors');
         done();
       })
+      it('should save a reference to the pid', function (done) {
+        appRecord.should.have.property('pid');
+        done();
+      })
     })
-    it('should stop an app by name');
-    it('should stop all apps');
-    it('should be able to uninstall an app')
+
+      describe('event management', function(){
+        var appRecord;
+        before( function(){
+          appRecord = _.find( Matrix.activeApplications, { name: 'test'});
+        })
+        it('should have listeners attached to process', function(done){
+          appRecord.process.should.have.property('handlers');
+          done();
+        })
+
+        it('should have listeners on the global event emitter', function(done){
+          Matrix.events.listeners('detection').length.should.be(1);
+          Matrix.events.listeners('app-message').length.should.be(1);
+          Matrix.events.listeners('app-test-message').length.should.be(1);
+          done();
+        })
+      })
+    describe('stop an app',function(){
+      it('should stop an app by name');
+      it('should stop all apps');
+
+    })
+      it('should be able to uninstall an app')
+    })
   });
 
-  describe('Functional', function(){
-    it('should be able to init a sensor');
-
-    // Matrix.init(['temperature', 'monitor'])
-    it('should be able to init multiple sensors');
-
-    // Matrix.init(['temperature', 'monitor'], { refresh: 10000 });
-    it('should share one option with multiple sensors');
-
-    // Matrix.init(['temperature', 'monitor'], {
-    //   temperature: { refresh: 30000 },
-    //   monitor: { refresh: 1000 }
-    // })
-    it('should send keyed options to multiple sensors');
-
-    //temperature.between(72,95)
-    it('should be able to filter data');
-    it('should be able to apply computer vision');
-    it('should return filtered data in .then()');
-  });
-
-  describe('Inter-App Messaging', function(){
-    it('should be able to recieve a targeted message');
-    it('should be able to recieve a global message')
-  });
+  
 })
