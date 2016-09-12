@@ -172,13 +172,19 @@ var jwt = require('jsonwebtoken');
                 var app = appRecord;
 
                 var currId = app.meta.currentVersion;
-                var appName = app.meta.shortName;
+                var appName = app.meta.shortName || app.meta.name;
 
 
                 var file = app.versions[currId].file;
                 var v = app.versions[currId].version;
 
-                Matrix.service.manager.install(file, appName, v, function(err){
+                var installOptions = {
+                  url: file,
+                  name: appName,
+                  version: v,
+                  id: appId
+                }
+                Matrix.service.manager.install(installOptions, function(err){
                   if (err) return error(err);
                   console.log(appName, v, 'installed from', file);
                 })
@@ -234,7 +240,7 @@ var jwt = require('jsonwebtoken');
     if ( Matrix.registerOK ){
       log('MXSS Connected:'.green, Matrix.streamingServer.grey)
     }
-    log(Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
+    log( Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
     Matrix.banner();
 
     //if START_APP is set

@@ -6,9 +6,10 @@ name: monitor
 version: 1
 configVersion: 2
 description: Matrix stats
+keywords: utility
 
 # provided to MatrixOS runtime as Matrix.refresh
-configuration:
+settings:
   refresh: 1000
 
 # these are defined for writing data to the data base
