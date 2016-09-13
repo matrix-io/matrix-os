@@ -163,6 +163,27 @@ var jwt = require('jsonwebtoken');
       Matrix.service.firebase.app.getUserAppIds( function( appIds ){
         console.log('Installed Apps:'.green, _.map( appIds, 'name' ).join(', ').grey)
 
+        var appsDir = fs.readdirSync('apps');
+        var appFolders = _.filter(appsDir, function(a){
+          return ( a.indexOf('.matrix') > -1 )
+        });
+
+        console.log('Local Apps:', appFolders);
+
+        var fileSystemVariance = appFolders.length - _.map( appIds, 'name' ).length;
+
+        console.log('Local / Installed Δ', fileSystemVariance  )
+
+          if ( fileSystemVariance === 0 ){
+            debug('Invariance. Clean System. Matching Records')
+          } else {
+            debug('Variance detected between registered applications and applications on device.')
+            // TODO: decide a source of truth, do we trust device to write to cloud
+            // do we trust cloud to have accurate device
+            // mix the two, updates to device are pushed to cloud and vice versa
+
+          }
+
           Matrix.service.firebase.app.watchUserApps( function( appId ){
             debug('Firebase->UserApps->(new)', appId )
             if ( _.keys(appIds).indexOf(appId) === -1 ){
