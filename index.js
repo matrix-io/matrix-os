@@ -83,6 +83,8 @@ Matrix.api.makeUrls(Matrix.apiServer);
 Matrix.activeApplications = [];
 //active sensors, see lib/device/sensor
 Matrix.activeSensors = [];
+//active detections, see lib/device/detection
+Matrix.activeDetections = [];
 
 //db - files stored in db/
 var DataStore = require('nedb');

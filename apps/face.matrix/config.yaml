@@ -2,6 +2,7 @@ name: face
 version: 1
 configVersion: 2
 description: Matrix face
+keywords: face,detect
 widgets:
   poop: 123
 
@@ -11,17 +12,8 @@ sensors:
   - wobbly
 
 services:
-  vehicle:
-    engine: vehicle-count
-    engineParams:
-      zones:
-        exitZone:
-          x: 100
-          y: 100
-          width: 100
-          height: 200
   face:
-    engine: face-detect
+    engine: face
     engineParams:
       zone:
         x: 10

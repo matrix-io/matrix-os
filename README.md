@@ -1,14 +1,16 @@
 # MATRIX OS
 
-# Alpha Intent
-MATRIX OS is not yet ready for wide public use. We want you to see what we're thinking about and learn from your feedback.
-
-### Documentation
-Look here for a non code-driven view.
-> http://matrix-io.github.io/matrix-documentation
-
 # Overview
-MATRIX OS is a platform for running applications on the MATRIX Creator. Many other hardware platforms will be supported.
+MATRIX Open Source is a platform for running applications on the MATRIX Creator. Many other hardware platforms will be supported.
+
+###### Bugs
+https://github.com/matrix-io/matrix-app-config-helper/issues
+
+###### Questions
+http://community.matrix.one
+
+###### Documentation
+http://matrix-io.github.io/matrix-documentation
 
 ## MATRIX Applications
 MATRIX applications are built in JavaScript to logically connect sensor and computer vision data streams with outputs, such as LED lights, sending voltages, integrations and data for dashboards and analysis.

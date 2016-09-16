@@ -10,9 +10,10 @@ module.exports = function(name, options){
   //TODO: find if this init is for a detection
   if ( !_.isNull(name.match(/(face|car|palm|thumb)/)) ){
     process.send({type:'detection-init', payload: { name: name, options: options }});
-    return { then: function(cb){
+    return {
+      then: function(cb){
       process.on('message', function (data) {
-        if ( data.eventType === 'detection'){
+        if ( data.eventType === 'detection-emit'){
           // TODO: need some other sort of check here to route properly
           // TODO: add filters, copy other then function
           cb(data.payload);
@@ -103,25 +104,6 @@ var filter, sensorOptions;
           }
         }
         // console.log('applying filter:', filter.json());
-
-
-      } else if (m.eventType === 'detection'){
-        _.omit( m, 'eventType' );
-
-        // Do filter
-        //TODO: Switch out format for unified object
-        if (filter.filters.length > 0){
-          result = applyFilter(filter, m.payload);
-        } else {
-          result = m.payload;
-        }
-
-        console.log('APP DETECT', result);
-        if (result !== false && !_.isUndefined(result)){
-          // LORE: switched from err first to promise style
-          // provides .then(function(data){})
-          cb(result);
-        }
       } else if ( m.eventType === 'container-status') {
         // ignore
       } else {

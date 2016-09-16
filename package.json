@@ -5,7 +5,7 @@
   "main": "app.js",
   "repository": "http://github.com/matrix-io/matrix-os",
   "scripts": {
-    "debug": "DEBUG=*,-engine*,-Component* NODE_ENV=dev node index.js",
+    "debug": "DEBUG=*,-engine* NODE_ENV=dev node index.js",
     "local-debug": "DEBUG=*,-engine*,-Component* NODE_ENV=local node index.js",
     "local": "NODE_ENV=local node index.js",
     "start": "nodemon --watch lib --watch config",
