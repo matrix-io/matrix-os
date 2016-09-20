@@ -196,9 +196,9 @@ var jwt = require('jsonwebtoken');
             // app to uninstall!
             if (_.keys(appIds).indexOf(app.id) !== -1) {
               console.log('uninstalling ', app.name + '...');
-              Matrix.service.manager.install(installOptions, function(err){
+              Matrix.service.manager.uninstall(app.name, function(err){
                 if (err) return error(err);
-                console.log(appName, v, 'installed from', file);
+                console.log('Successfully uninstalled ' + app.name.green);
               }) 
             } else {
               console.log('The application ' + app.name + ' isn\'t currently installed on this device');
