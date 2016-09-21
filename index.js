@@ -1,5 +1,5 @@
 // Welcome to MatrixOS - A JavaScript environment for IoT Applications
-
+forceExit = false;
 /* GLOBALS */
 _ = require('lodash');
 async = require('async');
@@ -111,6 +111,7 @@ var jwt = require('jsonwebtoken');
   async.series([
 
     function checkApiServer(cb) {
+      debug('Checking API server...'.green);
       require('http').get(Matrix.apiServer, function(res) {
         cb(null);
       }).on('error', function() {
@@ -148,17 +149,20 @@ var jwt = require('jsonwebtoken');
       });
     },
     function(cb){
-      debug('Checking MXSS');
+      debug('Checking MXSS...'.green);
       if ( !process.env.hasOwnProperty('MATRIX_NOMXSS') ){
         Matrix.service.stream.initSocket(cb);
       } else {
         cb()
       }
     },
-    function firebaseInit(cb){
+    function firebaseInit(cb) {
+      debug('Starting Firebase...'.green + ' U:', Matrix.userId, ', D: ', Matrix.deviceId, ', DT: ' , Matrix.deviceToken);
+      
       Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, Matrix.deviceToken, cb);
     },
-    function setupFirebaseListeners(cb){
+    function setupFirebaseListeners(cb) {
+      debug('Setting up Firebase Listeners...'.green);
       // watch for app installs
       // first pass is gets all apps
 
@@ -185,7 +189,23 @@ var jwt = require('jsonwebtoken');
             // mix the two, updates to device are pushed to cloud and vice versa
 
           }
-
+          
+          //App uninstalls
+          Matrix.service.firebase.app.watchUserAppsRemoval(function (app) {
+            debug('Firebase->UserApps->(X)', app.id, ' (' + app.name + ')');
+            // app to uninstall!
+            if (_.keys(appIds).indexOf(app.id) !== -1) {
+              console.log('uninstalling ', app.name + '...');
+              Matrix.service.manager.uninstall(app.name, function(err){
+                if (err) return error(err);
+                console.log('Successfully uninstalled ' + app.name.green);
+              }) 
+            } else {
+              console.log('The application ' + app.name + ' isn\'t currently installed on this device');
+            }
+          });
+            
+          //App installations
           Matrix.service.firebase.app.watchUserApps( function( appId ){
             debug('Firebase->UserApps->(new)', appId )
             if ( _.keys(appIds).indexOf(appId) === -1 ){
@@ -220,7 +240,8 @@ var jwt = require('jsonwebtoken');
 
     },
 
-    function checkFirebaseInfo(cb){
+    function checkFirebaseInfo(cb) {
+      debug('Checking Firebase Info...'.green);
       Matrix.service.firebase.device.get( function(err, device){
         if(err  || _.isNull(device) ) return cb('Bad Device Record');
         debug('[fb]devices/>'.blue, device)
@@ -247,7 +268,10 @@ var jwt = require('jsonwebtoken');
     },
   ], function(err) {
     if (err) {
+      debug('Initialization error! '.red, err);
       // Matrix.device.drivers.led.error();
+      //TODO Connectivity error needs to be handled gracefully 
+      // Sample error message in err = 'matrix A network error (such as timeout, interrupted connection or unreachable host) has occurred.'
       Matrix.haltTheMatrix();
       return error('Bad Matrix Initialization', err);
     }
@@ -336,19 +360,26 @@ function onKill() {
 function onDestroy() {
   //TODO: Implemenent cleanups
   // kill children apps\
-  Matrix.service.firebase.device.ping();
+  debug("DESTROYING".red);
+  if (!forceExit) {
+    Matrix.service.firebase.device.ping();
     Matrix.service.firebase.device.goOffline(function () {
       async.series([
         Matrix.service.manager.killAllApps,
         Matrix.service.manager.clearAppList,
         Matrix.service.manager.cleanLogs,
         // Matrix.device.drivers.clear
-      ], function(err){
+      ], function (err) {
         if (err) error(err);
         console.log('Cleanup complete...');
         process.exit(0);
       });
     })
+  } else {
+    console.log('Unable to clean, exitting...');
+    process.exit(1);
+  }
+
 }
 
 // every 4 hours do this
@@ -374,7 +405,8 @@ process.on('uncaughtException', function(err) {
     // error(err.stack);
     Matrix.device.manager.reboot("Memory clean up");
   } else {
-    // error(err.stack);
+    forceExit = true;
+    console.error("UNKNOWN ERROR!".red, err.stack);
 
     // TODO: bad update? revert to last
     //revert old
