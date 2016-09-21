@@ -8,7 +8,6 @@ matrix.led([
     color: 'red',
     start: 360 - ( i % 360 ),
     blend: true
-
   },
 
   {
@@ -22,14 +21,12 @@ matrix.led([
     color: 'green',
     start: ( i % 360 ),
     blend: true
-
   },
   {
     arc: 120,
     color: 'blue',
     start: ( i % 720 ) / 2,
     blend: true
-
   },
 ]).render();
 i += 1;

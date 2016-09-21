@@ -1,7 +1,7 @@
 # MATRIX OS
 
 # Overview
-MATRIX Open Source is a platform for running applications on the MATRIX Creator. 
+MATRIX Open Source is a platform for running applications on the MATRIX Creator.
 
 ###### Bugs
 https://github.com/matrix-io/matrix-os/issues
@@ -11,6 +11,29 @@ http://community.matrix.one
 
 ###### Documentation
 http://matrix-io.github.io/matrix-documentation
+
+## Alpha Installation Instructions
+New parts of the MATRIX ecosystem are being developed and integrated every day. Here are a set of instructions which will get MATRIX OS running on your Creator. This will be streamlined in the future.
+
+1. Install your Creator onto an rPi, connect to network cable which goes to local network, NOT to your computer, as it needs to be discoverable. Wifi support coming soon.
+1. Discover your rPi address with `arp -na | grep -i b8:27:eb`.
+1. (Optional) Map ip to a host name in `/etc/hosts`. Example.
+```
+> 192.168.0.15 matrix
+```
+1. SSH into your rPi. `ssh pi@matrix` Open 3 SSH sessions
+1. In one SSH session on your Creator `echo "deb http://packages.matrix.one/matrix-creator/ ./" | sudo tee --append /etc/apt/sources.list`
+1. `apt-get update; apt-get upgrade;` - update apt-get with our packages
+1. `sudo raspi-config` - enable camera
+1. `sudo reboot` - reboot
+1. `apt-get install git malos-eye matrix-creator-malos libzmq3-dev`
+1. `git clone https://github.com/matrix-io/matrix-os.git`
+1. `cd matrix-os; npm install`
+1. In one SSH session, run `malos`
+1. In another SSH session, run `malos_eye`
+1. In the final SSH session, from the `matrix-os` folder. `npm start`
+1. If you want to start a MATRIX app on launch, use the env `START_APP`. ex. `START_APP=monitor npm start`
+1. Now you can issue commands and deploy apps to your MATRIX OS from the CLI. ( https://github.com/matrix-io/matrix-cli)
 
 ## MATRIX Applications
 MATRIX applications are built in JavaScript to logically connect sensor and computer vision data streams with outputs, such as LED lights, sending voltages, integrations and data for dashboards and analysis.
