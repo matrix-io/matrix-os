@@ -31,9 +31,30 @@ New parts of the MATRIX ecosystem are being developed and integrated every day. 
 1. `cd matrix-os; npm install`
 1. In one SSH session, run `malos`
 1. In another SSH session, run `malos_eye`
-1. In the final SSH session, from the `matrix-os` folder. `npm start`
-1. If you want to start a MATRIX app on launch, use the env `START_APP`. ex. `START_APP=monitor npm start`
+1. In the final SSH session, from the `matrix-os` folder. `node index.js`
+1. If you want to start a MATRIX app on launch, use the env `START_APP`. ex. `START_APP=monitor node index.js`
+1. Readlet  environment notes below.
 1. Now you can issue commands and deploy apps to your MATRIX OS from the CLI. ( https://github.com/matrix-io/matrix-cli)
+
+### Environments
+MATRIX OS and CLI run on top of several different environments, most users will want to select `production`, which will be selected by default. ( Note: While in alpha, MATRIX OS will default to `rc` )
+
+`production` - stable releases ( do not use while in alpha )
+`rc` - release candidate
+
+These two share a dataset, so users and devices from one will be available on the other.
+
+Change environment by setting `NODE_ENV`. ex. `NODE_ENV=rc node index.js`
+
+From the CLI use `matrix set env rc`.
+
+Make sure your device software and CLI are using the same environment.
+
+#### Cutting Edge
+
+`dev` - development environment
+
+You will have to make a second account for this environment (use `matrix register`). Test out the newest features before they move to `rc`. You will have to recreate your devices here.
 
 ## MATRIX Applications
 MATRIX applications are built in JavaScript to logically connect sensor and computer vision data streams with outputs, such as LED lights, sending voltages, integrations and data for dashboards and analysis.
