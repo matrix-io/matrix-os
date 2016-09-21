@@ -1,7 +1,7 @@
 # MATRIX OS
 
 # Overview
-MATRIX Open Source is a platform for running applications on the MATRIX Creator. Many other hardware platforms will be supported.
+MATRIX Open Source is a platform for running applications on the MATRIX Creator. 
 
 ###### Bugs
 https://github.com/matrix-io/matrix-os/issues
