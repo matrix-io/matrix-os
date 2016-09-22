@@ -158,7 +158,7 @@ var jwt = require('jsonwebtoken');
     },
     function firebaseInit(cb) {
       debug('Starting Firebase...'.green + ' U:', Matrix.userId, ', D: ', Matrix.deviceId, ', DT: ' , Matrix.deviceToken);
-      
+
       Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, Matrix.deviceToken, cb);
     },
     function setupFirebaseListeners(cb) {
@@ -189,7 +189,7 @@ var jwt = require('jsonwebtoken');
             // mix the two, updates to device are pushed to cloud and vice versa
 
           }
-          
+
           //App uninstalls
           Matrix.service.firebase.app.watchUserAppsRemoval(function (app) {
             debug('Firebase->UserApps->(X)', app.id, ' (' + app.name + ')');
@@ -199,12 +199,12 @@ var jwt = require('jsonwebtoken');
               Matrix.service.manager.uninstall(app.name, function(err){
                 if (err) return error(err);
                 console.log('Successfully uninstalled ' + app.name.green);
-              }) 
+              })
             } else {
               console.log('The application ' + app.name + ' isn\'t currently installed on this device');
             }
           });
-            
+
           //App installations
           Matrix.service.firebase.app.watchUserApps( function( appId ){
             debug('Firebase->UserApps->(new)', appId )
@@ -270,7 +270,7 @@ var jwt = require('jsonwebtoken');
     if (err) {
       debug('Initialization error! '.red, err);
       // Matrix.device.drivers.led.error();
-      //TODO Connectivity error needs to be handled gracefully 
+      //TODO Connectivity error needs to be handled gracefully
       // Sample error message in err = 'matrix A network error (such as timeout, interrupted connection or unreachable host) has occurred.'
       Matrix.haltTheMatrix();
       return error('Bad Matrix Initialization', err);
@@ -429,10 +429,12 @@ process.on('uncaughtException', function(err) {
 
 // UTILITY
 function getEnvSettings(env){
-  var environmentSetting = env || process.env['NODE_ENV'] || 'production';
+  // Change to production after leaving alpha
+  var environmentSetting = env || process.env['NODE_ENV'] || 'rc';
   var validEnvList = require('fs').readdirSync('./config/env');
 
   if ( _.intersection(environmentSetting, validEnvList).length > -1 ){
+    console.log('Environment Selected:'.grey, environmentSetting.blue);
     return require('./config/env/'+ environmentSetting + '.js');
   }
 
