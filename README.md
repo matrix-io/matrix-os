@@ -18,7 +18,7 @@ New parts of the MATRIX ecosystem are being developed and integrated every day. 
 #### Local Computer
 1. Install your Creator onto an rPi, connect to network cable which goes to local network, NOT to your computer, as it needs to be discoverable. Wifi support coming soon.
 1. Discover your rPi address with `arp -na | grep -i b8:27:eb`.
-1. SSH into your rPi. `ssh pi@192.168.0.15` Open 3 SSH sessions
+1. SSH into your rPi. `ssh pi@192.168.0.15`
 1. (Optional) Map ip to a host name in `/etc/hosts`.
 ```
 echo '192.168.0.15 matrix' >> /etc/hosts
