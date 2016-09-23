@@ -15,6 +15,8 @@ http://matrix-io.github.io/matrix-documentation
 ## Alpha Installation Instructions
 New parts of the MATRIX ecosystem are being developed and integrated every day. Here are a set of instructions which will get MATRIX OS running on your Creator. This will be streamlined in the future.
 
+![matrix os launches](http://i.makeagif.com/media/5-10-2016/TDceSN.gif)
+
 #### Local Computer
 1. Install your Creator onto an rPi, connect to network cable which goes to local network, NOT to your computer, as it needs to be discoverable. Wifi support coming soon.
 1. Discover your rPi address with `arp -na | grep -i b8:27:eb`.
