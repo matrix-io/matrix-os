@@ -6,7 +6,7 @@ matrix.init('face').then(function (data) {
   _.each(data.recognition, function (r) {
 
     if (r.tag === 'HEAD_POSE'){
-      ledBuilder.push([
+      ledBuilder = ledBuilder.concat([
         {angle: Math.round( r.pose_roll * 360 ) + 90,
         color:'orange' }
       ]);
@@ -18,7 +18,7 @@ matrix.init('face').then(function (data) {
       // calm face
       if (r.emotion === 'CALM') {
 
-        ledBuilder.push([
+        ledBuilder = ledBuilder.concat([
           {
             angle: 45,
             color: matrix.color('lightblue'),
@@ -39,7 +39,7 @@ matrix.init('face').then(function (data) {
       } else if (r.emotion==='ANGRY') {
 
 
-        ledBuilder.push([
+        ledBuilder = ledBuilder.concat([
           {
             angle: 45,
             color: matrix.color('red'),
@@ -60,7 +60,7 @@ matrix.init('face').then(function (data) {
       } else if (r.emotion==='HAPPY') {
 
 
-        ledBuilder.push([
+        ledBuilder = ledBuilder.concat([
           {
             angle: 45,
             color: matrix.color('yellow'),
@@ -81,7 +81,7 @@ matrix.init('face').then(function (data) {
       } else if (r.emotion==='SAD') {
 
 
-        ledBuilder.push([
+        ledBuilder = ledBuilder.concat([
           {
             angle: 45,
             color: matrix.color('blue'),
@@ -100,7 +100,7 @@ matrix.init('face').then(function (data) {
           ]);
 
       } else if (r.emotion==='DISGUST') {
-        ledBuilder.push([
+        ledBuilder = ledBuilder.concat([
           {
             angle: 45,
             color: matrix.color('bada55'),
