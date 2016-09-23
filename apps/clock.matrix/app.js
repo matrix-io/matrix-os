@@ -35,4 +35,4 @@ setInterval(function(){
   i = ( i < 360 ) ? i + 1 : 0;
 
   matrix.led([ secondLED, minuteLED, hourLED ]).render();
-}, 50)
+}, 50);

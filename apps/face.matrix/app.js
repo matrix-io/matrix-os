@@ -119,7 +119,7 @@ matrix.init('face').then(function (data) {
         ]);
       }
     }
-  })
+  });
 
   // draw this thing
   matrix.led(ledBuilder).render();
