@@ -34,14 +34,22 @@ echo "deb http://packages.matrix.one/matrix-creator/ ./" | sudo tee --append /et
 sudo apt-get update;
 sudo apt-get upgrade;
 sudo apt-get install -y xc3sprog malos-eye matrix-creator-openocd wiringpi matrix-creator-init cmake g++ git --force-yes;
+
 git clone https://github.com/matrix-io/matrix-os.git;
+
+# install node
+wget https://nodejs.org/dist/v4.3.2/node-v4.3.2-linux-armv6l.tar.gz
+tar -xvf node-v4.3.2-linux-armv6l.tar.gz
+cd node-v4.3.2-linux-armv6l
+sudo cp -R * /usr/local/
+
+# Install Matrix OS Dependencies
 cd matrix-os;
 git submodule update --init;
 npm install;
 
 # configure - NOTE: This is interactive. Enable your camera
 sudo raspi-config;
-
 
 sudo reboot;
 ```

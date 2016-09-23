@@ -1,7 +1,7 @@
 module.exports = {
   name: 'rc',
   url: {
-    api: 'http://api.admobilize.com',
+    api: 'http://admobilize-api-production.herokuapp.com',
     streaming: 'http://rc-mxss.admobilize.com'
   },
   debug: false,
