@@ -1,5 +1,7 @@
 # MATRIX OS
 
+![matrix os launches](http://i.makeagif.com/media/5-10-2016/TDceSN.gif)
+
 # Overview
 MATRIX Open Source is a platform for running applications on the MATRIX Creator.
 
