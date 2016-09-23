@@ -5,7 +5,7 @@ matrix.init('face').then(function (data) {
 
     if (r.tag === 'HEAD_POSE'){
       matrix.led([
-        {angle: Math.round( r.pose_roll * 360 ),
+        {angle: Math.round( r.pose_roll * 360 ) + 90,
         color:'orange' }
       ]).render();
     }
@@ -34,7 +34,7 @@ matrix.init('face').then(function (data) {
           }
         ]).render();
 
-      } else if (r.emotion = 'ANGRY') {
+      } else if (r.emotion==='ANGRY') {
 
 
         matrix.led([
@@ -55,7 +55,7 @@ matrix.init('face').then(function (data) {
           }
         ]).render();
 
-      } else if (r.emotion = 'HAPPY') {
+      } else if (r.emotion==='HAPPY') {
 
 
         matrix.led([
@@ -76,7 +76,7 @@ matrix.init('face').then(function (data) {
                     }
                   ]).render();
 
-      } else if (r.emotion = 'SAD') {
+      } else if (r.emotion==='SAD') {
 
 
         matrix.led([
@@ -97,7 +97,7 @@ matrix.init('face').then(function (data) {
             }
           ]).render();
 
-      } else if (r.emotion = 'DISGUST') {
+      } else if (r.emotion==='DISGUST') {
         matrix.led([
           {
             angle: 45,
