@@ -1,13 +1,15 @@
 matrix.init('face').then(function (data) {
   console.log('face!', data);
 
+  var ledBuilder = [];
+
   _.each(data.recognition, function (r) {
 
     if (r.tag === 'HEAD_POSE'){
-      matrix.led([
+      ledBuilder.push([
         {angle: Math.round( r.pose_roll * 360 ) + 90,
         color:'orange' }
-      ]).render();
+      ]);
     }
 
     // filter by emotion module output
@@ -16,7 +18,7 @@ matrix.init('face').then(function (data) {
       // calm face
       if (r.emotion === 'CALM') {
 
-        matrix.led([
+        ledBuilder.push([
           {
             angle: 45,
             color: matrix.color('lightblue'),
@@ -32,12 +34,12 @@ matrix.init('face').then(function (data) {
             start: 225,
             blend: true
           }
-        ]).render();
+        ]);
 
       } else if (r.emotion==='ANGRY') {
 
 
-        matrix.led([
+        ledBuilder.push([
           {
             angle: 45,
             color: matrix.color('red'),
@@ -53,12 +55,12 @@ matrix.init('face').then(function (data) {
             start: 225,
             blend: true
           }
-        ]).render();
+        ]);
 
       } else if (r.emotion==='HAPPY') {
 
 
-        matrix.led([
+        ledBuilder.push([
           {
             angle: 45,
             color: matrix.color('yellow'),
@@ -74,12 +76,12 @@ matrix.init('face').then(function (data) {
             start: 225,
             blend: true
                     }
-                  ]).render();
+                  ]);
 
       } else if (r.emotion==='SAD') {
 
 
-        matrix.led([
+        ledBuilder.push([
           {
             angle: 45,
             color: matrix.color('blue'),
@@ -95,10 +97,10 @@ matrix.init('face').then(function (data) {
             start: 225,
             blend: true
             }
-          ]).render();
+          ]);
 
       } else if (r.emotion==='DISGUST') {
-        matrix.led([
+        ledBuilder.push([
           {
             angle: 45,
             color: matrix.color('bada55'),
@@ -114,9 +116,12 @@ matrix.init('face').then(function (data) {
             start: 225,
             blend: true
           }
-        ]).render();
+        ]);
       }
     }
   })
+
+  // draw this thing
+  matrix.led(ledBuilder).render();
 
 });
