@@ -160,7 +160,7 @@ var jwt = require('jsonwebtoken');
     function firebaseInit(cb) {
       debug('Starting Firebase...'.green + ' U:', Matrix.userId, ', D: ', Matrix.deviceId, ', DT: ' , Matrix.deviceToken);
 
-      Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, Matrix.deviceToken, cb);
+      Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, Matrix.deviceToken, Matrix.env, cb);
     },
     function setupFirebaseListeners(cb) {
       debug('Setting up Firebase Listeners...'.green);
