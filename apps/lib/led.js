@@ -18,11 +18,6 @@ module.exports = function ( c ) {
     colors = _.times( 35, i => c );
   }
 
-  // interleave
-  if ( _.isString( c[ 0 ] ) && _.isString( c[ 1 ] ) && c.length === 2 ) {
-    colors = _.flatten( _.fill( Array( 35 ), c ) );
-  }
-
   // init an empty array
   // TODO allow users to pass layers as arguments
   var colorLayers = [];
@@ -149,10 +144,9 @@ module.exports = function ( c ) {
     },
 
     darken : function ( di ) {
-      var origValue = di;
       _.each( colorLayers, function ( c, i ) {
         _.each(c, function (co, i2){
-          colorLayers[ i ][i2] =co.darken( di );
+          colorLayers[ i ][i2] = co.darken( di );
         })
       } )
       return subFn;
