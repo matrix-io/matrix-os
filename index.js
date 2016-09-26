@@ -195,15 +195,18 @@ var jwt = require('jsonwebtoken');
           Matrix.service.firebase.app.watchUserAppsRemoval(function (app) {
             debug('Firebase->UserApps->(X)', app.id, ' (' + app.name + ')');
             // app to uninstall!
-            if (_.keys(appIds).indexOf(app.id) !== -1) {
-              console.log('uninstalling ', app.name + '...');
-              Matrix.service.manager.uninstall(app.name, function(err){
-                if (err) return error(err);
-                console.log('Successfully uninstalled ' + app.name.green);
-              })
-            } else {
-              console.log('The application ' + app.name + ' isn\'t currently installed on this device');
-            }
+            // refresh app ids in case of recent install
+            Matrix.service.firebase.app.getUserAppIds( function (appIds) {
+              if (_.keys(appIds).indexOf(app.id) !== -1) {
+                console.log('uninstalling ', app.name + '...');
+                Matrix.service.manager.uninstall(app.name, function(err){
+                  if (err) return error(err);
+                  console.log('Successfully uninstalled ' + app.name.green);
+                })
+              } else {
+                console.log('The application ' + app.name + ' isn\'t currently installed on this device');
+              }
+            })
           });
 
           //App installations
