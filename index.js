@@ -221,8 +221,6 @@ var jwt = require('jsonwebtoken');
             var remoteVersions = _.mapValues( apps, 'version' );
             var appId;
 
-            console.log(localVersions, 'VVVRRR', remoteVersions)
-
             // find the app id of the changed app
             for ( var id in remoteVersions ){
               if ( !localVersions.hasOwnProperty(id) ){
