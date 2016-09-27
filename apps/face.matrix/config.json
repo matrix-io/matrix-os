@@ -1,1 +1,0 @@
-{"configVersion":2,"description":"Matrix face","keywords":"face,detect","name":"face","sensors":["camera","temperature"],"services":{"face":{"engine":"face","engineParams":{"zone":{"height":40,"width":50,"x":10,"y":100},"zones":[{"height":40,"width":50,"x":10,"y":100}]}}},"validated":true,"version":1,"widgets":{"poop":123}}
