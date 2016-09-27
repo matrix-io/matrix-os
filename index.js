@@ -170,6 +170,10 @@ var jwt = require('jsonwebtoken');
       Matrix.service.firebase.app.getUserAppIds( function( appIds ){
         console.log('Installed Apps:'.green, _.map( appIds, 'name' ).join(', ').grey)
 
+        Matrix.service.firebase.deviceapps.getInstalls( function(apps){
+          debug('device apps records', _.keys(apps));
+        })
+
         var appsDir = fs.readdirSync('apps');
         var appFolders = _.filter(appsDir, function(a){
           return ( a.indexOf('.matrix') > -1 )
@@ -210,8 +214,9 @@ var jwt = require('jsonwebtoken');
           });
 
           //App installations
-          Matrix.service.firebase.app.watchUserApps( function( appId ){
-            debug('Firebase->UserApps->(new)', appId )
+          Matrix.service.firebase.user.watchForNewApps( Matrix.deviceId, function( app ){
+            debug('Firebase->UserApps->(new)', app )
+            var appId = _.keys(app)[0];
             if ( _.keys(appIds).indexOf(appId) === -1 ){
               // new app install!
               console.log('installing', appId)
