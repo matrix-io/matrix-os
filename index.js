@@ -170,9 +170,10 @@ var jwt = require('jsonwebtoken');
       Matrix.service.firebase.app.getUserAppIds( function( appIds ){
         console.log('Installed Apps:'.green, _.map( appIds, 'name' ).join(', ').grey)
 
-        Matrix.service.firebase.deviceapps.getInstalls( function(apps){
-          debug('device apps records', _.keys(apps));
-        })
+        // for deviceapps installs. idk if this is useful yet.
+        // Matrix.service.firebase.deviceapps.getInstalls( function(apps){
+        //   debug('device apps records', _.keys(apps));
+        // })
 
         var appsDir = fs.readdirSync('apps');
         var appFolders = _.filter(appsDir, function(a){
@@ -185,91 +186,91 @@ var jwt = require('jsonwebtoken');
 
         console.log('Local / Installed Δ', fileSystemVariance  )
 
-          if ( fileSystemVariance === 0 ){
-            debug('Invariance. Clean System. Matching Records')
-          } else {
-            debug('Variance detected between registered applications and applications on device.')
-            // TODO: decide a source of truth, do we trust device to write to cloud
-            // do we trust cloud to have accurate device
-            // mix the two, updates to device are pushed to cloud and vice versa
+        if ( fileSystemVariance === 0 ){
+          debug('Invariance. Clean System. Matching Records')
+        } else {
+          debug('Variance detected between registered applications and applications on device.')
+          // TODO: decide a source of truth, do we trust device to write to cloud
+          // do we trust cloud to have accurate device
+          // mix the two, updates to device are pushed to cloud and vice versa
 
-          }
+        }
 
-          //App uninstalls
-          Matrix.service.firebase.app.watchUserAppsRemoval(function (app) {
-            debug('Firebase->UserApps->(X)', app.id, ' (' + app.name + ')');
-            // app to uninstall!
-            // refresh app ids in case of recent install
-            Matrix.service.firebase.app.getUserAppIds( function (appIds) {
-              if (_.keys(appIds).indexOf(app.id) !== -1) {
-                console.log('uninstalling ', app.name + '...');
-                Matrix.service.manager.uninstall(app.name, function(err){
-                  if (err) return error(err);
-                  console.log('Successfully uninstalled ' + app.name.green);
-                })
-              } else {
-                console.log('The application ' + app.name + ' isn\'t currently installed on this device');
-              }
-            })
-          });
+        //App uninstalls
+        Matrix.service.firebase.app.watchUserAppsRemoval(function (app) {
+          debug('Firebase->UserApps->(X)', app.id, ' (' + app.name + ')');
+          // app to uninstall!
+          // refresh app ids in case of recent install
+          Matrix.service.firebase.app.getUserAppIds( function (appIds) {
+            if (_.keys(appIds).indexOf(app.id) !== -1) {
+              console.log('uninstalling ', app.name + '...');
+              Matrix.service.manager.uninstall(app.name, function(err){
+                if (err) return error(err);
+                console.log('Successfully uninstalled ' + app.name.green);
+              })
+            } else {
+              console.log('The application ' + app.name + ' isn\'t currently installed on this device');
+            }
+          })
+        });
 
-          //App installations
-          Matrix.service.firebase.user.watchForNewApps( Matrix.deviceId, function( apps ){
-            debug('Firebase->UserApps->(new)', apps )
+        //App installations
+        Matrix.service.firebase.user.watchForNewApps( Matrix.deviceId, function( apps ){
+          debug('Firebase->UserApps->(new)', apps )
 
-            var localVersions = _.mapValues( appIds, 'version' );
-            var remoteVersions = _.mapValues( apps, 'version' );
-            var appId;
+          var localVersions = _.mapValues( appIds, 'version' );
+          var remoteVersions = _.mapValues( apps, 'version' );
+          var appId;
 
-            // find the app id of the changed app
-            for ( var id in remoteVersions ){
-              if ( !localVersions.hasOwnProperty(id) ){
-                // new app
+          // find the app id of the changed app
+          for ( var id in remoteVersions ){
+            if ( !localVersions.hasOwnProperty(id) ){
+              // new app
+              appId = id;
+              break;
+            }
+
+            if ( localVersions.hasOwnProperty(id) ){
+              // app exists, upgrade check
+              if ( localVersions[id] !== remoteVersions[id] ){
                 appId = id;
                 break;
               }
+            }
+          }
 
-              if ( localVersions.hasOwnProperty(id) ){
-                // app exists, upgrade check
-                if ( localVersions[id] !== remoteVersions[id] ){
-                  appId = id;
-                  break;
-                }
+          if ( !_.isUndefined(appId) ){
+            // if there is a new / updated app, appId will be defined
+
+            //Merge appids for future use
+            appIds[appId] = apps[appId];
+
+            console.log('installing', appId)
+            Matrix.service.firebase.appstore.get(appId, function( appRecord ){
+              var app = appRecord;
+
+              var currId = app.meta.currentVersion;
+              var appName = app.meta.shortName || app.meta.name;
+
+
+              var file = app.versions[currId].file;
+              var v = app.versions[currId].version;
+
+              var installOptions = {
+                url: file,
+                name: appName,
+                version: v,
+                id: appId
               }
-            }
 
-            if ( !_.isUndefined(appId) ){
-              // if there is a new / updated app, appId will be defined
-
-              //Merge appids for future use
-              appIds[appId] = apps[appId];
-
-              console.log('installing', appId)
-              Matrix.service.firebase.appstore.get(appId, function( appRecord ){
-                var app = appRecord;
-
-                var currId = app.meta.currentVersion;
-                var appName = app.meta.shortName || app.meta.name;
-
-
-                var file = app.versions[currId].file;
-                var v = app.versions[currId].version;
-
-                var installOptions = {
-                  url: file,
-                  name: appName,
-                  version: v,
-                  id: appId
-                }
-
-                //
-                Matrix.service.manager.install(installOptions, function(err){
-                  if (err) return error(err);
-                  console.log(appName, v, 'installed from', file);
-                })
+              //
+              Matrix.service.manager.install(installOptions, function(err){
+                if (err) return error(err);
+                console.log(appName, v, 'installed from', file);
               })
-            }
-          });
+            })
+          }
+        });
 
         cb();
       })
