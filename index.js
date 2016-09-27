@@ -214,11 +214,38 @@ var jwt = require('jsonwebtoken');
           });
 
           //App installations
-          Matrix.service.firebase.user.watchForNewApps( Matrix.deviceId, function( app ){
-            debug('Firebase->UserApps->(new)', app )
-            var appId = _.keys(app)[0];
-            if ( _.keys(appIds).indexOf(appId) === -1 ){
-              // new app install!
+          Matrix.service.firebase.user.watchForNewApps( Matrix.deviceId, function( apps ){
+            debug('Firebase->UserApps->(new)', apps )
+
+            var localVersions = _.mapValues( appIds, 'version' );
+            var remoteVersions = _.mapValues( apps, 'version' );
+            var appId;
+
+            console.log(localVersions, 'VVVRRR', remoteVersions)
+
+            // find the app id of the changed app
+            for ( var id in remoteVersions ){
+              if ( !localVersions.hasOwnProperty(id) ){
+                // new app
+                appId = id;
+                break;
+              }
+
+              if ( localVersions.hasOwnProperty(id) ){
+                // app exists, upgrade check
+                if ( localVersions[id] !== remoteVersions[id] ){
+                  appId = id;
+                  break;
+                }
+              }
+            }
+
+            if ( !_.isUndefined(appId) ){
+              // if there is a new / updated app, appId will be defined
+
+              //Merge appids for future use
+              appIds[appId] = apps[appId];
+
               console.log('installing', appId)
               Matrix.service.firebase.appstore.get(appId, function( appRecord ){
                 var app = appRecord;
@@ -236,6 +263,8 @@ var jwt = require('jsonwebtoken');
                   version: v,
                   id: appId
                 }
+
+                //
                 Matrix.service.manager.install(installOptions, function(err){
                   if (err) return error(err);
                   console.log(appName, v, 'installed from', file);
