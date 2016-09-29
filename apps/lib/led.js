@@ -213,7 +213,7 @@ function composeLayers(layers){
   },[])
 
   // console.log('=---= compDone');
-  console.log('C :'.grey, printLights(final));
+  // console.log('C :'.grey, printLights(final));
   emitColorRing(final);
 }
 

@@ -98,7 +98,7 @@ var fileManager = {
 
 var matrixDebug = false;
 
-// For listening to events from other apps
+// For sending events to other apps
 function interAppNotification( appName, eventName, payload ){
 if (arguments.length === 1){
   // global form
@@ -109,20 +109,20 @@ if (arguments.length === 1){
 } else if ( arguments.length === 2){
   //app specific
   process.send({
-    type: 'app-'+appName+'-message',
+    type: 'app-'+ appName +'-message',
     payload: arguments[1]
   })
 } else {
   // app specific event namespaced
   process.send({
-    type: 'app-'+appName+'-message',
+    type: 'app-'+ appName +'-message',
     event: eventName,
     payload: payload
   })
 }
 }
 
-// For Sending Messages to other Apps
+// For recieving events from other Apps
 function interAppResponse( name, cb ){
   if (_.isUndefined(cb)){
     // for globals
