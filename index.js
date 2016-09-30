@@ -446,7 +446,7 @@ setInterval(function maintenance() {
 process.on('uncaughtException', function(err) {
   console.error('Uncaught exception: ', err, err.stack);
   if (err.code && err.code == "ENOTFOUND") {
-    error('ENOTFOUND (Connectivity error)', );
+    error('ENOTFOUND (Connectivity error)');
     //TODO Attempt to restablish connectivity? Matrix.device.manager.setupDNS();
   } else if (err.code && err.code == "EAFNOSUPPORT") {
     error('EAFNOSUPPORT (Connectivity error)');
