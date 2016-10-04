@@ -338,7 +338,7 @@ var msg = [];
             debug('Latest Version Installed. ' + currentVersion.grey)
             cb()
           } else {
-            msg.push('MATRIX OS Upgrade Needed. ' + remoteVersion + ' now available.')
+            msg.push('MATRIX OS Upgrade Ready. ' + remoteVersion + ' now available.')
             cb();
           }
         })
@@ -366,8 +366,11 @@ var msg = [];
     if ( Matrix.registerOK ){
       log('MXSS Connected:'.green, Matrix.streamingServer.grey)
     }
-    log( Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold, msg.join('\n').grey);
+    log( Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
     Matrix.banner();
+    if (msg.length > 0){
+      console.log(msg.join('\n').red);
+    }
 
     //if START_APP is set
     if (Matrix.config.fakeApp) {
