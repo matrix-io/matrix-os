@@ -342,7 +342,6 @@ var msg = [];
             cb();
           }
         })
-        res.resume();
       })
     },
   ], function(err) {
