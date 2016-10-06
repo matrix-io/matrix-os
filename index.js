@@ -108,6 +108,8 @@ Matrix.device.malos.info(function(data){
 
 var jwt = require('jsonwebtoken');
 
+var msg = [];
+
   // init
   async.series([
 
@@ -193,9 +195,37 @@ var jwt = require('jsonwebtoken');
           debug('Invariance. Clean System. Matching Records')
         } else {
           debug('Variance detected between registered applications and applications on device.')
-          // TODO: decide a source of truth, do we trust device to write to cloud
-          // do we trust cloud to have accurate device
-          // mix the two, updates to device are pushed to cloud and vice versa
+
+          // sync new installs to device
+          // find apps which aren't on the device yet
+          var newApps = _.pickBy( appIds, function(a){
+            return ( appFolders.indexOf(a.name + '.matrix') === -1 )
+          })
+
+          _.forIn(newApps, function(a, id){
+            Matrix.service.firebase.appstore.get( id, function(appRecord){
+
+              // for version id in firebase 1_0_0
+              var vStr = _.snakeCase( a.version || '1.0.0');
+              var vId = id + '-' + vStr;
+
+              var url = appRecord.versions[vId].file;
+
+              // filter out test appstore records
+              if ( url.indexOf('...') === -1 ){
+                console.log('=== Offline Installation === ['.yellow, a.name.toUpperCase(), ']'.yellow, a.version.grey, a.id.grey)
+
+                Matrix.service.manager.install({
+                  name: a.name,
+                  version: a.version || '1.0.0',
+                  url: url,
+                  id: id
+                }, function(err){
+                  cb(err);
+                });
+              }
+            })
+          })
 
         }
 
@@ -293,18 +323,29 @@ var jwt = require('jsonwebtoken');
       });
     },
 
+    //TODO: implement MOS update system
     function checkUpdates(cb) {
-      return cb();
-      // warn('Updates not implemented on api yet');
-      // Matrix.api.device.checkUpdates(function(err, update) {
-      //   if (err) return cb(err);
-      //   // check version
-      //   if (update.version === Matrix.version) {
-      //     cb(null);
-      //   } else {
-      //     cb(null);
-      //   }
-      // });
+      var info = JSON.parse(require('fs').readFileSync('package.json'));
+      var currentVersion = info.version;
+      require('https').get(
+        'https://raw.githubusercontent.com/matrix-io/matrix-os/master/package.json'
+      , function(res){
+        // console.log(res);
+        var write = "";
+        res.on('data', function(c){
+          write += c;
+        })
+        res.on('end', function(e){
+          var remoteVersion = JSON.parse(write).version;
+          if ( currentVersion === remoteVersion ){
+            debug('Latest Version Installed. ' + currentVersion.grey)
+            cb()
+          } else {
+            msg.push('MATRIX OS Upgrade Ready. ' + remoteVersion + ' now available.')
+            cb();
+          }
+        })
+      })
     },
   ], function(err) {
     if (err) {
@@ -329,6 +370,9 @@ var jwt = require('jsonwebtoken');
     }
     log( Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
     Matrix.banner();
+    if (msg.length > 0){
+      console.log(msg.join('\n').red);
+    }
 
     //if START_APP is set
     if (Matrix.config.fakeApp) {
