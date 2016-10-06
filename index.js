@@ -276,27 +276,18 @@ var msg = [];
             appIds[appId] = apps[appId];
 
             console.log('installing', appId)
-            Matrix.service.firebase.appstore.get(appId, function( appRecord ){
-              var app = appRecord;
-
-              var currId = app.meta.currentVersion;
+            Matrix.service.firebase.deviceapps.get(appId, function (app) {
               var appName = app.meta.shortName || app.meta.name;
-
-
-              var file = app.versions[currId].file;
-              var v = app.versions[currId].version;
-
               var installOptions = {
-                url: file,
+                url: app.file,
                 name: appName,
-                version: v,
+                version: app.version,
                 id: appId
               }
 
-              //
               Matrix.service.manager.install(installOptions, function(err){
                 if (err) return error(err);
-                console.log(appName, v, 'installed from', file);
+                console.log(appName, app.version, 'installed from', app.file);
               })
             })
           }
