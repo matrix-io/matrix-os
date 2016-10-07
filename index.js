@@ -161,7 +161,7 @@ var msg = [];
     },
     function firebaseInit(cb) {
       debug('Starting Firebase...'.green + ' U:', Matrix.userId, ', D: ', Matrix.deviceId, ', DT: ' , Matrix.deviceToken);
-      Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, Matrix.deviceToken, Matrix.env, function (err, deviceId) { 
+      Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, Matrix.deviceToken, Matrix.env, function (err, deviceId) {
         if (!err) {
           Matrix.service.firebase.initialized = true;
         }
@@ -255,8 +255,10 @@ var msg = [];
         Matrix.service.firebase.user.watchForNewApps( Matrix.deviceId, function( apps ){
           debug('Firebase->UserApps->(new)', apps )
 
-          var localVersions = _.mapValues( appIds, 'version' );
-          var remoteVersions = _.mapValues( apps, 'version' );
+          // look at updated at timestamps to determine if new
+          // not using versions because it doesn't support deploy
+          var localVersions = _.mapValues( appIds, 'updatedAt' );
+          var remoteVersions = _.mapValues( apps, 'updatedAt' );
           var appId;
 
           // find the app id of the changed app
@@ -407,7 +409,7 @@ process.on("SIGINT", function() {
   log("Matrix -- CRTL+C kill detected");
   disconnectFirebase(function () {
     process.exit(0);
-  }); 
+  });
 });
 
 //Triggered when the application is killed with a -15
@@ -464,7 +466,7 @@ function onDestroy() {
 @method onDestroy
 @description If Firebase was initialized, pings firebase and sends a goes offline, skips otherwise
 */
-function disconnectFirebase(cb) { 
+function disconnectFirebase(cb) {
   if (!_.isUndefined(Matrix.service.firebase.initialized) && Matrix.service.firebase.initialized) {
     debug('Disconnecting firebase');
     Matrix.service.firebase.device.ping();
