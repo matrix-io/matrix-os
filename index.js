@@ -248,21 +248,24 @@ var msg = [];
         Matrix.service.firebase.user.watchForNewApps( Matrix.deviceId, function( apps ){
           debug('Firebase->UserApps->(new)', apps )
 
-          var localVersions = _.mapValues( appIds, 'version' );
-          var remoteVersions = _.mapValues( apps, 'version' );
+
+          var localUpdateTime = _.mapValues( appIds, 'updatedAt' );
+          var remoteUpdateTime = _.mapValues( apps, 'updatedAt' );
+
+          debug('Local'.yellow, localUpdateTime, '\n', _.repeat('-=',10).rainbow + 'New\n'.yellow, remoteUpdateTime );
           var appId;
 
           // find the app id of the changed app
-          for ( var id in remoteVersions ){
-            if ( !localVersions.hasOwnProperty(id) ){
+          for ( var id in remoteUpdateTime ){
+            if ( !localUpdateTime.hasOwnProperty(id) ){
               // new app
               appId = id;
               break;
             }
 
-            if ( localVersions.hasOwnProperty(id) ){
-              // app exists, upgrade check
-              if ( localVersions[id] !== remoteVersions[id] ){
+            if ( localUpdateTime.hasOwnProperty(id) ){
+              // install, even if version is the same, this might be a deployment
+              if ( localUpdateTime[id] !== remoteUpdateTime[id] ){
                 appId = id;
                 break;
               }
