@@ -161,8 +161,12 @@ var msg = [];
     },
     function firebaseInit(cb) {
       debug('Starting Firebase...'.green + ' U:', Matrix.userId, ', D: ', Matrix.deviceId, ', DT: ' , Matrix.deviceToken);
-      Matrix.service.firebase.initialized = true;
-      Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, Matrix.deviceToken, Matrix.env, cb);
+      Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, Matrix.deviceToken, Matrix.env, function (err, deviceId) { 
+        if (!err) {
+          Matrix.service.firebase.initialized = true;
+        }
+        cb(err, deviceId);
+      });
     },
     function setupFirebaseListeners(cb) {
       debug('Setting up Firebase Listeners...'.green);
@@ -470,7 +474,7 @@ function onDestroy() {
 @description If Firebase was initialized, pings firebase and sends a goes offline, skips otherwise
 */
 function disconnectFirebase(cb) { 
-  if (!_.isUndefined(Matrix.service.firebase.initialized) && Matrix.service.firebase.initialize) {
+  if (!_.isUndefined(Matrix.service.firebase.initialized) && Matrix.service.firebase.initialized) {
     debug('Disconnecting firebase');
     Matrix.service.firebase.device.ping();
     Matrix.service.firebase.device.goOffline(cb);
