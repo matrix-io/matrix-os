@@ -292,16 +292,16 @@ var msg = [];
             Matrix.service.firebase.deviceapps.get(newAppId, function (app) {
               var appName = app.meta.shortName || app.meta.name;
               var installOptions = {
-                url: app.file,
+                url: app.meta.file,
                 name: appName,
-                version: app.version,
+                version: app.meta.version,
                 id: newAppId
               }
               debug('Trying to install: ' + appName.yellow);
               Matrix.service.manager.install(installOptions, function (err) {
                 debug('Finished index install');
                 if (err) return error(err);
-                console.log(appName, app.version, 'installed from', app.file);
+                console.log(appName, installOptions.version, 'installed from', installOptions.url);
               })
             })
           }
