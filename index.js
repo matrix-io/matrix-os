@@ -257,22 +257,20 @@ var msg = [];
           var newAppId;
           // look at updated at timestamps to determine if new
           // not using versions because it doesn't support deploy
-          //var localVersions = _.mapValues( appIds, 'updatedAt' );
-          //var remoteVersions = _.mapValues( apps, 'updatedAt' );
           var localVersions = appIds;
           var remoteVersions = apps;
           debug('localVersions', localVersions);
           debug('remoteVersions', remoteVersions);
           debug('Found ' + Object.keys(remoteVersions).length + ' remote apps');
           // find the app id of the changed app
-          for(appId in remoteVersions) {
+          for (appId in remoteVersions) {
             if (!localVersions.hasOwnProperty(appId)) {
               //If app isn't in local apps, need to install it
               newAppId = appId;
               break;
-            } else if (remoteVersions[appId].hasOwnPorperty('updatedAt')) {
+            } else if (remoteVersions[appId].hasOwnProperty('updatedAt')) {
               // No updatedAt date
-              if (!localVersions[appId].hasOwnProperty('updatedAt') || localVersions[appId].updatedAt < remoteVersions[appId].updatedAt) {
+              if (!localVersions[appId].hasOwnProperty('updatedAt') || localVersions[appId].updatedAt != remoteVersions[appId].updatedAt) {
                 // Remote version is newer, update
                 newAppId = appId;
                 break;
@@ -290,7 +288,7 @@ var msg = [];
             //Merge appIds for future use
             appIds[newAppId] = apps[newAppId];
 
-            console.log('installing', newAppId)
+            console.log('installing', newAppId);
             Matrix.service.firebase.deviceapps.get(newAppId, function (app) {
               var appName = app.meta.shortName || app.meta.name;
               var installOptions = {
