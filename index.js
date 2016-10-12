@@ -263,15 +263,17 @@ var msg = [];
           debug('remoteVersions', remoteVersions);
           debug('Found ' + Object.keys(remoteVersions).length + ' remote apps');
           // find the app id of the changed app
-          for (appId in remoteVersions) {
+          for (var appId in remoteVersions) {
             if (!localVersions.hasOwnProperty(appId)) {
               //If app isn't in local apps, need to install it
               newAppId = appId;
               break;
             } else if (remoteVersions[appId].hasOwnProperty('updatedAt')) {
               // No updatedAt date
-              if (!localVersions[appId].hasOwnProperty('updatedAt') || localVersions[appId].updatedAt != remoteVersions[appId].updatedAt) {
-                // Remote version is newer, update
+              if ( !localVersions[appId].hasOwnProperty('updatedAt') ||
+                    localVersions[appId].updatedAt !== remoteVersions[appId].updatedAt )
+              {
+                // Remote version is different, update
                 newAppId = appId;
                 break;
               } else {
