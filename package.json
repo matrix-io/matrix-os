@@ -1,6 +1,6 @@
 {
   "name": "matrix-os",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "description": "Portal to device layer for AdMobilize Matrix devices. Includes global component, npm install -g matrix-cli",
   "main": "app.js",
   "repository": "http://github.com/matrix-io/matrix-os",
