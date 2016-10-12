@@ -290,11 +290,12 @@ var msg = [];
 
             console.log('installing', newAppId);
             Matrix.service.firebase.deviceapps.get(newAppId, function (app) {
+              debug('App data: ', app);
               var appName = app.meta.shortName || app.meta.name;
               var installOptions = {
-                url: app.meta.file,
+                url: app.meta.file || app.file, //TODO only use meta
                 name: appName,
-                version: app.meta.version,
+                version: app.meta.version || app.version, //TODO only use meta
                 id: newAppId
               }
               debug('Trying to install: ' + appName.yellow);
