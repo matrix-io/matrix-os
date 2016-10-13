@@ -304,7 +304,7 @@ var msg = [];
               debug('Trying to install: ' + appName.yellow);
               Matrix.service.manager.install(installOptions, function (err) {
                 debug('Finished index install');
-                if (err) return cb(err);
+                cb(err);
                 console.log(appName, installOptions.version, 'installed from', installOptions.url);
               })
             })
