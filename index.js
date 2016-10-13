@@ -300,17 +300,18 @@ var msg = [];
                 version: app.meta.version || app.version, //TODO only use meta
                 id: newAppId
               }
+
               debug('Trying to install: ' + appName.yellow);
               Matrix.service.manager.install(installOptions, function (err) {
                 debug('Finished index install');
-                if (err) return error(err);
+                if (err) return cb(err);
                 console.log(appName, installOptions.version, 'installed from', installOptions.url);
               })
             })
+          } else {
+            cb();
           }
         });
-
-        cb();
       })
 
     },
