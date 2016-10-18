@@ -6,3 +6,4 @@ tmp
 assets/*
 .env
 .envz
+.e*

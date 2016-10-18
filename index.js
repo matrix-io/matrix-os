@@ -170,14 +170,12 @@ var msg = [];
         cb(err, deviceId);
       });
     },
-    function updateApps(cb) {
+    function syncApps(cb) {
       // Gets all apps
-      Matrix.service.firebase.app.getUserAppIds(function (appIds) {
-        if (!_.isNull(appIds)) {
-          appIds = {};
-        }
-        debug('userApps->', appIds);
-        Matrix.localApps = appIds;
+
+        // this is populated from init>getallapps
+        Matrix.localApps = Matrix.service.firebase.util.records.userApps;
+        debug('userApps->', Matrix.localApps);
         console.log('Installed Apps:'.green, _.map( Matrix.localApps, 'name' ).join(', ').grey)
 
         // for deviceapps installs. idk if this is useful yet.
@@ -232,7 +230,6 @@ var msg = [];
           });
         }
         cb();
-      })
     },
     function setupFirebaseListeners(cb) {
       debug('Setting up Firebase Listeners...'.green);
