@@ -252,6 +252,7 @@ var msg = [];
         });
 
         //App installations
+        // TODO: Have this support multiple app installs, right now only supports one
         Matrix.service.firebase.user.watchForNewApps( Matrix.deviceId, function( apps ){
           debug('Firebase->UserApps->(new)', apps )
           var newAppId;
@@ -282,7 +283,7 @@ var msg = [];
             } else {
               debug('Not installing ' + remoteVersions[appId].name.yellow);
             }
-          };
+          }
 
           if ( !_.isUndefined(newAppId) ){
             // if there is a new / updated app, newAppId will be defined
@@ -293,6 +294,11 @@ var msg = [];
             console.log('installing', newAppId);
             Matrix.service.firebase.deviceapps.get(newAppId, function (app) {
               debug('App data: ', app);
+
+              if ( !Matrix.service.firebase.deviceapps.validate(app) ){
+                return cb('app record is invalid, see debug for more information');
+              }
+
               var appName = app.meta.shortName || app.meta.name;
               var installOptions = {
                 url: app.meta.file || app.file, //TODO only use meta
