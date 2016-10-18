@@ -173,9 +173,10 @@ var msg = [];
     function updateApps(cb) {
       // Gets all apps
       Matrix.service.firebase.app.getUserAppIds(function (appIds) {
-        if (!_.isUndefined(appIds)) {
+        if (!_.isNull(appIds)) {
           appIds = {};
         }
+        debug('userApps->', appIds);
         Matrix.localApps = appIds;
         console.log('Installed Apps:'.green, _.map( Matrix.localApps, 'name' ).join(', ').grey)
 
