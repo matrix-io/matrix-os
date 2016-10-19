@@ -380,11 +380,21 @@ var msg = [];
             debug('Latest Version Installed. ' + currentVersion.grey)
             cb()
           } else {
-            msg.push('MATRIX OS Upgrade Ready. ' + remoteVersion + ' now available.')
+            console.log('MATRIX OS Upgrade Ready. ' + remoteVersion + ' now available.\n', 'Upgrading MATRIX OS....')
+            require('child_process').execSync('npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase');
+            console.log('Upgrade Complete: Restart MATRIX OS... ')
+            process.exit();
             cb();
           }
         })
       })
+
+      // check depencies
+      var olds = _.filter([ Matrix.service.firebase, require('matrix-node-sdk'), require('matrix-app-config-helper')], { current : false });
+      if ( olds.length > 0 ){
+        console.log('Upgrading Dependencies....')
+        require('child_process').execSync('npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase');
+      }
     },
   ], function(err) {
     if (err) {
