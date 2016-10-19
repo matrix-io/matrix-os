@@ -365,13 +365,18 @@ var msg = [];
     //TODO: implement MOS update system
     function checkUpdates(cb) {
 
+      // in case you want to skip the upgrade for whatever reason
+      if (  process.env.hasOwnProperty('NO_UPGRADE') ){
+        cb();
+        return;
+      }
+
       // check depends
       var olds = _.filter([ Matrix.service.firebase, require('matrix-node-sdk'), require('matrix-app-config-helper')], { current : false });
       if ( olds.length > 0 ){
         console.log('Upgrading Dependencies....'.yellow)
         require('child_process').execSync('npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase');
-        console.log('Upgrade Done!'.green)
-
+        console.log('Upgrade Done!'.green);
       }
 
       // check MATRIX OS

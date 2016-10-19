@@ -165,6 +165,11 @@ MATRIX_STREAMING_SERVER http://dev-mxss.admobilize.com:80 - points to admatrix-s
 START_APP=monitor node index.js
 ```
 
+## Disable upgrades
+```
+NO_UPGRADE=true node index.js
+```
+
 # Globals
 ```
 Matrix - is the primary global namespace.
