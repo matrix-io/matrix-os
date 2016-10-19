@@ -214,7 +214,7 @@ var msg = [];
 
               // filter out test appstore records
               if ( url.indexOf('...') === -1 ){
-                console.log('=== Offline Installation === ['.yellow, a.name.toUpperCase(), a.version ']'.yellow )
+                console.log('=== Offline Installation === ['.yellow, a.name.toUpperCase(), a.version, ']'.yellow )
 
                 Matrix.service.manager.install({
                   name: a.name,
