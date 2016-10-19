@@ -214,7 +214,7 @@ var msg = [];
 
               // filter out test appstore records
               if ( url.indexOf('...') === -1 ){
-                console.log('=== Offline Installation === ['.yellow, a.name.toUpperCase(), ']'.yellow, a.version.grey, a.id.grey)
+                console.log('=== Offline Installation === ['.yellow, a.name.toUpperCase(), a.version ']'.yellow )
 
                 Matrix.service.manager.install({
                   name: a.name,
@@ -395,7 +395,7 @@ var msg = [];
             cb()
           } else {
             console.log('MATRIX OS Upgrade Ready. ' + remoteVersion + ' now available.\n', 'Upgrading MATRIX OS....')
-            require('child_process').execSync('git fetch;git pull');
+            require('child_process').execSync('git submodule update --init;git fetch;git pull');
             console.log('Upgrade Complete: Restart MATRIX OS... ')
             process.exit();
             cb();
