@@ -264,6 +264,7 @@ var msg = [];
 
         if (_.isUndefined(localVersions)){
           localVersions = {};
+          Matrix.localApps = {};
         }
 
         debug('localVersions', localVersions);
