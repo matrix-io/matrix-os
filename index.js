@@ -261,12 +261,17 @@ var msg = [];
         // not using versions because it doesn't support deploy
         var localVersions = Matrix.localApps;
         var remoteVersions = apps;
+
+        if (_.isUndefined(localVersions)){
+          localVersions = {};
+        }
+
         debug('localVersions', localVersions);
         debug('remoteVersions', remoteVersions);
         debug('Found ' + Object.keys(remoteVersions).length + ' remote apps');
         // find the app id of the changed app
         for (var appId in remoteVersions) {
-          if (!localVersions.hasOwnProperty(appId)) {
+          if ( !localVersions.hasOwnProperty(appId)) {
             //If app isn't in local apps, need to install it
             newAppId = appId;
             break;
