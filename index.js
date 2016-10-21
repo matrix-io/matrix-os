@@ -87,6 +87,8 @@ Matrix.activeSensors = [];
 //active detections, see lib/device/detection
 Matrix.activeDetections = [];
 
+Matrix.localApps = {};
+
 //db - files stored in db/
 var DataStore = require('nedb');
 Matrix.db = {
@@ -168,16 +170,13 @@ var msg = [];
         cb(err, deviceId);
       });
     },
-    function setupFirebaseListeners(cb) {
-      debug('Setting up Firebase Listeners...'.green);
-      // watch for app installs
-      // first pass is gets all apps
+    function syncApps(cb) {
+      // Gets all apps
 
-      Matrix.service.firebase.app.getUserAppIds(function (appIds) {
-        if (!_.isUndefined(appIds)) {
-          appIds = {};
-        }
-        console.log('Installed Apps:'.green, _.map( appIds, 'name' ).join(', ').grey)
+        // this is populated from init>getallapps
+        Matrix.localApps = Matrix.service.firebase.util.records.userApps || Matrix.localApps;
+        debug('userApps->', Matrix.localApps);
+        console.log('Installed Apps:'.green, _.map( Matrix.localApps, 'name' ).join(', ').grey)
 
         // for deviceapps installs. idk if this is useful yet.
         // Matrix.service.firebase.deviceapps.getInstalls( function(apps){
@@ -190,11 +189,9 @@ var msg = [];
         });
 
         console.log('Local Apps:', appFolders);
-
-        var fileSystemVariance = appFolders.length - _.map( appIds, 'name' ).length;
+        var fileSystemVariance = appFolders.length - _.map( Matrix.localApps, 'name' ).length;
 
         console.log('Local / Installed Δ', fileSystemVariance  )
-
         if ( fileSystemVariance === 0 ){
           debug('Invariance. Clean System. Matching Records')
         } else {
@@ -202,7 +199,7 @@ var msg = [];
 
           // sync new installs to device
           // find apps which aren't on the device yet
-          var newApps = _.pickBy( appIds, function(a){
+          var newApps = _.pickBy( Matrix.localApps, function(a){
             return ( appFolders.indexOf(a.name + '.matrix') === -1 )
           })
 
@@ -217,7 +214,7 @@ var msg = [];
 
               // filter out test appstore records
               if ( url.indexOf('...') === -1 ){
-                console.log('=== Offline Installation === ['.yellow, a.name.toUpperCase(), ']'.yellow, a.version.grey, a.id.grey)
+                console.log('=== Offline Installation === ['.yellow, a.name.toUpperCase(), a.version, ']'.yellow )
 
                 Matrix.service.manager.install({
                   name: a.name,
@@ -225,94 +222,68 @@ var msg = [];
                   url: url,
                   id: id
                 }, function(err){
-                  cb(err);
+                  //cb(err);
+                  console.log('Local app update failed ', err);
                 });
               }
             })
-          })
-
+          });
         }
-
-        //App uninstalls
-        Matrix.service.firebase.app.watchUserAppsRemoval(function (app) {
-          debug('Firebase->UserApps->(X)', app.id, ' (' + app.name + ')');
-          // app to uninstall!
-          // refresh app ids in case of recent install
-          Matrix.service.firebase.app.getUserAppIds( function (appIds) {
-            if (_.keys(appIds).indexOf(app.id) !== -1) {
-              console.log('uninstalling ', app.name + '...');
-              Matrix.service.manager.uninstall(app.name, function(err){
-                if (err) return error(err);
-                console.log('Successfully uninstalled ' + app.name.green);
-              })
-            } else {
-              console.log('The application ' + app.name + ' isn\'t currently installed on this device');
-            }
-          })
-        });
-
-        //App installations
-        Matrix.service.firebase.user.watchForNewApps( Matrix.deviceId, function( apps ){
-          debug('Firebase->UserApps->(new)', apps )
-          var newAppId;
-          // look at updated at timestamps to determine if new
-          // not using versions because it doesn't support deploy
-          var localVersions = appIds;
-          var remoteVersions = apps;
-          debug('localVersions', localVersions);
-          debug('remoteVersions', remoteVersions);
-          debug('Found ' + Object.keys(remoteVersions).length + ' remote apps');
-          // find the app id of the changed app
-          for (var appId in remoteVersions) {
-            if (!localVersions.hasOwnProperty(appId)) {
-              //If app isn't in local apps, need to install it
-              newAppId = appId;
-              break;
-            } else if (remoteVersions[appId].hasOwnProperty('updatedAt')) {
-              // No updatedAt date
-              if ( !localVersions[appId].hasOwnProperty('updatedAt') ||
-                    localVersions[appId].updatedAt !== remoteVersions[appId].updatedAt )
-              {
-                // Remote version is different, update
-                newAppId = appId;
-                break;
-              } else {
-                debug('Already updated ' + remoteVersions[appId].name.yellow);
-              }
-            } else {
-              debug('Not installing ' + remoteVersions[appId].name.yellow);
-            }
-          };
-
-          if ( !_.isUndefined(newAppId) ){
-            // if there is a new / updated app, newAppId will be defined
-
-            //Merge appIds for future use
-            appIds[newAppId] = apps[newAppId];
-
-            console.log('installing', newAppId);
-            Matrix.service.firebase.deviceapps.get(newAppId, function (app) {
-              debug('App data: ', app);
-              var appName = app.meta.shortName || app.meta.name;
-              var installOptions = {
-                url: app.meta.file || app.file, //TODO only use meta
-                name: appName,
-                version: app.meta.version || app.version, //TODO only use meta
-                id: newAppId
-              }
-              debug('Trying to install: ' + appName.yellow);
-              Matrix.service.manager.install(installOptions, function (err) {
-                debug('Finished index install');
-                if (err) return error(err);
-                console.log(appName, installOptions.version, 'installed from', installOptions.url);
-              })
-            })
-          }
-        });
-
         cb();
-      })
+    },
+    function setupFirebaseListeners(cb) {
+      debug('Setting up Firebase Listeners...'.green);
+      // watch for app installs
 
+      //App uninstalls
+      Matrix.service.firebase.app.watchUserAppsRemoval(function (app) {
+        debug('Firebase->UserApps->(X)', app.id, ' (' + app.name + ')');
+        // app to uninstall!
+        // refresh app ids in case of recent install
+        Matrix.service.firebase.app.getUserAppIds( function (appIds) {
+          if (_.keys(appIds).indexOf(app.id) !== -1) {
+            console.log('uninstalling ', app.name + '...');
+            Matrix.service.manager.uninstall(app.name, function(err){
+              if (err) return error(err);
+              console.log('Successfully uninstalled ' + app.name.green);
+            })
+          } else {
+            console.log('The application ' + app.name + ' isn\'t currently installed on this device');
+          }
+        })
+      });
+
+       //App install update
+       Matrix.service.firebase.user.watchAppInstall(Matrix.deviceId, function (app) {
+        if (!_.isUndefined(app) && Object.keys(app).length > 0) {
+          var appId = Object.keys(app)[0];
+          app = app[appId];
+          
+          Matrix.localApps[appId] = app;
+
+          console.log('installing', appId);
+          Matrix.service.firebase.deviceapps.get(appId, function (app) {
+            debug('App data: ', app);
+            var appName = app.meta.shortName || app.meta.name;
+            var installOptions = {
+              url: app.meta.file || app.file, //TODO only use meta
+              name: appName,
+              version: app.meta.version || app.version, //TODO only use meta
+              id: appId
+            }
+
+            debug('Trying to install: ' + appName.yellow);
+            Matrix.service.manager.install(installOptions, function (err) {
+              debug('Finished index install');
+              console.log(appName, installOptions.version, 'installed from', installOptions.url);
+            })
+          })
+        } else {
+          debug('Empty app install triggered');
+        }
+      });
+      
+      cb();
     },
 
     function checkFirebaseInfo(cb) {
@@ -330,8 +301,27 @@ var msg = [];
 
     //TODO: implement MOS update system
     function checkUpdates(cb) {
+
+      // in case you want to skip the upgrade for whatever reason
+      if (  process.env.hasOwnProperty('NO_UPGRADE') ){
+        cb();
+        return;
+      }
+
+      // check depends
+      var olds = _.filter([ Matrix.service.firebase, require('matrix-node-sdk'), require('matrix-app-config-helper')], { current : false });
+      if ( olds.length > 0 ){
+        console.log('Upgrading Dependencies....'.yellow)
+        require('child_process').execSync('npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase');
+        console.log('Upgrade Done!'.green);
+      }
+
+      // check MATRIX OS
+
       var info = JSON.parse(require('fs').readFileSync('package.json'));
       var currentVersion = info.version;
+
+
       require('https').get(
         'https://raw.githubusercontent.com/matrix-io/matrix-os/master/package.json'
       , function(res){
@@ -340,17 +330,22 @@ var msg = [];
         res.on('data', function(c){
           write += c;
         })
-        res.on('end', function(e){
+        res.on('end', function(){
           var remoteVersion = JSON.parse(write).version;
           if ( currentVersion === remoteVersion ){
             debug('Latest Version Installed. ' + currentVersion.grey)
             cb()
           } else {
-            msg.push('MATRIX OS Upgrade Ready. ' + remoteVersion + ' now available.')
+            console.log('MATRIX OS Upgrade Ready. ' + remoteVersion + ' now available.\n', 'Upgrading MATRIX OS....')
+            require('child_process').execSync('git submodule update --init;git fetch;git pull');
+            console.log('Upgrade Complete: Restart MATRIX OS... ')
+            process.exit();
             cb();
           }
         })
       })
+
+
     },
   ], function(err) {
     if (err) {
