@@ -115,6 +115,56 @@ var msg = [];
   // init
   async.series([
 
+    function checkUpdates(cb) {
+
+      // in case you want to skip the upgrade for whatever reason
+      if (  process.env.hasOwnProperty('NO_UPGRADE') ){
+        cb();
+        return;
+      }
+
+      // check depends
+      var olds = _.filter([ Matrix.service.firebase, require('matrix-node-sdk'), require('matrix-app-config-helper')], { current : false });
+      if ( olds.length > 0 ){
+        console.log('Upgrading Dependencies....'.yellow)
+        require('child_process').execSync('npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase');
+        console.log('Upgrade Done!'.green);
+      } else {
+        console.log('Dependencies up to date.')
+      }
+
+      // check MATRIX OS
+
+      var info = JSON.parse(require('fs').readFileSync('package.json'));
+      var currentVersion = info.version;
+
+
+      require('https').get(
+        'https://raw.githubusercontent.com/matrix-io/matrix-os/master/package.json'
+      , function(res){
+        // console.log(res);
+        var write = "";
+        res.on('data', function(c){
+          write += c;
+        })
+        res.on('end', function(){
+          var remoteVersion = JSON.parse(write).version;
+          if ( currentVersion === remoteVersion ){
+            debug('Latest Version Installed. ' + currentVersion.grey)
+            cb()
+          } else {
+            console.log('MATRIX OS Upgrade Ready. ' + remoteVersion + ' now available.\n', 'Upgrading MATRIX OS....')
+            require('child_process').execSync('git submodule update --init;git fetch;git pull');
+            console.log('Upgrade Complete: Restart MATRIX OS... ')
+            process.exit();
+            cb();
+          }
+        })
+      })
+
+
+    },
+
     function checkApiServer(cb) {
       debug('Checking API server...'.green);
       require('http').get(Matrix.apiServer, function(res) {
@@ -299,54 +349,7 @@ var msg = [];
       });
     },
 
-    //TODO: implement MOS update system
-    function checkUpdates(cb) {
 
-      // in case you want to skip the upgrade for whatever reason
-      if (  process.env.hasOwnProperty('NO_UPGRADE') ){
-        cb();
-        return;
-      }
-
-      // check depends
-      var olds = _.filter([ Matrix.service.firebase, require('matrix-node-sdk'), require('matrix-app-config-helper')], { current : false });
-      if ( olds.length > 0 ){
-        console.log('Upgrading Dependencies....'.yellow)
-        require('child_process').execSync('npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase');
-        console.log('Upgrade Done!'.green);
-      }
-
-      // check MATRIX OS
-
-      var info = JSON.parse(require('fs').readFileSync('package.json'));
-      var currentVersion = info.version;
-
-
-      require('https').get(
-        'https://raw.githubusercontent.com/matrix-io/matrix-os/master/package.json'
-      , function(res){
-        // console.log(res);
-        var write = "";
-        res.on('data', function(c){
-          write += c;
-        })
-        res.on('end', function(){
-          var remoteVersion = JSON.parse(write).version;
-          if ( currentVersion === remoteVersion ){
-            debug('Latest Version Installed. ' + currentVersion.grey)
-            cb()
-          } else {
-            console.log('MATRIX OS Upgrade Ready. ' + remoteVersion + ' now available.\n', 'Upgrading MATRIX OS....')
-            require('child_process').execSync('git submodule update --init;git fetch;git pull');
-            console.log('Upgrade Complete: Restart MATRIX OS... ')
-            process.exit();
-            cb();
-          }
-        })
-      })
-
-
-    },
   ], function(err) {
     if (err) {
       debug('Initialization error! '.red, err);
