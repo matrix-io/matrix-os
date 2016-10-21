@@ -174,7 +174,7 @@ var msg = [];
       // Gets all apps
 
         // this is populated from init>getallapps
-        Matrix.localApps = Matrix.service.firebase.util.records.userApps;
+        Matrix.localApps = Matrix.service.firebase.util.records.userApps || Matrix.localApps;
         debug('userApps->', Matrix.localApps);
         console.log('Installed Apps:'.green, _.map( Matrix.localApps, 'name' ).join(', ').grey)
 
@@ -253,92 +253,23 @@ var msg = [];
         })
       });
 
-      //App installations
-      Matrix.service.firebase.user.watchForNewApps(Matrix.deviceId, function (apps) {
-        debug('Firebase->UserApps->(new)', apps )
-        var newAppId;
-        // look at updated at timestamps to determine if new
-        // not using versions because it doesn't support deploy
-        var localVersions = Matrix.localApps;
-        var remoteVersions = apps;
+       //App install update
+       Matrix.service.firebase.user.watchAppInstall(Matrix.deviceId, function (app) {
+        if (!_.isUndefined(app) && Object.keys(app).length > 0) {
+          var appId = Object.keys(app)[0];
+          app = app[appId];
+          
+          Matrix.localApps[appId] = app;
 
-        if (_.isUndefined(localVersions)){
-          localVersions = {};
-          Matrix.localApps = {};
-        }
-
-        debug('localVersions', localVersions);
-        debug('remoteVersions', remoteVersions);
-        debug('Found ' + Object.keys(remoteVersions).length + ' remote apps');
-        // find the app id of the changed app
-        for (var appId in remoteVersions) {
-          if ( !localVersions.hasOwnProperty(appId)) {
-            //If app isn't in local apps, need to install it
-            newAppId = appId;
-            break;
-          } else if (remoteVersions[appId].hasOwnProperty('updatedAt')) {
-            // No updatedAt date
-            if ( !localVersions[appId].hasOwnProperty('updatedAt') ||
-                  localVersions[appId].updatedAt !== remoteVersions[appId].updatedAt )
-            {
-              // Remote version is different, update
-              newAppId = appId;
-              break;
-            } else {
-              debug('Already updated ' + remoteVersions[appId].name.yellow);
-            }
-          }
-
-          if ( !_.isUndefined(newAppId) ){
-            // if there is a new / updated app, newAppId will be defined
-
-            //Merge appIds for future use
-            appIds[newAppId] = apps[newAppId];
-
-            console.log('installing', newAppId);
-            Matrix.service.firebase.deviceapps.get(newAppId, function (app) {
-              debug('App data: ', app);
-
-              if ( !Matrix.service.firebase.deviceapps.validate(app) ){
-                return cb('app record is invalid, see debug for more information');
-              }
-
-              var appName = app.meta.shortName || app.meta.name;
-              var installOptions = {
-                url: app.meta.file || app.file, //TODO only use meta
-                name: appName,
-                version: app.meta.version || app.version, //TODO only use meta
-                id: newAppId
-              }
-
-              debug('Trying to install: ' + appName.yellow);
-              Matrix.service.manager.install(installOptions, function (err) {
-                debug('Finished index install');
-                cb(err);
-                console.log(appName, installOptions.version, 'installed from', installOptions.url);
-              })
-            })
-
-          } else {
-            debug('Not installing ' + remoteVersions[appId].name.yellow);
-          }
-        };
-
-        if ( !_.isUndefined(newAppId) ){
-          // if there is a new / updated app, newAppId will be defined
-
-          //Merge appIds for future use
-          Matrix.localApps[newAppId] = apps[newAppId];
-
-          console.log('installing', newAppId);
-          Matrix.service.firebase.deviceapps.get(newAppId, function (app) {
+          console.log('installing', appId);
+          Matrix.service.firebase.deviceapps.get(appId, function (app) {
             debug('App data: ', app);
             var appName = app.meta.shortName || app.meta.name;
             var installOptions = {
               url: app.meta.file || app.file, //TODO only use meta
               name: appName,
               version: app.meta.version || app.version, //TODO only use meta
-              id: newAppId
+              id: appId
             }
 
             debug('Trying to install: ' + appName.yellow);
@@ -348,10 +279,10 @@ var msg = [];
             })
           })
         } else {
-          //Do nothing
+          debug('Empty app install triggered');
         }
       });
-
+      
       cb();
     },
 
