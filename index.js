@@ -258,7 +258,7 @@ var msg = [];
         if (!_.isUndefined(app) && Object.keys(app).length > 0) {
           var appId = Object.keys(app)[0];
           app = app[appId];
-          
+
           Matrix.localApps[appId] = app;
 
           console.log('installing', appId);
@@ -282,7 +282,7 @@ var msg = [];
           debug('Empty app install triggered');
         }
       });
-      
+
       cb();
     },
 
