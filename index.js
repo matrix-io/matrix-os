@@ -262,7 +262,7 @@ var msg = [];
         var localVersions = Matrix.localApps;
         var remoteVersions = apps;
 
-        if (_.isUndefined(localVersions)){
+        if ( _.isUndefined(localVersions) || _.isNull(localVersions) ){
           localVersions = {};
           Matrix.localApps = {};
         }
