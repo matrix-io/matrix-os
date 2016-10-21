@@ -128,7 +128,8 @@ var msg = [];
       if ( olds.length > 0 ){
         console.log('Upgrading Dependencies....'.yellow)
         require('child_process').execSync('npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase');
-        console.log('Upgrade Done!'.green);
+        console.log('Upgrade Done!'.green, 'Please restart MATRIX OS.');
+        process.exit();
       } else {
         console.log('Dependencies up to date.')
       }
