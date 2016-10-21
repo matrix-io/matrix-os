@@ -161,6 +161,8 @@ var msg = [];
             cb();
           }
         })
+      }).on('error', function (e) {
+        console.error('Upgrade Check Error: ', e)
       })
 
 
