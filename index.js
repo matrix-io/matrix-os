@@ -114,6 +114,15 @@ var msg = [];
 
   // init
   async.series([
+    function checkApiServer(cb) {
+      debug('Checking API server...'.green);
+      require('http').get(Matrix.apiServer, function(res) {
+        cb(null);
+      }).on('error', function() {
+        error('No API Server Visible', Matrix.apiServer);
+        cb();
+      });
+    },
 
     function checkUpdates(cb) {
 
@@ -124,8 +133,12 @@ var msg = [];
       }
 
       // check depends
-      var olds = _.filter([ Matrix.service.firebase, require('matrix-node-sdk'), require('matrix-app-config-helper')], { current : false });
-      if ( olds.length > 0 ){
+      var deps = [ Matrix.service.firebase, Matrix.api, require('matrix-app-config-helper')];  
+
+      var olds = _.filter(deps, { current : false });
+      var gone = _.filter(deps, function(d){ return !_.has(d, 'current'); });
+
+      if ( olds.length > 0 || gone.length > 0 ){
         console.log('Upgrading Dependencies....'.yellow)
         require('child_process').execSync('npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase');
         console.log('Upgrade Done!'.green, 'Please restart MATRIX OS.');
@@ -168,15 +181,7 @@ var msg = [];
 
     },
 
-    function checkApiServer(cb) {
-      debug('Checking API server...'.green);
-      require('http').get(Matrix.apiServer, function(res) {
-        cb(null);
-      }).on('error', function() {
-        error('No API Server Visible', Matrix.apiServer);
-        cb();
-      });
-    },
+
     function populateToken(cb) {
       // Fetches device token from service and stores to local DB
 
