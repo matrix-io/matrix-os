@@ -133,14 +133,13 @@ var msg = [];
       }
 
       // check depends
-      var deps = [ Matrix.service.firebase, Matrix.api, require('matrix-app-config-helper')];  
+      var deps = [ Matrix.service.firebase, Matrix.api, require('matrix-app-config-helper'), require('matrix-eventfilter')];
 
       var olds = _.filter(deps, { current : false });
-      var gone = _.filter(deps, function(d){ return !_.has(d, 'current'); });
 
-      if ( olds.length > 0 || gone.length > 0 ){
+      if ( olds.length > 0 ){
         console.log('Upgrading Dependencies....'.yellow)
-        require('child_process').execSync('npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase');
+        require('child_process').execSync('npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase matrix-eventfilter');
         console.log('Upgrade Done!'.green, 'Please restart MATRIX OS.');
         process.exit();
       } else {

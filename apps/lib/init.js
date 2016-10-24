@@ -71,6 +71,8 @@ var filter, sensorOptions;
   // prepare local chaining filter
   filter = new EventFilter(name);
 
+  debug('app filter', filter)
+
   // then is a listener for messages from sensors
   // FIXME: Issue with app only storing one process at a time
   // console.log('sensor err >> looking into fix');
