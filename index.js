@@ -34,6 +34,11 @@ Matrix = require('./lib/index.js');
 // runtime reference for device components, led, gyro, etc
 Matrix.components = {};
 
+// runtime reference for the application environment
+Matrix.applicationEnvironment = {
+  validInitCommands : []
+};
+
 // Make globals from env settings for easy access
 parseEnvSettings(envSettings);
 
@@ -85,7 +90,7 @@ Matrix.activeApplications = [];
 //active sensors, see lib/device/sensor
 Matrix.activeSensors = [];
 //active detections, see lib/device/detection
-Matrix.activeDetections = [];
+Matrix.activeService = [];
 
 Matrix.localApps = {};
 
