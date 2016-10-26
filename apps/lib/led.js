@@ -189,7 +189,7 @@ function composeLayers(layers){
   var i = 0;
   var final = _.reduce(layers, function (r, v) {
 
-    // console.log( i++, printLights(v));
+    console.log( i++, printLights(v));
     // combine matrix of points with next layer
     _.each(v, function (c, i) {
       composeMix = true;
@@ -226,10 +226,19 @@ function emitColorRing( colors ) {
       return { r:0, g:0, b:0, a:0 };
     }
     var rgb = c.toRgb();
+
+    // luminence conversion for accuracy
+    // 0.299*R + 0.587*G + 0.114
+    if ( process.env.SUN_MODE === 'true' ){
+      var luma = [ 0.299, 0.587, 0.114 ];
+      rgb.w = Math.round(luma[0] * rgb.r + luma[1] * rgb.g + luma[2] * rgb.b);
+    }
+
     // make sure light goes on if it's on
-    rgb.r = ( rgb.r > 0 ) ? Math.min(16, rgb.r) : rgb.r;
-    rgb.g = ( rgb.g > 0 ) ? Math.min(16, rgb.g) : rgb.g;
-    rgb.b = ( rgb.b > 0 ) ? Math.min(16, rgb.b) : rgb.b;
+    rgb.r = ( rgb.r > 0 ) ? Math.max(16, rgb.r) : rgb.r;
+    rgb.g = ( rgb.g > 0 ) ? Math.max(16, rgb.g) : rgb.g;
+    rgb.b = ( rgb.b > 0 ) ? Math.max(16, rgb.b) : rgb.b;
+
     return rgb;
   })
 
