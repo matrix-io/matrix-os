@@ -227,7 +227,7 @@ function emitColorRing( colors ) {
     }
     var rgb = c.toRgb();
 
-    // luminence conversion for accuracy
+    // luminence conversion for accuracy behind tinted glass
     // 0.299*R + 0.587*G + 0.114
     if ( process.env.SUN_MODE === 'true' ){
       var luma = [ 0.299, 0.587, 0.114 ];
