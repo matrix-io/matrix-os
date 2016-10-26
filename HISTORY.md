@@ -2,7 +2,7 @@
 
 Update app install same check to use updatedAt, not version
 
-0.5.12 - WIP
+0.5.12
 Fixed and sped up heart beat
 Enabled `SUN_MODE` to use white leds from `matrix.led`. Will be useful when the lights are covered.
 Enable gestures `matrix.init('thumb-up')`
