@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+
 ## [Unreleased]
 ### Added
 - gesture driver
@@ -23,7 +24,6 @@ Enable gestures `matrix.init('thumb-up')`
 
 
 ## [0.5.11]
-
 Improve event filter handling
 Add eventfilter to upgrade
 Exit after dependency upgrade
