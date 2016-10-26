@@ -81,6 +81,10 @@ var filter, sensorOptions;
     // recieves from events/sensors
     process.on('message', function(m) {
 
+      if ( _.isUndefined(m) ){
+        return console.error('[M]->[m] Empty Message From matrix.init'.red, name, options );
+      }
+
       console.log('[M]->[m](%s):', name, m);
       if (m.eventType === 'sensor-emit') {
         // TODO: filter multiple sensors

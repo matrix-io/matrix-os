@@ -374,6 +374,7 @@ var msg = [];
       log('MXSS Connected:'.green, Matrix.streamingServer.grey)
     }
     log( Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
+    log( '['.grey + Matrix.userId.grey + ']'.grey )
     Matrix.banner();
     if (msg.length > 0){
       console.log(msg.join('\n').red);
