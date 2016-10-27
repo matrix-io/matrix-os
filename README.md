@@ -32,3 +32,8 @@ Don't worry. We like other languages too, all it will need is a supporting SDK. 
 
 #### Open Source
 We built MATRIX on top of open source software and we are releasing it for everyone to see under the hood and make contributions😎. We believe in open access to information, especially for the IoT space, where security and privacy are of the utmost importance.
+
+## Great, how do I use the thing over the internet?
+Right now, you need a MATRIX Creator, available at [creator.matrix.one]().
+
+Then follow the installation instructions above.
