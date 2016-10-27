@@ -9,7 +9,7 @@ module.exports = function(name, options){
 
   //TODO: find if this init is for a detection
   if ( !_.isNull(name.match(/(face|vehicle|palm|pinch|fist|thumb-up)/)) ){
-    process.send({type:'detection-init', payload: { name: name, options: options }});
+    process.send({type:'service-init', name: name, options: options });
     return {
       then: function(cb){
       process.on('message', function (data) {
