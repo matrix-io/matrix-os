@@ -34,11 +34,6 @@ Matrix = require('./lib/index.js');
 // runtime reference for device components, led, gyro, etc
 Matrix.components = {};
 
-// runtime reference for the application environment
-Matrix.applicationEnvironment = {
-  validInitCommands : []
-};
-
 // Make globals from env settings for easy access
 parseEnvSettings(envSettings);
 
@@ -90,7 +85,7 @@ Matrix.activeApplications = [];
 //active sensors, see lib/device/sensor
 Matrix.activeSensors = [];
 //active detections, see lib/device/detection
-Matrix.activeService = [];
+Matrix.activeServices = [];
 
 Matrix.localApps = {};
 
@@ -110,7 +105,10 @@ Matrix.db = {
 }
 
 Matrix.device.malos.info(function(data){
-  console.log("DEVICE", data);
+  debug('MALOS COMPONENTS' );
+  _.each(data.info, function(i){
+    debug( i.driver_name, i.notes_for_human, i.basePort )
+  })
 })
 
 var jwt = require('jsonwebtoken');
@@ -355,7 +353,10 @@ var msg = [];
         debug('[fb]devices/>'.blue, device)
         Matrix.service.firebase.user.checkDevice( Matrix.deviceId, function (err, device) {
           if (err || _.isNull(device) ) return cb('Bad User Device Record');
-          debug('[fb]user/devices/deviceId>'.blue, device);
+          debug('[fb]user/devices/deviceId>'.blue)
+          _.forIn(device.apps, function(v,k){
+            debug(v.name, k, v.description);
+          });
           cb();
         })
       });
