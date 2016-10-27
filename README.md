@@ -17,7 +17,7 @@ http://matrix-io.github.io/matrix-documentation
 ## MATRIX Applications
 MATRIX applications are built in JavaScript to logically connect sensor and computer vision data streams with outputs, such as LED lights, sending voltages, integrations and data for dashboards and analysis.
 
-An example application would recognize your face and unlock your front door. A security gesture could be added for a basic level of access control. A 2 factor QR Code provided over the phone or fingerprint reader could be integrated for the much more security.
+An example application would recognize your face and unlock your front door. A security gesture could be added for a basic level of access control. A 2 factor QR Code provided over the phone or fingerprint reader could be integrated more security.
 
 Using [configuration files](https://matrix-io.github.io/matrix-documentation/Configuration/examples/), an application end-user could customize an application for their specific use case. Adding API keys or custom phrases.
 
