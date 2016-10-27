@@ -58,7 +58,7 @@ module.exports = function(message) {
         // not defined yet, TODO: enable this flow later
         var format = dataTypes[type];
         if ((format === 'string' && _.isString(message)) ||
-          (format === 'float' && _.isFloat(message)) ||
+          (format === 'float' &&  ( parseFloat( message ) === message ) ) ||
           (format === 'int' && _.isInteger(message))) {
           msgObj.value = message;
         } else if (format === 'object' && _.isPlainObject(message)) {
