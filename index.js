@@ -45,17 +45,9 @@ Matrix.activeServices = [];
 // a collection of apps installed on the device, not expecially in firebase
 Matrix.localApps = {};
 
-<<<<<<< HEAD
-
 // Make Matrix[setting] from env settings for easy access
-=======
-// runtime reference for the application environment
-Matrix.applicationEnvironment = {
-  validInitCommands : []
-};
 
 // Make globals from env settings for easy access
->>>>>>> Woot
 parseEnvSettings(envSettings);
 
 // Configuration besides env settings
@@ -102,17 +94,6 @@ Matrix.api = require('matrix-node-sdk');
 // This needs to be done after urls are made available via parseEnvSettings
 Matrix.api.makeUrls(Matrix.apiServer);
 
-<<<<<<< HEAD
-=======
-//app process objects, see lib/service/mananger
-Matrix.activeApplications = [];
-//active sensors, see lib/device/sensor
-Matrix.activeSensors = [];
-//active detections, see lib/device/detection
-Matrix.activeService = [];
-
-Matrix.localApps = {};
->>>>>>> Woot
 
 //db - files stored in db/
 var DataStore = require('nedb');
