@@ -1,5 +1,8 @@
 // Welcome to MatrixOS - A JavaScript environment for IoT Applications
-forceExit = false;
+
+// for crash handling
+
+var forceExit = false;
 /* GLOBALS */
 _ = require('lodash');
 async = require('async');
@@ -33,8 +36,17 @@ Matrix = require('./lib/index.js');
 
 // runtime reference for device components, led, gyro, etc
 Matrix.components = {};
+//app process objects, see lib/service/mananger
+Matrix.activeApplications = [];
+//active sensors, see lib/device/sensor
+Matrix.activeSensors = [];
+//active detections, see lib/device/detection
+Matrix.activeServices = [];
+// a collection of apps installed on the device, not expecially in firebase
+Matrix.localApps = {};
 
-// Make globals from env settings for easy access
+
+// Make Matrix[setting] from env settings for easy access
 parseEnvSettings(envSettings);
 
 // Configuration besides env settings
@@ -78,16 +90,9 @@ Matrix.device.drivers.led.loader();
 // Node-SDK - Use for API Server Communication
 // SDK is used mainly for AUTH
 Matrix.api = require('matrix-node-sdk');
+// This needs to be done after urls are made available via parseEnvSettings
 Matrix.api.makeUrls(Matrix.apiServer);
 
-//app process objects, see lib/service/mananger
-Matrix.activeApplications = [];
-//active sensors, see lib/device/sensor
-Matrix.activeSensors = [];
-//active detections, see lib/device/detection
-Matrix.activeServices = [];
-
-Matrix.localApps = {};
 
 //db - files stored in db/
 var DataStore = require('nedb');
@@ -104,11 +109,13 @@ Matrix.db = {
   })
 }
 
+// Show whats available from MALOS
 Matrix.device.malos.info(function(data){
-  debug('MALOS COMPONENTS' );
+  var out = '';
   _.each(data.info, function(i){
-    debug( i.driver_name, i.notes_for_human, i.basePort )
+    out += ' ⚙ '.yellow + i.driver_name.blue + ':' + i.base_port + ' | ' + i.notes_for_human.grey + '\n';
   })
+  debug('MALOS COMPONENTS', '\n', out);
 })
 
 var jwt = require('jsonwebtoken');
@@ -117,6 +124,8 @@ var msg = [];
 
   // init
   async.series([
+
+    // Make sure we can see the API server for auth
     function checkApiServer(cb) {
       debug('Checking API server...'.green);
       require('http').get(Matrix.apiServer, function(res) {
@@ -127,6 +136,7 @@ var msg = [];
       });
     },
 
+    // Check for updates to MOS and dependencies
     function checkUpdates(cb) {
 
       // in case you want to skip the upgrade for whatever reason
@@ -135,7 +145,7 @@ var msg = [];
         return;
       }
 
-      // check depends
+      // check depends - eventfilter is used for apps
       var deps = [ Matrix.service.firebase, Matrix.api, require('matrix-app-config-helper'), require('matrix-eventfilter')];
 
       var olds = _.filter(deps, { current : false });
@@ -150,10 +160,8 @@ var msg = [];
       }
 
       // check MATRIX OS
-
       var info = JSON.parse(require('fs').readFileSync('package.json'));
       var currentVersion = info.version;
-
 
       require('https').get(
         'https://raw.githubusercontent.com/matrix-io/matrix-os/master/package.json'
@@ -179,14 +187,12 @@ var msg = [];
       }).on('error', function (e) {
         console.error('Upgrade Check Error: ', e)
       })
-
-
     },
 
 
     function populateToken(cb) {
-      // Fetches device token from service and stores to local DB
 
+      // Fetches device token from service and saves to local DB
       Matrix.service.auth.authenticate(function setupDeviceToken(err, token) {
         if (err) return cb(err);
 
@@ -213,19 +219,26 @@ var msg = [];
         cb();
       });
     },
-    function(cb){
+    function mxssInit(cb){
+
+      // Now that we have a token, lets login to the streaming server
       debug('Checking MXSS...'.green);
+      // extremely unlikely event that the mxss is bad and we need to skip
       if ( !process.env.hasOwnProperty('MATRIX_NOMXSS') ){
         Matrix.service.stream.initSocket(cb);
       } else {
         cb()
       }
     },
+    // token also lets us access firebase
     function firebaseInit(cb) {
       debug('Starting Firebase...'.green + ' U:', Matrix.userId, ', D: ', Matrix.deviceId, ', DT: ' , Matrix.deviceToken);
       Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, Matrix.deviceToken, Matrix.env, function (err, deviceId) {
         if (!err) {
           Matrix.service.firebase.initialized = true;
+        }
+        if ( deviceId !== Matrix.deviceId ){
+          return cb('firebase / deviceid mismatch')
         }
         cb(err, deviceId);
       });
@@ -235,7 +248,7 @@ var msg = [];
 
         // this is populated from init>getallapps
         Matrix.localApps = Matrix.service.firebase.util.records.userApps || Matrix.localApps;
-        debug('userApps->', Matrix.localApps);
+        // debug('userApps->', Matrix.localApps);
         console.log('Installed Apps:'.green, _.map( Matrix.localApps, 'name' ).join(', ').grey)
 
         // for deviceapps installs. idk if this is useful yet.
@@ -355,7 +368,7 @@ var msg = [];
           if (err || _.isNull(device) ) return cb('Bad User Device Record');
           debug('[fb]user/devices/deviceId>'.blue)
           _.forIn(device.apps, function(v,k){
-            debug(v.name, k, v.description);
+            debug(k + ' - ' + v.name);
           });
           cb();
         })
