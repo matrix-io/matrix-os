@@ -55,7 +55,6 @@ describe.skip('component', function(){
     })
   })
   it('should implement print', function(done){
-    TestProto
     component.print( )
   })
   it('should implement read')
