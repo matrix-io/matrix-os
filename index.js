@@ -46,8 +46,6 @@ Matrix.activeServices = [];
 Matrix.localApps = {};
 
 // Make Matrix[setting] from env settings for easy access
-
-// Make globals from env settings for easy access
 parseEnvSettings(envSettings);
 
 // Configuration besides env settings

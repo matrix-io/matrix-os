@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Added
 - gesture driver
+- detection driver
 - service for integrations
 
 ### Removed
