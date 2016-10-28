@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Added
 - gesture driver
+- detection driver
 - service for integrations
 
 ### Removed
@@ -19,7 +20,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Start versioning history
 
 ## [0.5.12]
->>>>>>> Change history, gesture connects
 Fixed and sped up heart beat
 Enabled `SUN_MODE` to use white leds from `matrix.led`. Will be useful when the lights are covered.
 Enable gestures `matrix.init('thumb-up')`
