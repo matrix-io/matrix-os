@@ -521,7 +521,7 @@ process.on('uncaughtException', function(err) {
   } else if (err.code && err.code == "ENOMEM") {
     error('ENOMEM was detected (Out of memory)');
     // error(err.stack);
-    Matrix.device.manager.reboot("Memory clean up");
+    Matrix.device.system.reboot("Memory clean up");
   } else {
     forceExit = true;
     console.error("UNKNOWN ERROR!".red, err.stack);
