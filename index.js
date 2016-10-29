@@ -24,7 +24,7 @@ error = console.error;
 var envSettings = getEnvSettings();
 // if NODE_ENV=dev then set sane debug
 if ( envSettings.debug === true && !_.has(process.env, 'DEBUG' ) ){
-  process.env.DEBUG = '*,-engine*,-Component*';
+  process.env.DEBUG = '*,-engine*,-Component*,-*led*';
   // process.env.DEBUG = '*,-engine*';
 }
 
