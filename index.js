@@ -295,27 +295,17 @@ var msg = [];
       //App uninstalls
       Matrix.service.firebase.app.watchUserAppsRemoval(function (app) {
         debug('Firebase->UserApps->(X)', app.id, ' (' + app.name + ')');
-        // app to uninstall!
-        // refresh app ids in case of recent install
-        Matrix.service.firebase.app.getUserAppIds( function (appIds) {
-          if (_.keys(appIds).indexOf(app.id) !== -1) {
-            console.log('uninstalling ', app.name + '...');
-            Matrix.service.manager.uninstall(app.name, function(err){
-              if (err) return error(err);
-              console.log('Successfully uninstalled ' + app.name.green);
-            })
-          } else {
-            console.log('The application ' + app.name + ' isn\'t currently installed on this device');
-          }
-        })
+        console.log('uninstalling ', app.name + '...');
+        Matrix.service.manager.uninstall(app.name, function (err) {
+          if (err) return error(err);
+          delete Matrix.localApps[app.id];
+          console.log('Successfully uninstalled ' + app.name.green);
+        });
       });
 
        //App install update
-       Matrix.service.firebase.user.watchAppInstall(Matrix.deviceId, function (app) {
-        if (!_.isUndefined(app) && Object.keys(app).length > 0) {
-          var appId = Object.keys(app)[0];
-          app = app[appId];
-
+       Matrix.service.firebase.user.watchAppInstall(Matrix.deviceId, function (app, appId) {
+        if (!_.isUndefined(app) && !_.isUndefined(appId)) {
           Matrix.localApps[appId] = app;
 
           console.log('installing', appId);
