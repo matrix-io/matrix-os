@@ -34,6 +34,11 @@ Matrix = require('./lib/index.js');
 // runtime reference for device components, led, gyro, etc
 Matrix.components = {};
 
+// runtime reference for the application environment
+Matrix.applicationEnvironment = {
+  validInitCommands : []
+};
+
 // Make globals from env settings for easy access
 parseEnvSettings(envSettings);
 
@@ -85,7 +90,9 @@ Matrix.activeApplications = [];
 //active sensors, see lib/device/sensor
 Matrix.activeSensors = [];
 //active detections, see lib/device/detection
-Matrix.activeDetections = [];
+Matrix.activeService = [];
+
+Matrix.localApps = {};
 
 //db - files stored in db/
 var DataStore = require('nedb');
@@ -112,7 +119,6 @@ var msg = [];
 
   // init
   async.series([
-
     function checkApiServer(cb) {
       debug('Checking API server...'.green);
       require('http').get(Matrix.apiServer, function(res) {
@@ -122,6 +128,64 @@ var msg = [];
         cb();
       });
     },
+
+    function checkUpdates(cb) {
+
+      // in case you want to skip the upgrade for whatever reason
+      if (  process.env.hasOwnProperty('NO_UPGRADE') ){
+        cb();
+        return;
+      }
+
+      // check depends
+      var deps = [ Matrix.service.firebase, Matrix.api, require('matrix-app-config-helper'), require('matrix-eventfilter')];
+
+      var olds = _.filter(deps, { current : false });
+
+      if ( olds.length > 0 ){
+        console.log('Upgrading Dependencies....'.yellow)
+        require('child_process').execSync('npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase matrix-eventfilter');
+        console.log('Upgrade Done!'.green, 'Please restart MATRIX OS.');
+        process.exit();
+      } else {
+        console.log('Dependencies up to date.')
+      }
+
+      // check MATRIX OS
+
+      var info = JSON.parse(require('fs').readFileSync('package.json'));
+      var currentVersion = info.version;
+
+
+      require('https').get(
+        'https://raw.githubusercontent.com/matrix-io/matrix-os/master/package.json'
+      , function(res){
+        // console.log(res);
+        var write = "";
+        res.on('data', function(c){
+          write += c;
+        })
+        res.on('end', function(){
+          var remoteVersion = JSON.parse(write).version;
+          if ( currentVersion === remoteVersion ){
+            debug('Latest Version Installed. ' + currentVersion.grey)
+            cb()
+          } else {
+            console.log('MATRIX OS Upgrade Ready. ' + remoteVersion + ' now available.\n', 'Upgrading MATRIX OS....')
+            require('child_process').execSync('git submodule update --init;git fetch;git pull');
+            console.log('Upgrade Complete: Restart MATRIX OS... ')
+            process.exit();
+            cb();
+          }
+        })
+      }).on('error', function (e) {
+        console.error('Upgrade Check Error: ', e)
+      })
+
+
+    },
+
+
     function populateToken(cb) {
       // Fetches device token from service and stores to local DB
 
@@ -161,16 +225,20 @@ var msg = [];
     },
     function firebaseInit(cb) {
       debug('Starting Firebase...'.green + ' U:', Matrix.userId, ', D: ', Matrix.deviceId, ', DT: ' , Matrix.deviceToken);
-
-      Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, Matrix.deviceToken, Matrix.env, cb);
+      Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, Matrix.deviceToken, Matrix.env, function (err, deviceId) {
+        if (!err) {
+          Matrix.service.firebase.initialized = true;
+        }
+        cb(err, deviceId);
+      });
     },
-    function setupFirebaseListeners(cb) {
-      debug('Setting up Firebase Listeners...'.green);
-      // watch for app installs
-      // first pass is gets all apps
+    function syncApps(cb) {
+      // Gets all apps
 
-      Matrix.service.firebase.app.getUserAppIds( function( appIds ){
-        console.log('Installed Apps:'.green, _.map( appIds, 'name' ).join(', ').grey)
+        // this is populated from init>getallapps
+        Matrix.localApps = Matrix.service.firebase.util.records.userApps || Matrix.localApps;
+        debug('userApps->', Matrix.localApps);
+        console.log('Installed Apps:'.green, _.map( Matrix.localApps, 'name' ).join(', ').grey)
 
         // for deviceapps installs. idk if this is useful yet.
         // Matrix.service.firebase.deviceapps.getInstalls( function(apps){
@@ -183,11 +251,9 @@ var msg = [];
         });
 
         console.log('Local Apps:', appFolders);
-
-        var fileSystemVariance = appFolders.length - _.map( appIds, 'name' ).length;
+        var fileSystemVariance = appFolders.length - _.map( Matrix.localApps, 'name' ).length;
 
         console.log('Local / Installed Δ', fileSystemVariance  )
-
         if ( fileSystemVariance === 0 ){
           debug('Invariance. Clean System. Matching Records')
         } else {
@@ -195,7 +261,7 @@ var msg = [];
 
           // sync new installs to device
           // find apps which aren't on the device yet
-          var newApps = _.pickBy( appIds, function(a){
+          var newApps = _.pickBy( Matrix.localApps, function(a){
             return ( appFolders.indexOf(a.name + '.matrix') === -1 )
           })
 
@@ -210,7 +276,7 @@ var msg = [];
 
               // filter out test appstore records
               if ( url.indexOf('...') === -1 ){
-                console.log('=== Offline Installation === ['.yellow, a.name.toUpperCase(), ']'.yellow, a.version, a.id)
+                console.log('=== Offline Installation === ['.yellow, a.name.toUpperCase(), a.version, ']'.yellow )
 
                 Matrix.service.manager.install({
                   name: a.name,
@@ -218,93 +284,68 @@ var msg = [];
                   url: url,
                   id: id
                 }, function(err){
-                  cb(err);
+                  //cb(err);
+                  console.log('Local app update failed ', err);
                 });
               }
             })
-          })
-
+          });
         }
-
-        //App uninstalls
-        Matrix.service.firebase.app.watchUserAppsRemoval(function (app) {
-          debug('Firebase->UserApps->(X)', app.id, ' (' + app.name + ')');
-          // app to uninstall!
-          // refresh app ids in case of recent install
-          Matrix.service.firebase.app.getUserAppIds( function (appIds) {
-            if (_.keys(appIds).indexOf(app.id) !== -1) {
-              console.log('uninstalling ', app.name + '...');
-              Matrix.service.manager.uninstall(app.name, function(err){
-                if (err) return error(err);
-                console.log('Successfully uninstalled ' + app.name.green);
-              })
-            } else {
-              console.log('The application ' + app.name + ' isn\'t currently installed on this device');
-            }
-          })
-        });
-
-        //App installations
-        Matrix.service.firebase.user.watchForNewApps( Matrix.deviceId, function( apps ){
-          debug('Firebase->UserApps->(new)', apps )
-
-          var localVersions = _.mapValues( appIds, 'version' );
-          var remoteVersions = _.mapValues( apps, 'version' );
-          var appId;
-
-          // find the app id of the changed app
-          for ( var id in remoteVersions ){
-            if ( !localVersions.hasOwnProperty(id) ){
-              // new app
-              appId = id;
-              break;
-            }
-
-            if ( localVersions.hasOwnProperty(id) ){
-              // app exists, upgrade check
-              if ( localVersions[id] !== remoteVersions[id] ){
-                appId = id;
-                break;
-              }
-            }
-          }
-
-          if ( !_.isUndefined(appId) ){
-            // if there is a new / updated app, appId will be defined
-
-            //Merge appids for future use
-            appIds[appId] = apps[appId];
-
-            console.log('installing', appId)
-            Matrix.service.firebase.appstore.get(appId, function( appRecord ){
-              var app = appRecord;
-
-              var currId = app.meta.currentVersion;
-              var appName = app.meta.shortName || app.meta.name;
-
-
-              var file = app.versions[currId].file;
-              var v = app.versions[currId].version;
-
-              var installOptions = {
-                url: file,
-                name: appName,
-                version: v,
-                id: appId
-              }
-
-              //
-              Matrix.service.manager.install(installOptions, function(err){
-                if (err) return error(err);
-                console.log(appName, v, 'installed from', file);
-              })
-            })
-          }
-        });
-
         cb();
-      })
+    },
+    function setupFirebaseListeners(cb) {
+      debug('Setting up Firebase Listeners...'.green);
+      // watch for app installs
 
+      //App uninstalls
+      Matrix.service.firebase.app.watchUserAppsRemoval(function (app) {
+        debug('Firebase->UserApps->(X)', app.id, ' (' + app.name + ')');
+        // app to uninstall!
+        // refresh app ids in case of recent install
+        Matrix.service.firebase.app.getUserAppIds( function (appIds) {
+          if (_.keys(appIds).indexOf(app.id) !== -1) {
+            console.log('uninstalling ', app.name + '...');
+            Matrix.service.manager.uninstall(app.name, function(err){
+              if (err) return error(err);
+              console.log('Successfully uninstalled ' + app.name.green);
+            })
+          } else {
+            console.log('The application ' + app.name + ' isn\'t currently installed on this device');
+          }
+        })
+      });
+
+       //App install update
+       Matrix.service.firebase.user.watchAppInstall(Matrix.deviceId, function (app) {
+        if (!_.isUndefined(app) && Object.keys(app).length > 0) {
+          var appId = Object.keys(app)[0];
+          app = app[appId];
+
+          Matrix.localApps[appId] = app;
+
+          console.log('installing', appId);
+          Matrix.service.firebase.deviceapps.get(appId, function (app) {
+            debug('App data: ', app);
+            var appName = app.meta.shortName || app.meta.name;
+            var installOptions = {
+              url: app.meta.file || app.file, //TODO only use meta
+              name: appName,
+              version: app.meta.version || app.version, //TODO only use meta
+              id: appId
+            }
+
+            debug('Trying to install: ' + appName.yellow);
+            Matrix.service.manager.install(installOptions, function (err) {
+              debug('Finished index install');
+              console.log(appName, installOptions.version, 'installed from', installOptions.url);
+            })
+          })
+        } else {
+          debug('Empty app install triggered');
+        }
+      });
+
+      cb();
     },
 
     function checkFirebaseInfo(cb) {
@@ -320,30 +361,7 @@ var msg = [];
       });
     },
 
-    //TODO: implement MOS update system
-    function checkUpdates(cb) {
-      var info = JSON.parse(require('fs').readFileSync('package.json'));
-      var currentVersion = info.version;
-      require('https').get(
-        'https://raw.githubusercontent.com/matrix-io/matrix-os/master/package.json'
-      , function(res){
-        // console.log(res);
-        var write = "";
-        res.on('data', function(c){
-          write += c;
-        })
-        res.on('end', function(e){
-          var remoteVersion = JSON.parse(write).version;
-          if ( currentVersion === remoteVersion ){
-            debug('Latest Version Installed. ' + currentVersion.grey)
-            cb()
-          } else {
-            msg.push('MATRIX OS Upgrade Ready. ' + remoteVersion + ' now available.')
-            cb();
-          }
-        })
-      })
-    },
+
   ], function(err) {
     if (err) {
       debug('Initialization error! '.red, err);
@@ -407,9 +425,9 @@ module.exports = {
 //Triggered when the application is killed by a [CRTL+C] from keyboard
 process.on("SIGINT", function() {
   log("Matrix -- CRTL+C kill detected");
-  Matrix.service.firebase.device.goOffline(function(){
+  disconnectFirebase(function () {
     process.exit(0);
-  })
+  });
 });
 
 //Triggered when the application is killed with a -15
@@ -443,8 +461,7 @@ function onDestroy() {
   // kill children apps\
   debug("DESTROYING".red);
   if (!forceExit) {
-    Matrix.service.firebase.device.ping();
-    Matrix.service.firebase.device.goOffline(function () {
+    disconnectFirebase(function () {
       async.series([
         Matrix.service.manager.killAllApps,
         Matrix.service.manager.clearAppList,
@@ -455,12 +472,27 @@ function onDestroy() {
         console.log('Cleanup complete...');
         process.exit(0);
       });
-    })
+    });
   } else {
     console.log('Unable to clean, exitting...');
     process.exit(1);
   }
 
+}
+
+/*
+@method onDestroy
+@description If Firebase was initialized, pings firebase and sends a goes offline, skips otherwise
+*/
+function disconnectFirebase(cb) {
+  if (!_.isUndefined(Matrix.service.firebase.initialized) && Matrix.service.firebase.initialized) {
+    debug('Disconnecting firebase');
+    Matrix.service.firebase.device.ping();
+    Matrix.service.firebase.device.goOffline(cb);
+  } else {
+    debug('Firebase wasn\'t initialized');
+    cb();
+  }
 }
 
 // every 4 hours do this
@@ -471,18 +503,18 @@ setInterval(function maintenance() {
 //Triggered when an unexpected (programming) error occurs
 //Also called when a DNS error is presented
 process.on('uncaughtException', function(err) {
-  console.error('Matrix -- Uncaught exception: ', err, err.stack);
+  console.error('Uncaught exception: ', err, err.stack);
   if (err.code && err.code == "ENOTFOUND") {
-    error('Matrix -- ENOTFOUND was detected (DNS error)');
-    Matrix.device.manager.setupDNS();
+    error('ENOTFOUND (Connectivity error)');
+    //TODO Attempt to restablish connectivity? Matrix.device.manager.setupDNS();
   } else if (err.code && err.code == "EAFNOSUPPORT") {
-    error('Matrix -- EAFNOSUPPORT was detected (DNS error 2?)');
-    Matrix.device.manager.setupDNS();
+    error('EAFNOSUPPORT (Connectivity error)');
+    //TODO Attempt to restablish connectivity? Matrix.device.manager.setupDNS();
   } else if (err.code && err.code == "ETIMEDOUT") {
-    error('Matrix -- ETIMEDOUT was detected (DNS error 3?)');
-    Matrix.device.manager.setupDNS();
+    error('ETIMEDOUT (Connectivity error)');
+    //TODO Attempt to restablish connectivity? Matrix.device.manager.setupDNS();
   } else if (err.code && err.code == "ENOMEM") {
-    error('Matrix -- ENOMEM was detected (Out of memory)');
+    error('ENOMEM was detected (Out of memory)');
     // error(err.stack);
     Matrix.device.manager.reboot("Memory clean up");
   } else {

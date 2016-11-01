@@ -8,21 +8,20 @@ module.exports = function(name, options){
   }
 
   //TODO: find if this init is for a detection
-  if ( !_.isNull(name.match(/(face|car|palm|thumb)/)) ){
+  if ( !_.isNull(name.match(/(face|vehicle|palm|pinch|fist|thumb-up)/)) ){
     process.send({type:'detection-init', payload: { name: name, options: options }});
     return {
       then: function(cb){
       process.on('message', function (data) {
-        if ( data.eventType === 'detection-emit'){
-          // TODO: need some other sort of check here to route properly
-          // TODO: add filters, copy other then function
+        if ( data.eventType === 'service-emit'){
+          // TODO: add filters
           cb(data.payload);
         }
       })
     }}
   } else {
 
-    //TODO: Find if this init is for a sensor names
+    //TODO: Find if this init is for a sensor name
     return initSensor(name,options);
   }
 
@@ -71,6 +70,8 @@ var filter, sensorOptions;
   // prepare local chaining filter
   filter = new EventFilter(name);
 
+  debug('app filter', filter)
+
   // then is a listener for messages from sensors
   // FIXME: Issue with app only storing one process at a time
   // console.log('sensor err >> looking into fix');
@@ -104,10 +105,10 @@ var filter, sensorOptions;
           }
         }
         // console.log('applying filter:', filter.json());
-      } else if ( m.eventType === 'container-status') {
+      } else if ( m.eventType === 'container-ready') {
         // ignore
       } else {
-        console.log('NO DETECT', result);
+        console.warn('[M]->[m] uncaught message', m);
         cb(m.payload);
       }
 

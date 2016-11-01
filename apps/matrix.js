@@ -8,8 +8,7 @@ require('colors');
 //needs sudo for audio commands disable until we figure this out
 var request = require('request');
 var lib = require('./lib');
-var EventFilter = require('matrix-eventfilter').EventFilter;
-var applyFilter = require('matrix-eventfilter').apply;
+
 var request = require('request');
 var fs = require('fs');
 _ = require('lodash');
