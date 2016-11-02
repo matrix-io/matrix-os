@@ -261,7 +261,7 @@ var msg = [];
           return ( a.indexOf('.matrix') > -1 )
         });
 
-        console.log('Local Apps:', appFolders);
+        console.log('Local Apps:'.yellow, appFolders.join(', ').grey);
         var fileSystemVariance = appFolders.length - _.map( Matrix.localApps, 'name' ).length;
 
         console.log('Local / Installed Δ', fileSystemVariance  )

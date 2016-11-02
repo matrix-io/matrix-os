@@ -42,6 +42,7 @@ Fix deploy issues
 Upgrade matrix and Dependencies
 
 ## [0.5.4]
+
 ### Added
 * Support Upgrade Checking
 * Support Application install on Init
