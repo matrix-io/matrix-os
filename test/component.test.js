@@ -1,12 +1,12 @@
 
 var protobuf = require('protobufjs');
-var zmq = require('zermq')
+var zmq = require('zeromq')
 
 
 describe.skip('component', function(){
   var component, TestProto;
   before(function(){
-    component = new Matrix.component()
+    component = new Matrix.service.component()
 
     var tProto = protobuf.loadProtoFile('./fixtures/test.proto')
     var tBuilder = tProto.build('matrix_test');
