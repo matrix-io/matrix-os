@@ -1,19 +1,15 @@
 
-describe.skip('component', function(){
+describe.only('component', function(){
   var component, TestProto;
   before(function(){
-    component = new Matrix.service.component({})
-
-    var tProto = protobuf.loadProtoFile('./fixtures/test.proto')
-    var tBuilder = tProto.build('matrix_test');
-    var ProtoTest = tBuilder.Test;
-
 
     //fake device
-    Matrix.device.port.test = 13370;
+    Matrix.device.port.defaults.test = 11370;
 
-
+    // fake driver
     Matrix.device.drivers.test = {
+      name: 'test',
+      init: function(){},
       read: function(buffer){
         return new TestProto.Test.decode(buffer)
       },
@@ -31,62 +27,47 @@ describe.skip('component', function(){
         Matrix.components.test.config(config)
       },
       error: function(cb){
-
+        Matrix.components.test.error(cb)
       }
-
-      // makes component available
-      Matrix.service.zeromq.registerComponent(Matrix.device.drivers.test);
     }
+
+    // makes component available
+    var mqs = Matrix.service.zeromq.registerComponent(Matrix.device.drivers.test);
+
+    component = new Matrix.service.component( mqs );
+
 
   })
 
   describe('Component basics', function () {
     it('should register component on Matrix.components', function () {
-      (Matrix.components).should.have.key('test')
+      Matrix.components.should.have.key('test')
     });
 
     describe('Component methods', function(){
       it('should have a send method', function(){
-        (Matrix.components).should.have.key('send')
+        Matrix.components.test.should.have.key('send')
       })
       it('should have a read method', function(){
-        (Matrix.components).should.have.key('read')
+        Matrix.components.test.should.have.key('read')
       })
       it('should have a ping method', function(){
-        (Matrix.components).should.have.key('ping')
+        Matrix.components.test.should.have.key('ping')
       })
       it('should have a error method', function(){
-        (Matrix.components).should.have.key('error')
+        Matrix.components.test.should.have.key('error')
       })
       it('should have a config method', function(){
-        (Matrix.components).should.have.key('config')
+        Matrix.components.test.should.have.key('config')
       })
     })
 
   })
 
-  it('should implement ping', function(done){
-    component.ping();
-    zmqChannel.see(function(data){
-      done();
-    })
-  });
-  it('should implement prepare', function(done){
-    component.prepare(function(proto){
-      (typeof proto).should.be.eql('buffer');
-      done();
-    });
-  });
-  it('should implement send', function(done){
-    component.send({ test: true });
-    zmqChannel.see(function(data){
-      done();
-    })
-  })
-  it('should implement print', function(done){
-    TestProto
-    component.print( )
-  })
+  it('should implement ping');
+  it('should implement prepare');
+  it('should implement send')
+  it('should implement print')
   it('should implement read')
   it('should implement error')
   it('should apply sensor = true to drivers with a read component')
