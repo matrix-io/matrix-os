@@ -293,6 +293,23 @@ var msg = [];
         }
         cb();
     },
+    function stopAllDevices(cb){
+      debug('Stop all devices...'.green);
+      //Retrieve status for each app
+      async.forEach(Object.keys(Matrix.localApps), function (appId, done) {
+        Matrix.service.firebase.app.getStatus(appId, function (status) {
+          if (_.isUndefined(status)) status = "inactive"; //Set default status to inactive
+          if(status=="active"){
+            Matrix.service.firebase.app.setOnline(appId, false);
+            Matrix.service.firebase.app.setStatus(appId, 'inactive');
+          }else{
+            done();
+          }
+        });
+      }, function(err) {
+        cb();
+      });
+    },
     function setupFirebaseListeners(cb) {
       debug('Setting up Firebase Listeners...'.green);
       // watch for app installs
