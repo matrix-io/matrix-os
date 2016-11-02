@@ -1,7 +1,3 @@
 [submodule "proto"]
 	path = proto
 	url = http://github.com/matrix-io/protocol-buffers.git
-
-[submodule "testapps"]
-  path = test/fixtures/testapps
-	url = http://github.com/matrix-io/matrix-srcjs-apps.git
