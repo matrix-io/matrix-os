@@ -3,5 +3,5 @@
 	url = http://github.com/matrix-io/protocol-buffers.git
 
 [submodule "testapps"]
-  path = test/fixtures
+  path = test/fixtures/apps
 	url = http://github.com/matrix-io/matrix-srcjs-apps.git
