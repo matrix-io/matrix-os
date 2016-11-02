@@ -299,7 +299,7 @@ var msg = [];
       async.forEach(Object.keys(Matrix.localApps), function (appId, done) {
         Matrix.service.firebase.app.getStatus(appId, function (status) {
           if (_.isUndefined(status)) status = "inactive"; //Set default status to inactive
-          if(status=="active"){
+          if(status === "active"){
             Matrix.service.firebase.app.setOnline(appId, false);
             Matrix.service.firebase.app.setStatus(appId, 'inactive');
           }else{
