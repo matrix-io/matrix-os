@@ -1,12 +1,8 @@
 
-var protobuf = require('protobufjs');
-var zmq = require('zeromq')
-
-
 describe.skip('component', function(){
   var component, TestProto;
   before(function(){
-    component = new Matrix.service.component()
+    component = new Matrix.service.component({})
 
     var tProto = protobuf.loadProtoFile('./fixtures/test.proto')
     var tBuilder = tProto.build('matrix_test');
@@ -30,9 +26,42 @@ describe.skip('component', function(){
       },
       ping: function(){
         Matrix.components.test.ping();
+      },
+      config: function(config){
+        Matrix.components.test.config(config)
+      },
+      error: function(cb){
+
       }
 
+      // makes component available
+      Matrix.service.zeromq.registerComponent(Matrix.device.drivers.test);
     }
+
+  })
+
+  describe('Component basics', function () {
+    it('should register component on Matrix.components', function () {
+      (Matrix.components).should.have.key('test')
+    });
+
+    describe('Component methods', function(){
+      it('should have a send method', function(){
+        (Matrix.components).should.have.key('send')
+      })
+      it('should have a read method', function(){
+        (Matrix.components).should.have.key('read')
+      })
+      it('should have a ping method', function(){
+        (Matrix.components).should.have.key('ping')
+      })
+      it('should have a error method', function(){
+        (Matrix.components).should.have.key('error')
+      })
+      it('should have a config method', function(){
+        (Matrix.components).should.have.key('config')
+      })
+    })
 
   })
 
