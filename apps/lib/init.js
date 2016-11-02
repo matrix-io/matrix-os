@@ -7,6 +7,8 @@ module.exports = function(name, options){
     options = {};
   }
 
+  //TODO: add catch for config.service name
+
   //TODO: find if this init is for a detection
   if ( !_.isNull(name.match(/(face|demographics|vehicle|palm|pinch|fist|thumb-up)/)) ){
     process.send({type:'service-init', name: name, options: options });

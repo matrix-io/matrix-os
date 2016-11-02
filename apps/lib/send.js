@@ -1,3 +1,5 @@
+
+
 module.exports = function(message) {
   console.log('[M]('+ this.appName +') send ->', message);
   if ( _.isNull(message) ){
