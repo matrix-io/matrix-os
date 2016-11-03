@@ -301,10 +301,12 @@ var msg = [];
       Matrix.service.firebase.app.watchUserAppsRemoval(function (app) {
         debug('Firebase->UserApps->(X)', app.id, ' (' + app.name + ')');
         console.log('uninstalling ', app.name + '...');
-        Matrix.service.manager.uninstall(app.name, function (err) {
-          if (err) return error(err);
-          delete Matrix.localApps[app.id];
-          console.log('Successfully uninstalled ' + app.name.green);
+        Matrix.service.manager.stop(app.name, function (err) {
+          Matrix.service.manager.uninstall(app.name, function (err) {
+            if (err) return error(err);
+            delete Matrix.localApps[app.id];
+            console.log('Successfully uninstalled ' + app.name.green);
+          });
         });
       });
 
