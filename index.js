@@ -367,9 +367,13 @@ var msg = [];
         Matrix.service.firebase.user.checkDevice( Matrix.deviceId, function (err, device) {
           if (err || _.isNull(device) ) return cb('Bad User Device Record');
           debug('[fb]user/devices/deviceId>'.blue)
-          _.forIn(device.apps, function(v,k){
-            debug(k + ' - ' + v.name);
-          });
+          if ( _.has(device, 'apps')){
+            _.forIn(device.apps, function(v,k){
+              debug(k + ' - ' + v.name);
+            });
+          } else {
+            debug('No apps installed on this device', Matrix.deviceId)
+          }
           cb();
         })
       });

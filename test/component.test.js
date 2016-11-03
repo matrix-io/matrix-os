@@ -1,3 +1,4 @@
+var zeromq = require('zmq');
 
 describe.only('component', function(){
   var component, TestProto;
@@ -36,29 +37,45 @@ describe.only('component', function(){
 
     component = new Matrix.service.component( mqs );
 
+    //fake malos
+    var config = zeromq.socket('pull');
+    var error = zeromq.socket('pub');
+    var update = zeromq.socket('pub');
+    var ping = zeromq.socket('pull');
+
+    config.connect('tcp://127.0.0.1:' + Matrix.device.port.get('test').input);
+    error.connect('tcp://127.0.0.1:' + Matrix.device.port.get('test').error);
+    update.connect('tcp://127.0.0.1:' + Matrix.device.port.get('test').update);
+    ping.connect('tcp://127.0.0.1:' + Matrix.device.port.get('test').ping);
+
+
 
   })
 
   describe('Component basics', function () {
     it('should register component on Matrix.components', function () {
-      Matrix.components.should.have.key('test')
+      Matrix.components.should.have.property('test')
     });
+
+    it('should identify as a sensor', function(){
+      Matrix.components.test.sensor.should.equal(true);
+    })
 
     describe('Component methods', function(){
       it('should have a send method', function(){
-        Matrix.components.test.should.have.key('send')
+        Matrix.components.test.should.have.property('send')
       })
       it('should have a read method', function(){
-        Matrix.components.test.should.have.key('read')
+        Matrix.components.test.should.have.property('read')
       })
       it('should have a ping method', function(){
-        Matrix.components.test.should.have.key('ping')
+        Matrix.components.test.should.have.property('ping')
       })
       it('should have a error method', function(){
-        Matrix.components.test.should.have.key('error')
+        Matrix.components.test.should.have.property('error')
       })
       it('should have a config method', function(){
-        Matrix.components.test.should.have.key('config')
+        Matrix.components.test.should.have.property('config')
       })
     })
 
