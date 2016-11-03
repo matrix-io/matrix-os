@@ -1,9 +1,11 @@
 var zeromq = require('zmq');
-
+var protobuf = require('protobufjs');
 describe.only('component', function(){
-  var component, TestProto;
+  var component, TestProto, send, read, ping, config, TestProto;
   before(function(){
 
+    var TestBuilder = protobuf.loadProtoFile('./test/fixtures/test.proto');
+    TestProto = TestBuilder.build('matrix_test');
     //fake device
     Matrix.device.port.defaults.test = 11370;
 
@@ -12,13 +14,11 @@ describe.only('component', function(){
       name: 'test',
       init: function(){},
       read: function(buffer){
-        return new TestProto.Test.decode(buffer)
+        return new Test.decode(buffer)
       },
       prepare: function(option, cb){
-        var t = new tBuilder.Test;
-        for ( var k in option ){
-          t[k] = option[k];
-        }
+        var t = new TestProto.Test;
+        _.extend(t, option)
         cb( t.encode().toBuffer() )
       },
       ping: function(){
@@ -38,21 +38,20 @@ describe.only('component', function(){
     component = new Matrix.service.component( mqs );
 
     //fake malos
-    var config = zeromq.socket('pull');
-    var error = zeromq.socket('pub');
-    var update = zeromq.socket('pub');
-    var ping = zeromq.socket('pull');
+    send = zeromq.socket('pull');
+    error = zeromq.socket('pub');
+    update = zeromq.socket('pub');
+    ping = zeromq.socket('pull');
 
-    config.connect('tcp://127.0.0.1:' + Matrix.device.port.get('test').input);
+    send.connect('tcp://127.0.0.1:' + Matrix.device.port.get('test').input);
     error.connect('tcp://127.0.0.1:' + Matrix.device.port.get('test').error);
     update.connect('tcp://127.0.0.1:' + Matrix.device.port.get('test').update);
     ping.connect('tcp://127.0.0.1:' + Matrix.device.port.get('test').ping);
 
 
-
   })
 
-  describe('Component basics', function () {
+  describe('Component', function () {
     it('should register component on Matrix.components', function () {
       Matrix.components.should.have.property('test')
     });
@@ -79,10 +78,25 @@ describe.only('component', function(){
       })
     })
 
-  })
+    describe('functional', function () {
 
-  it('should implement ping');
-  it('should implement prepare');
+      it('should implement ping', function (done) {
+        ping.on('message', function (msg){
+          done();
+        })
+        Matrix.components.test.ping();
+      });
+
+      it('should implement send', function(done){
+        send.on('message', function (msg){
+          var decode = new TestProto.Test.decode(msg);
+          decode.should.property('test', true );
+          done();
+        })
+        Matrix.components.test.send({ test: true });
+      });
+    });
+  })
   it('should implement send')
   it('should implement print')
   it('should implement read')
