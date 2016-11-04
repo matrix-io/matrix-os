@@ -1,7 +1,8 @@
 var zeromq = require('zmq');
 var protobuf = require('protobufjs');
 describe.only('component', function(){
-  var component, TestProto, send, read, ping, config, TestProto;
+  var component, TestProto, malosSend, malosRead, malosPing, malosError, TestProto;
+
   before(function(){
 
     var TestBuilder = protobuf.loadProtoFile('./test/fixtures/test.proto');
@@ -14,7 +15,7 @@ describe.only('component', function(){
       name: 'test',
       init: function(){},
       read: function(buffer){
-        return new Test.decode(buffer)
+        return new TestProto.Test.decode(buffer)
       },
       prepare: function(option, cb){
         var t = new TestProto.Test;
@@ -27,8 +28,8 @@ describe.only('component', function(){
       config: function(config){
         Matrix.components.test.config(config)
       },
-      error: function(cb){
-        Matrix.components.test.error(cb)
+      error: function(err){
+        return err.toString();
       }
     }
 
@@ -38,16 +39,13 @@ describe.only('component', function(){
     component = new Matrix.service.component( mqs );
 
     //fake malos
-    send = zeromq.socket('pull');
-    error = zeromq.socket('pub');
-    update = zeromq.socket('pub');
-    ping = zeromq.socket('pull');
+    malosSend = zeromq.socket('pull');
+    malosError = zeromq.socket('pub');
+    malosRead = zeromq.socket('pub');
+    malosPing = zeromq.socket('pull');
 
-    send.connect('tcp://127.0.0.1:' + Matrix.device.port.get('test').input);
-    error.connect('tcp://127.0.0.1:' + Matrix.device.port.get('test').error);
-    update.connect('tcp://127.0.0.1:' + Matrix.device.port.get('test').update);
-    ping.connect('tcp://127.0.0.1:' + Matrix.device.port.get('test').ping);
-
+    malosSend.bindSync('tcp://127.0.0.1:' + Matrix.device.port.get('test').send);
+    malosPing.bindSync('tcp://127.0.0.1:' + Matrix.device.port.get('test').ping);
 
   })
 
@@ -81,26 +79,68 @@ describe.only('component', function(){
     describe('functional', function () {
 
       it('should implement ping', function (done) {
-        ping.on('message', function (msg){
-          done();
+        var d = _.once(done);
+        malosPing.on('message', function (msg){
+          d();
         })
         Matrix.components.test.ping();
       });
 
       it('should implement send', function(done){
-        send.on('message', function (msg){
+        var d = _.once(done);
+        malosSend.on('message', function (msg){
           var decode = new TestProto.Test.decode(msg);
           decode.should.property('test', true );
-          done();
+          d();
         })
+
         Matrix.components.test.send({ test: true });
       });
+
+      it('should implement print', function(done){
+        malosSend.connect('tcp://127.0.0.1:' + Matrix.device.port.get('test').input);
+        var d = _.once(done);
+
+        malosSend.on('message', function(msg){
+          var decode = new TestProto.Test.decode(msg);
+          decode.should.property('test', true );
+          d();
+        })
+
+        //print takes raw protobufs
+        var t = new TestProto.Test;
+        t.test = true;
+        Matrix.components.test.print( t.encode().toBuffer() );
+      })
+
+      it('should implement read', function(done){
+        Matrix.components.test.read( function(msg){
+          msg.should.property('test', true);
+          done();
+        });
+
+        malosRead.bindSync('tcp://127.0.0.1:' + Matrix.device.port.get('test').read);
+        //print takes raw protobufs
+        var t = new TestProto.Test;
+        t.test = true;
+        setTimeout(function () {
+          malosRead.send(t.encode().toBuffer());
+        }, 100)
+      })
+
+      it('should implement error', function(done){
+        Matrix.components.test.error( function(msg){
+          msg.should.equal('test');
+          done();
+        });
+
+
+        malosError.bindSync('tcp://127.0.0.1:' + Matrix.device.port.get('test').error);
+        setTimeout(function () {
+          malosError.send('test');
+        }, 100)
+      })
     });
+
   })
-  it('should implement send')
-  it('should implement print')
-  it('should implement read')
-  it('should implement error')
-  it('should apply sensor = true to drivers with a read component')
-  it('should register a new component in Matrix.components')
 })
