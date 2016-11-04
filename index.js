@@ -45,7 +45,6 @@ Matrix.activeServices = [];
 // a collection of apps installed on the device, not expecially in firebase
 Matrix.localApps = {};
 
-
 // Make Matrix[setting] from env settings for easy access
 parseEnvSettings(envSettings);
 
@@ -327,11 +326,8 @@ var msg = [];
       });
 
        //App install update
-       Matrix.service.firebase.user.watchAppInstall(Matrix.deviceId, function (app) {
-        if (!_.isUndefined(app) && Object.keys(app).length > 0) {
-          var appId = Object.keys(app)[0];
-          app = app[appId];
-
+       Matrix.service.firebase.user.watchAppInstall(Matrix.deviceId, function (app, appId) {
+        if (!_.isUndefined(app) && !_.isUndefined(appId)) {
           Matrix.localApps[appId] = app;
 
           console.log('installing', appId);
