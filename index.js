@@ -310,14 +310,19 @@ var msg = [];
       //App uninstalls
       Matrix.service.firebase.app.watchUserAppsRemoval(function (app) {
         debug('Firebase->UserApps->(X)', app.id, ' (' + app.name + ')');
-        console.log('uninstalling ', app.name + '...');
-        Matrix.service.manager.stop(app.name, function (err) {
-          Matrix.service.manager.uninstall(app.name, function (err) {
-            if (err) return error(err);
-            delete Matrix.localApps[app.id];
-            console.log('Successfully uninstalled ' + app.name.green);
-          });
-        });
+        // app to uninstall!
+        // refresh app ids in case of recent install
+        Matrix.service.firebase.app.getUserAppIds( function (appIds) {
+          if (_.keys(appIds).indexOf(app.id) !== -1) {
+            console.log('uninstalling ', app.name + '...');
+            Matrix.service.manager.uninstall(app.name, function(err){
+              if (err) return error(err);
+              console.log('Successfully uninstalled ' + app.name.green);
+            })
+          } else {
+            console.log('The application ' + app.name + ' isn\'t currently installed on this device');
+          }
+        })
       });
 
        //App install update
@@ -358,9 +363,13 @@ var msg = [];
         Matrix.service.firebase.user.checkDevice( Matrix.deviceId, function (err, device) {
           if (err || _.isNull(device) ) return cb('Bad User Device Record');
           debug('[fb]user/devices/deviceId>'.blue)
-          _.forIn(device.apps, function(v,k){
-            debug(k + ' - ' + v.name);
-          });
+          if ( _.has(device, 'apps')){
+            _.forIn(device.apps, function(v,k){
+              debug(k + ' - ' + v.name);
+            });
+          } else {
+            debug('No apps installed on this device', Matrix.deviceId)
+          }
           cb();
         })
       });
