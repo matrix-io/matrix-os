@@ -189,7 +189,7 @@ function composeLayers(layers){
   var i = 0;
   var final = _.reduce(layers, function (r, v) {
 
-    console.log( i++, printLights(v));
+    // console.log( i++, printLights(v));
     // combine matrix of points with next layer
     _.each(v, function (c, i) {
       composeMix = true;

@@ -38,37 +38,42 @@ describe.skip('Matrix Applications', function(){
         appRecord.should.have.property('sensors');
         done();
       })
+      it('should save a reference to the services', function (done) {
+        appRecord.should.have.property('services');
+        done();
+      })
       it('should save a reference to the pid', function (done) {
         appRecord.should.have.property('pid');
         done();
       })
     })
 
-      describe('event management', function(){
-        var appRecord;
-        before( function(){
-          appRecord = _.find( Matrix.activeApplications, { name: 'test'});
-        })
-        it('should have listeners attached to process', function(done){
-          appRecord.process.should.have.property('handlers');
-          done();
-        })
-
-        it('should have listeners on the global event emitter', function(done){
-          Matrix.events.listeners('detection').length.should.be(1);
-          Matrix.events.listeners('app-message').length.should.be(1);
-          Matrix.events.listeners('app-test-message').length.should.be(1);
-          done();
-        })
+    describe('event management', function(){
+      var appRecord;
+      before( function(){
+        appRecord = _.find( Matrix.activeApplications, { name: 'test'});
       })
+      it('should have listeners attached to process', function(done){
+        appRecord.process.should.have.property('handlers');
+        done();
+      })
+
+      it('should have listeners on the global event emitter', function(done){
+        Matrix.events.listeners('app-message').length.should.be(1);
+        Matrix.events.listeners('app-test-message').length.should.be(1);
+        done();
+      })
+    })
+
     describe('stop an app',function(){
       it('should stop an app by name');
       it('should stop all apps');
+      it('stopped apps should not be in activeApplications')
 
     })
       it('should be able to uninstall an app')
     })
   });
 
-  
+
 })
