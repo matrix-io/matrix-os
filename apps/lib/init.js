@@ -7,9 +7,11 @@ module.exports = function(name, options){
     options = {};
   }
 
+  //TODO: add catch for config.service name
+
   //TODO: find if this init is for a detection
-  if ( !_.isNull(name.match(/(face|vehicle|palm|pinch|fist|thumb-up)/)) ){
-    process.send({type:'detection-init', payload: { name: name, options: options }});
+  if ( !_.isNull(name.match(/(face|demographics|vehicle|palm|pinch|fist|thumb-up)/)) ){
+    process.send({type:'service-init', name: name, options: options });
     return {
       then: function(cb){
       process.on('message', function (data) {
@@ -80,6 +82,10 @@ var filter, sensorOptions;
     var result;
     // recieves from events/sensors
     process.on('message', function(m) {
+
+      if ( _.isUndefined(m) ){
+        return console.error('[M]->[m] Empty Message From matrix.init'.red, name, options );
+      }
 
       console.log('[M]->[m](%s):', name, m);
       if (m.eventType === 'sensor-emit') {
