@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
-## [Unreleased]
+## [0.6.0]
 ### Added
 - gesture driver
 - detection driver
@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - face goes through detection driver
 - Start versioning history
+- Deployment improvements
+- Firebase improvements
 
 ## [0.5.12]
 Fixed and sped up heart beat
