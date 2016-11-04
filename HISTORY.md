@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - gesture driver
 - detection driver
 - service for integrations
+- component test
 
 ### Removed
 - face driver
