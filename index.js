@@ -293,12 +293,15 @@ var msg = [];
         }
         cb();
     },
-    function stopAllDevices(cb){
-      debug('Stop all devices...'.green);
+    //Verify if the device has a active applications and stop these
+    function stopAllApps(cb){
+      debug('Stop all apps...'.green);
       //Retrieve status for each app
       async.forEach(Object.keys(Matrix.localApps), function (appId, done) {
         Matrix.service.firebase.app.getStatus(appId, function (status) {
-          if (_.isUndefined(status)) status = "inactive"; //Set default status to inactive
+           //Set default status to inactive
+          if (_.isUndefined(status)) status = "inactive";
+          //If the status is active set online false and status inactive on the app
           if(status === "active"){
             Matrix.service.firebase.app.setOnline(appId, false);
             Matrix.service.firebase.app.setStatus(appId, 'inactive');
