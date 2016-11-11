@@ -16,9 +16,7 @@ var DataStore = require('nedb');
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
 
-var D = require('debug')
-
-debug = console.log;
+// console.log('Env Vars:', process.env)
 
 process.setMaxListeners(50);
 
@@ -234,9 +232,6 @@ var Matrix = {
   emit: interAppNotification,
   startApp: function(name){
     appName = name;
-
-    // setup debug
-    debug = new D('')
 
     // Config is written as JSON by MOS -
     try {
