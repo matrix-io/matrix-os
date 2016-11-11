@@ -44,7 +44,7 @@ var filter, sensorOptions;
   }
 
   var returnObj = function(){
-    console.warn(this, ' is a multi typed Matrix data object, please specify a child data souce using key-value notation ( obj.sensor or obj[\'sensor\'])')
+    console.log(this, ' is a multi typed Matrix data object, please specify a child data souce using key-value notation ( obj.sensor or obj[\'sensor\'])')
     return {};
   };
 
@@ -72,8 +72,6 @@ var filter, sensorOptions;
   // prepare local chaining filter
   filter = new EventFilter(name);
 
-  debug('app filter', filter)
-
   // then is a listener for messages from sensors
   // FIXME: Issue with app only storing one process at a time
   // console.log('sensor err >> looking into fix');
@@ -84,7 +82,7 @@ var filter, sensorOptions;
     process.on('message', function(m) {
 
       if ( _.isUndefined(m) ){
-        return console.error('[M]->[m] Empty Message From matrix.init'.red, name, options );
+        return console.log('[M]->[m] Empty Message From matrix.init'.red, name, options );
       }
 
       console.log('[M]->[m](%s):', name, m);
@@ -114,7 +112,7 @@ var filter, sensorOptions;
       } else if ( m.eventType === 'container-ready') {
         // ignore
       } else {
-        console.warn('[M]->[m] uncaught message', m);
+        console.log('[M]->[m] uncaught message', m);
         cb(m.payload);
       }
 

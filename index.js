@@ -246,7 +246,7 @@ var msg = [];
       // Gets all apps
 
         // this is populated from init>getallapps
-        Matrix.localApps = Matrix.service.firebase.util.records.userApps || Matrix.localApps;
+        Matrix.localApps = Matrix.service.firebase.util.records.apps || Matrix.localApps;
         // debug('userApps->', Matrix.localApps);
         console.log('Installed Apps:'.green, _.map( Matrix.localApps, 'name' ).join(', ').grey)
 
@@ -302,6 +302,25 @@ var msg = [];
           });
         }
         cb();
+    },
+    //Verify if the device has a active applications and stop these
+    function stopAllApps(cb){
+      debug('Stop all apps...'.green);
+      //Retrieve status for each app
+      async.each(Object.keys(Matrix.localApps), function (appId, done) {
+        Matrix.service.firebase.app.getStatus(appId, function (status) {
+           //Set default status to inactive
+          if (_.isUndefined(status)) status = "inactive";
+          //If the status is active set online false and status inactive on the app
+          if(status === "active"){
+            Matrix.service.firebase.app.setOnline(appId, false);
+            Matrix.service.firebase.app.setStatus(appId, 'inactive');
+          }
+          done();
+        });
+      }, function(err) {
+        cb();
+      });
     },
     function setupFirebaseListeners(cb) {
       debug('Setting up Firebase Listeners...'.green);
@@ -440,6 +459,7 @@ module.exports = {
 //Triggered when the application is killed by a [CRTL+C] from keyboard
 process.on("SIGINT", function() {
   log("Matrix -- CRTL+C kill detected");
+  Matrix.device.drivers.led.clear();
   disconnectFirebase(function () {
     process.exit(0);
   });
@@ -475,6 +495,8 @@ function onDestroy() {
   //TODO: Implemenent cleanups
   // kill children apps\
   debug("DESTROYING".red);
+
+  Matrix.device.drivers.led.clear();
   if (!forceExit) {
     disconnectFirebase(function () {
       async.series([
