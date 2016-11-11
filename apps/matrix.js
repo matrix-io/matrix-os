@@ -18,7 +18,7 @@ var eventEmitter = new events.EventEmitter();
 
 var D = require('debug')
 
-debug = undefined;
+debug = console.log;
 
 process.setMaxListeners(50);
 
