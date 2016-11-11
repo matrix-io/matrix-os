@@ -307,7 +307,7 @@ var msg = [];
     function stopAllApps(cb){
       debug('Stop all apps...'.green);
       //Retrieve status for each app
-      async.forEach(Object.keys(Matrix.localApps), function (appId, done) {
+      async.each(Object.keys(Matrix.localApps), function (appId, done) {
         Matrix.service.firebase.app.getStatus(appId, function (status) {
            //Set default status to inactive
           if (_.isUndefined(status)) status = "inactive";
@@ -315,9 +315,8 @@ var msg = [];
           if(status === "active"){
             Matrix.service.firebase.app.setOnline(appId, false);
             Matrix.service.firebase.app.setStatus(appId, 'inactive');
-          }else{
-            done();
           }
+          done();
         });
       }, function(err) {
         cb();
