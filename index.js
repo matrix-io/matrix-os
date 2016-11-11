@@ -246,7 +246,7 @@ var msg = [];
       // Gets all apps
 
         // this is populated from init>getallapps
-        Matrix.localApps = Matrix.service.firebase.util.records.userApps || Matrix.localApps;
+        Matrix.localApps = Matrix.service.firebase.util.records.apps || Matrix.localApps;
         // debug('userApps->', Matrix.localApps);
         console.log('Installed Apps:'.green, _.map( Matrix.localApps, 'name' ).join(', ').grey)
 
