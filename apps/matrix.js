@@ -203,10 +203,10 @@ var Matrix = {
   led: require('./lib/led'),
   audio: {
     say: function(msg){
-      console.warn('say() is not implemented yet')
+      console.log('say() is not implemented yet')
     },
     play: function(file, volume){
-      console.warn('play() is not implemented yet' )
+      console.log('play() is not implemented yet' )
       // var assetPath = __dirname + '/' + appName + '.matrix/storage/';
       // var volume = ( !_.isUndefined(volume)) ? volume: 80;
       // require('loudness').setVolume( volume, function(){});
@@ -267,7 +267,7 @@ var Matrix = {
   trigger: doTrigger,
   color: require('tinycolor2'),
   static: function(){
-    console.warn('static not implmented uyet')
+    console.log('static not implmented uyet')
   }
 }
 
