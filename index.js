@@ -458,7 +458,7 @@ module.exports = {
 
 //Triggered when the application is killed by a [CRTL+C] from keyboard
 process.on("SIGINT", function() {
-  log("Matrix -- CRTL+C kill detected");
+  log("Matrix -- CTRL+C kill detected");
   Matrix.device.drivers.led.clear();
   disconnectFirebase(function () {
     process.exit(0);
