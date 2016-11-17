@@ -83,8 +83,12 @@ module.exports = function ( c ) {
           color.angle = 360 + color.angle;
         }
         color.angle = ( color.angle < 360 ) ? color.angle : color.angle % 360;
+
+        // 24.75
         var point = 35 * ( color.angle / 360 )
+
         if ( color.blend === true ) {
+          //which light?
           // 24
           var base = Math.trunc( point );
           // .75
@@ -92,10 +96,12 @@ module.exports = function ( c ) {
           // .25
           var sub2Weight = 1 - sub1Weight;
 
-          var darkWeight = 25;
+          // adjust this - 28 is where one light comes on when the other disappears
+          var darkWeight = 28;
 
           tcColors[base] = tc( color.color ).darken(sub1Weight * darkWeight);
           tcColors[base+1] = tc( color.color ).darken(sub2Weight * darkWeight);
+
         } else {
           // default blend false
           var angleIndex = Math.round( point );
