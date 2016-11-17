@@ -28,6 +28,6 @@ module.exports = {
       cb();
     }
   },
-  open: function(),
-  close: function()
+  open: function(){},
+  close: function(){}
 }
