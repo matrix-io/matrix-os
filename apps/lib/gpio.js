@@ -27,5 +27,7 @@ module.exports = {
     if ( _.isFunction(cb) ){
       cb();
     }
-  }
+  },
+  open: function(),
+  close: function()
 }
