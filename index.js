@@ -303,25 +303,10 @@ var msg = [];
         }
         cb();
     },
-    //Verify if the device has a active applications and stop these
-    function stopAllApps(cb){
-      debug('Stop all apps...'.green);
-      //Retrieve status for each app
-      async.each(Object.keys(Matrix.localApps), function (appId, done) {
-        Matrix.service.firebase.app.getStatus(appId, function (status) {
-           //Set default status to inactive
-          if (_.isUndefined(status)) status = "inactive";
-          //If the status is active set online false and status inactive on the app
-          if(status === "active"){
-            Matrix.service.firebase.app.setOnline(appId, false);
-            Matrix.service.firebase.app.setStatus(appId, 'inactive');
-          }
-          done();
-        });
-      }, function(err) {
-        cb();
-      });
-    },
+
+    //Stop apps in firebase if started
+    Matrix.service.manager.resetAppStatus,
+
     function setupFirebaseListeners(cb) {
       debug('Setting up Firebase Listeners...'.green);
       // watch for app installs
@@ -524,6 +509,7 @@ function onDestroy() {
 function disconnectFirebase(cb) {
   if (!_.isUndefined(Matrix.service.firebase.initialized) && Matrix.service.firebase.initialized) {
     debug('Disconnecting firebase');
+    Matrix.service.manager.resetAppStatus();
     Matrix.service.firebase.device.ping();
     Matrix.service.firebase.device.goOffline(cb);
   } else {
