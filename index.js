@@ -295,7 +295,7 @@ var msg = [];
                   id: id
                 }, function(err){
                   //cb(err);
-                  console.log('Local app update failed ', err);
+                  if (err) console.log('Local app update failed ', err);
                 });
               }
             })
