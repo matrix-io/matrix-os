@@ -200,6 +200,7 @@ vim -nb or :nbs from inside vim
 4. Change logs and component in `sensorname.js` to point at new sensorname
 5. Update port number in `lib/device/port.js`
 6. Update sensorTypeList in `lib/device/sensor.js`
+7. Route correctly in `apps/lib/init.js`
 
 ## Maintainers
 

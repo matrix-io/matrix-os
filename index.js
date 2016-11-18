@@ -295,7 +295,7 @@ var msg = [];
                   id: id
                 }, function(err){
                   //cb(err);
-                  console.log('Local app update failed ', err);
+                  if (err) console.log('Local app update failed ', err);
                 });
               }
             })
@@ -303,25 +303,10 @@ var msg = [];
         }
         cb();
     },
-    //Verify if the device has a active applications and stop these
-    function stopAllApps(cb){
-      debug('Stop all apps...'.green);
-      //Retrieve status for each app
-      async.each(Object.keys(Matrix.localApps), function (appId, done) {
-        Matrix.service.firebase.app.getStatus(appId, function (status) {
-           //Set default status to inactive
-          if (_.isUndefined(status)) status = "inactive";
-          //If the status is active set online false and status inactive on the app
-          if(status === "active"){
-            Matrix.service.firebase.app.setOnline(appId, false);
-            Matrix.service.firebase.app.setStatus(appId, 'inactive');
-          }
-          done();
-        });
-      }, function(err) {
-        cb();
-      });
-    },
+
+    //Stop apps in firebase if started
+    Matrix.service.manager.resetAppStatus,
+
     function setupFirebaseListeners(cb) {
       debug('Setting up Firebase Listeners...'.green);
       // watch for app installs
@@ -331,17 +316,19 @@ var msg = [];
         debug('Firebase->UserApps->(X)', app.id, ' (' + app.name + ')');
         // app to uninstall!
         // refresh app ids in case of recent install
-        Matrix.service.firebase.app.getUserAppIds( function (appIds) {
-          if (_.keys(appIds).indexOf(app.id) !== -1) {
-            console.log('uninstalling ', app.name + '...');
-            Matrix.service.manager.uninstall(app.name, function(err){
-              if (err) return error(err);
-              console.log('Successfully uninstalled ' + app.name.green);
-            })
-          } else {
-            console.log('The application ' + app.name + ' isn\'t currently installed on this device');
-          }
-        })
+        Matrix.service.manager.stop(app.name, function (err) {
+          Matrix.service.firebase.app.getUserAppIds(function (appIds) {
+            if (_.keys(appIds).indexOf(app.id) !== -1) {
+              console.log('uninstalling ', app.name + '...');
+              Matrix.service.manager.uninstall(app.name, function (err) {
+                if (err) return error(err);
+                console.log('Successfully uninstalled ' + app.name.green);
+              })
+            } else {
+              console.log('The application ' + app.name + ' isn\'t currently installed on this device');
+            }
+          });
+        });
       });
 
        //App install update
@@ -361,10 +348,12 @@ var msg = [];
             }
 
             debug('Trying to install: ' + appName.yellow);
-            Matrix.service.manager.install(installOptions, function (err) {
-              debug('Finished index install');
-              console.log(appName, installOptions.version, 'installed from', installOptions.url);
-            })
+            Matrix.service.manager.stop(appName, function (err) {
+              Matrix.service.manager.install(installOptions, function (err) {
+                debug('Finished index install');
+                console.log(appName, installOptions.version, 'installed from', installOptions.url);
+              });
+            }); 
           })
         } else {
           debug('Empty app install triggered');
@@ -458,7 +447,7 @@ module.exports = {
 
 //Triggered when the application is killed by a [CRTL+C] from keyboard
 process.on("SIGINT", function() {
-  log("Matrix -- CRTL+C kill detected");
+  log("Matrix -- CTRL+C kill detected");
   Matrix.device.drivers.led.clear();
   disconnectFirebase(function () {
     process.exit(0);
@@ -524,6 +513,7 @@ function onDestroy() {
 function disconnectFirebase(cb) {
   if (!_.isUndefined(Matrix.service.firebase.initialized) && Matrix.service.firebase.initialized) {
     debug('Disconnecting firebase');
+    Matrix.service.manager.resetAppStatus();
     Matrix.service.firebase.device.ping();
     Matrix.service.firebase.device.goOffline(cb);
   } else {
