@@ -96,7 +96,8 @@ module.exports = function ( c ) {
           // .25
           var sub2Weight = 1 - sub1Weight;
 
-          // adjust this - 28 is where one light comes on when the other disappears
+          // 28 is where one light comes on when the other disappears
+          // 25 has two lights on all the time, 30 has a period with one light on
           var darkWeight = 28;
 
           tcColors[base] = tc( color.color ).darken(sub1Weight * darkWeight);
