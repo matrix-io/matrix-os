@@ -295,7 +295,7 @@ var msg = [];
                   id: id
                 }, function(err){
                   //cb(err);
-                  console.log('Local app update failed ', err);
+                  if (err) console.log('Local app update failed ', err);
                 });
               }
             })
@@ -316,17 +316,19 @@ var msg = [];
         debug('Firebase->UserApps->(X)', app.id, ' (' + app.name + ')');
         // app to uninstall!
         // refresh app ids in case of recent install
-        Matrix.service.firebase.app.getUserAppIds( function (appIds) {
-          if (_.keys(appIds).indexOf(app.id) !== -1) {
-            console.log('uninstalling ', app.name + '...');
-            Matrix.service.manager.uninstall(app.name, function(err){
-              if (err) return error(err);
-              console.log('Successfully uninstalled ' + app.name.green);
-            })
-          } else {
-            console.log('The application ' + app.name + ' isn\'t currently installed on this device');
-          }
-        })
+        Matrix.service.manager.stop(app.name, function (err) {
+          Matrix.service.firebase.app.getUserAppIds(function (appIds) {
+            if (_.keys(appIds).indexOf(app.id) !== -1) {
+              console.log('uninstalling ', app.name + '...');
+              Matrix.service.manager.uninstall(app.name, function (err) {
+                if (err) return error(err);
+                console.log('Successfully uninstalled ' + app.name.green);
+              })
+            } else {
+              console.log('The application ' + app.name + ' isn\'t currently installed on this device');
+            }
+          });
+        });
       });
 
        //App install update
@@ -346,10 +348,12 @@ var msg = [];
             }
 
             debug('Trying to install: ' + appName.yellow);
-            Matrix.service.manager.install(installOptions, function (err) {
-              debug('Finished index install');
-              console.log(appName, installOptions.version, 'installed from', installOptions.url);
-            })
+            Matrix.service.manager.stop(appName, function (err) {
+              Matrix.service.manager.install(installOptions, function (err) {
+                debug('Finished index install');
+                console.log(appName, installOptions.version, 'installed from', installOptions.url);
+              });
+            }); 
           })
         } else {
           debug('Empty app install triggered');
