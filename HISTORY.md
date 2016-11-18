@@ -6,9 +6,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
-## Unreleased
+## [0.6.2]
+### Added
 - Added stubs for GPIO, IR and Microphone
-  
+- Basic Microphone data coming in (needs work)
+- Restart application if configuration changes
+- Clear app status on device exit
+- Check for existence before starting app
+
+### Changed
+- Stop crash if app folder doesn't exist on start
+- Stop app on uninstall / install / deploy
+
+
 ## [0.6.1]
 
 
