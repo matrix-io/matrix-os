@@ -5,8 +5,8 @@ var readPins = [];
 var writePins = [];
 
 module.exports = {
-  read: function(pin, cb){
-    if ( !_.isFunction(cb) ){
+  read: function (pin, cb) {
+    if (!_.isFunction(cb)) {
       throw new Error('matrix.gpio.read requires a callback');
     }
 
@@ -14,20 +14,26 @@ module.exports = {
     readPins = _.uniq(pin);
     pinHandlers[pin] = cb;
 
-    process.send('gpio-open', pin);
-    process.on('gpio-emit', function(d){
-      if ( d.pin === pin ){
+    process.send({
+      type: 'gpio-open',
+      pin: pin
+    });
+
+    process.on('message', function (d) {
+      if (d.pin === pin) {
         cb(d.value)
       }
     })
   },
 
-  write: function( pin, value, cb ){
+  write: function (pin, value, cb) {
     process.send('gpio-write', { pin: pin, value: value });
-    if ( _.isFunction(cb) ){
+    if (_.isFunction(cb)) {
       cb();
     }
   },
-  open: function(){},
-  close: function(){}
+  open: function () {
+    
+   },
+  close: function () { }
 }
