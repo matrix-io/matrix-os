@@ -15,7 +15,7 @@ module.exports = {
     pinHandlers[pin] = cb;
 
     process.send('gpio-open', pin);
-    process.on('gpio-read', function(d){
+    process.on('gpio-emit', function(d){
       if ( d.pin === pin ){
         cb(d.value)
       }
