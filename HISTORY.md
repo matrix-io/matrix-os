@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Mic basics
-- Support application upadtes
+- Support application updates
 
 
 ## [0.6.2]
