@@ -310,6 +310,10 @@ var msg = [];
     function setupFirebaseListeners(cb) {
       debug('Setting up Firebase Listeners...'.green);
       // watch for app installs
+      //
+      if ( process.env.hasOwnProperty('NO_INSTALL')){
+        return cb();
+      }
 
       //App uninstalls
       Matrix.service.firebase.app.watchUserAppsRemoval(function (app) {
@@ -353,7 +357,7 @@ var msg = [];
                 debug('Finished index install');
                 console.log(appName, installOptions.version, 'installed from', installOptions.url);
               });
-            }); 
+            });
           })
         } else {
           debug('Empty app install triggered');
@@ -419,6 +423,11 @@ var msg = [];
 
     //for tests
     Matrix.events.emit('matrix-ready');
+
+    // CLI uses IPC for tests
+    if ( process.hasOwnProperty('send')){
+      process.send({ 'matrix-ready' : true })
+    }
 
     if (process.env.hasOwnProperty('REPL')){
       const repl = require('repl');
