@@ -184,7 +184,7 @@ var msg = [];
               updateError = err;
             }
             if (!updateError) {
-              console.log('Moules updated... '.green)
+              console.log('Modules updated... '.green)
               try {
                 require('child_process').execSync('git fetch && git pull', { stdio: 'ignore' });
               } catch (err) {
