@@ -1,7 +1,7 @@
 // Welcome to MatrixOS - A JavaScript environment for IoT Applications
 
 // for crash handling
-
+var destroyingProcess = false;
 var forceExit = false;
 /* GLOBALS */
 _ = require('lodash');
@@ -176,11 +176,39 @@ var msg = [];
             debug('Latest Version Installed. ' + currentVersion.grey)
             cb()
           } else {
-            console.log('MATRIX OS Upgrade Ready. ' + remoteVersion + ' now available.\n', 'Upgrading MATRIX OS....')
-            require('child_process').execSync('git submodule update --init;git fetch;git pull');
-            console.log('Upgrade Complete: Restart MATRIX OS... ')
-            process.exit();
-            cb();
+            console.log('MATRIX OS Upgrade Ready. ' + remoteVersion + ' now available.\n', 'Upgrading MATRIX OS....'.yellow)
+            var updateError, exitCode;
+            try {
+              exitCode = require('child_process').execSync('git submodule update --init', { stdio: 'ignore' });
+            } catch (err) {
+              updateError = err;
+            }
+            if (!updateError) {
+              console.log('Modules updated... '.green)
+              try {
+                require('child_process').execSync('git fetch && git pull', { stdio: 'ignore' });
+              } catch (err) {
+                updateError = err;
+              }
+              if (!updateError) {
+                console.log('Main Code updated... '.green)
+                console.log('Upgrade Complete: Restart MATRIX OS... '.green)
+                process.exit();
+                //cb();
+              } else { //Code update failed
+                debug('Error updating main code:\n', updateError.message);
+                console.error('Unable to update MOS main code'.yellow);
+                console.error('Please make sure you haven\'t modified any files ('.yellow + 'git status'.gray + '), check your connection and try again'.yellow);
+                console.error('Alternatively, you can run MOS without the upgrade check in the meantime \''.yellow + 'NO_UPGRADE=true node index.js'.gray + '\''.yellow);
+                process.exit();
+              }
+            } else { //Git submodules update failed
+              debug('Error updating modules:\n', updateError.message);
+              console.error('Unable to update MOS submodules'.yellow);
+              console.error('Try \''.yellow + 'git submodule deinit -f ; git submodule update --init'.gray + '\' to fix your modules'.yellow);
+              console.error('Alternatively, you can run MOS without the upgrade check in the meantime \''.yellow + 'NO_UPGRADE=true node index.js'.gray + '\''.yellow);
+              process.exit();
+            }
           }
         })
       }).on('error', function (e) {
@@ -481,8 +509,12 @@ process.on("SIGQUIT", function() {
 @description Used to unify the behavior of all kill signals
 */
 function onKill() {
-  log("Matrix -- Application Closing...");
-  onDestroy();
+  if (!destroyingProcess) {
+    log("Matrix -- Application Closing...");
+    onDestroy();
+  } else {
+    log("Matrix -- Already closing, please wait a few seconds...");
+  }
 }
 
 /*
@@ -490,9 +522,11 @@ function onKill() {
 @description Stop process before stop application
 */
 function onDestroy() {
+  //TODO Consider adding a setTimeout>process.exit if all else fails
   //TODO: Implemenent cleanups
   // kill children apps\
   debug("DESTROYING".red);
+  destroyingProcess = true;
 
   Matrix.device.drivers.led.clear();
   if (!forceExit) {
