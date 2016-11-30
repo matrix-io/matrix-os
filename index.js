@@ -233,11 +233,13 @@ var msg = [];
     function firebaseInit(cb) {
       debug('Starting Firebase...'.green + ' U:', Matrix.userId, ', D: ', Matrix.deviceId, ', DT: ' , Matrix.deviceToken);
       Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, Matrix.deviceToken, Matrix.env, function (err, deviceId) {
-        if (!err) {
+        if (err) {
+          return cb(err);
+        } else {
           Matrix.service.firebase.initialized = true;
         }
         if ( deviceId !== Matrix.deviceId ){
-          return cb('firebase / deviceid mismatch')
+          return cb('firebase / deviceid mismatch' + deviceId + ' != ' + Matrix.deviceId )
         }
         cb(err, deviceId);
       });
