@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - NO_INSTALL flag to skip new installs, cli tests
 - 'matrix-ready' IPC event for cli tests
+- Error checking for upgrades
+
+### Changed
+- Prevent multiple kill signals
 
 ## [0.6.3]
 
