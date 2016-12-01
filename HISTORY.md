@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+- NO_INSTALL flag to skip new installs, cli tests
+- 'matrix-ready' IPC event for cli tests
+- Error checking for upgrades
+
+### Changed
+- Prevent multiple kill signals
+
+## [0.6.3]
+
+### Added
+- Mic basics
+- Support application updates
 
 
 ## [0.6.2]
