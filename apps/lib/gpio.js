@@ -1,7 +1,7 @@
 
 // pin # = index
-var pinHandlers = [];
-var readPins = [];
+var pinHandlers = []; //Callback for each pin 
+var readPins = []; //Pins that are being notified
 var writePins = [];
 
 var listenerStarted = false;
@@ -9,13 +9,12 @@ var listenerStarted = false;
 
 module.exports = {
   read: function (pin, cb) {
-    console.log("PIN TO READ:", pin);
     if (!_.isFunction(cb)) {
       throw new Error('matrix.gpio.read requires a callback');
     }
-
+    
     readPins.push(pin);
-    readPins = _.uniq(pin);
+    readPins = _.uniq(readPins);
     pinHandlers[pin] = cb;
 
     process.send({
@@ -23,29 +22,19 @@ module.exports = {
       pin: pin
     });
 
-    if (!listenerStarted) {
+    if (!listenerStarted) { //Only start listening once
       listenerStarted = true;
       process.on('message', function (message) {
-        console.log("PIN MESSAGE: ", message); //NOT getting a pin in the message
         if (message.eventType == 'gpio-emit') {
-          console.log("GPIO-EMIT");
           var resultPins = message.payload.values;
-
           readPins.forEach(function (element) {
             var value = 0;
-            if (resultPins.length >= element) {
-              value = resultPins[element - 1];
+            if (resultPins.hasOwnProperty(element)) { //Only assign a value to that pin if a value is specified 
+              value = resultPins[element];
             }
             pinHandlers[element](value);
-            console.log("#PIN: ", resultPins.length, '>', element, '? ... ', value);
           });
         }
-        
-        /*
-        if (d.pin === pin) {
-          cb(d.value)
-        }
-        */
       })
     }    
   },
