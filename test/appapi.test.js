@@ -1,4 +1,4 @@
-describe('Matrix App API', function () {
+describe.skip('Matrix App API', function () {
   var matrix;
   before(function(){
     matrix = require(__dirname + '/../apps/matrix.js');
