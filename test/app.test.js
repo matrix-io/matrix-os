@@ -48,15 +48,21 @@ describe.skip('Matrix Applications', function(){
       })
     })
 
+    describe('application sensors and integrations', function(done){
+      it('')
+    })
+
     describe('event management', function(){
       var appRecord;
       before( function(){
         appRecord = _.find( Matrix.activeApplications, { name: 'test'});
       })
+
       it('should have listeners attached to process', function(done){
         appRecord.process.should.have.property('handlers');
         done();
-      })
+      });
+
 
       it('should have listeners on the global event emitter', function(done){
         Matrix.events.listeners('app-message').length.should.be(1);

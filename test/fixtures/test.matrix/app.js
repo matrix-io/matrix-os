@@ -82,14 +82,14 @@ process.on('message', function(msg){
       matrix.type('test').send({ foo: 1 });
       break;
     case 'talk':
-    // //send global message
-    matrix.emit('foo')
-    //
-    // //send app specific message
-    matrix.emit('otherapp', 'otherfoo')
-    //
-    // //send namespaced message
-    matrix.emit('otherapp','nameofevent', 'namedfoo')
+      // //send global message
+      matrix.emit('foo')
+      //
+      // //send app specific message
+      matrix.emit('otherapp', 'otherfoo')
+      //
+      // //send namespaced message
+      matrix.emit('otherapp','nameofevent', 'namedfoo')
 
     default:
       break;
