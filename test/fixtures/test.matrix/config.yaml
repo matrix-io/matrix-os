@@ -1,6 +1,6 @@
 name: test
 dataTypes:
-  testType:
+  test:
     foo: integer
 description: none
 configVersion: 2
