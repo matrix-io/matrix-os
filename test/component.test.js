@@ -125,9 +125,10 @@ describe('component', function(){
         t.test = true;
         setTimeout(function () {
           malosRead.send(t.encode().toBuffer());
-        }, 100)
+        }, 500)
       })
 
+      // TODO: Finish this, not sure why not working
       it('should implement error', function(done){
         Matrix.components.test.error( function(msg){
           msg.should.equal('test');
@@ -136,9 +137,16 @@ describe('component', function(){
 
 
         malosError.bindSync('tcp://127.0.0.1:' + Matrix.device.port.get('test').error);
+        // var malosSub = zeromq.socket('sub')
+        // malosSub.connect('tcp://127.0.0.1:' + Matrix.device.port.get('test').error);
+        // malosSub.subscribe('');
+        // malosSub.on('message', function(d){
+        //   console.log('TEST DATA', d.toString());
+        // })
         setTimeout(function () {
           malosError.send('test');
-        }, 100)
+        }, 500)
+
       })
     });
 

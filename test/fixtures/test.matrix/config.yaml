@@ -5,3 +5,15 @@ dataTypes:
 description: none
 configVersion: 2
 keywords: test
+
+sensors:
+  - temperature
+
+integrations:
+  - gpio
+
+services:
+  faceSvc:
+    engine: detection
+    type: face
+    

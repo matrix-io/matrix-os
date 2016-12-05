@@ -1,4 +1,4 @@
-describe.only('App API', function(){
+describe('App API', function(){
   this.timeout(5000)
 
 

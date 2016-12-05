@@ -14,14 +14,14 @@
 // matrix.emit('otherapp','nameofevent', 'namedfoo')
 
 
-matrix = require('../../../apps/matrix.js')
+matrix = require('../../../apps/matrix.js');
 
 var c = JSON.parse( require('fs').readFileSync( __dirname + '/config.json'));
 matrix.startApp('test', c);
 
 process.on('message', function(msg){
   if (!msg.hasOwnProperty('test')){
-    return console.error('no test passed to faketrix')
+    return console.error('no test passed to faketrix');
   }
   switch ( msg.test ) {
     case 'led':
@@ -83,15 +83,15 @@ process.on('message', function(msg){
       break;
     case 'talk':
       // //send global message
-      matrix.emit('foo')
+      matrix.emit('foo');
       //
       // //send app specific message
-      matrix.emit('otherapp', 'otherfoo')
+      matrix.emit('otherapp', 'otherfoo');
       //
       // //send namespaced message
-      matrix.emit('otherapp','nameofevent', 'namedfoo')
-
+      matrix.emit('otherapp','nameofevent', 'namedfoo');
+      break;
     default:
       break;
   }
-})
+});

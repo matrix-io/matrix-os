@@ -8,14 +8,6 @@ describe('Matrix Base', function() {
       _.isUndefined(Matrix.streamingServer).should.be.false;
       done();
     });
-    it('should have MATRIX_CLIENT_ID', function(done) {
-      _.isUndefined(Matrix.clientId).should.be.false;
-      done();
-    });
-    it('should have MATRIX_CLIENT_SECRET', function(done) {
-      _.isUndefined(Matrix.clientSecret).should.be.false;
-      done();
-    });
     it('should have MATRIX_DEVICE_ID', function(done) {
       _.isUndefined(Matrix.deviceId).should.be.false;
       done();
