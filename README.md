@@ -1,5 +1,7 @@
 # MATRIX OS
 
+[![Build Status](https://travis-ci.org/matrix-io/matrix-os.svg?branch=master)](https://travis-ci.org/matrix-io/matrix-os)
+
 ![matrix os launches](http://i.makeagif.com/media/5-10-2016/TDceSN.gif)
 
 # Overview

@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+- Enable GPIO Read / write
+- Add testing and Travis
+
+## [0.6.4]
 
 ### Added
 - NO_INSTALL flag to skip new installs, cli tests
