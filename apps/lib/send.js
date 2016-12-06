@@ -43,15 +43,19 @@ module.exports = function(message) {
       if ( _.isObject(dataTypes[type])){
         // nested datatype structure
         _.each( dataTypes[type], function(f, key){
-
-          // check that the data is formatted correctly
-          if (
-            (f.match(re.string) && _.isString(message[key])) ||
-            (f.match(re.integer) && _.isInteger(message[key])) ||
-            (f.match(re.float) && ( parseFloat( message[key] ) === message[key] )) ||
-            ( f.match(re.boolean) && _.isBoolean(message[key]) )
-          ){} else {
-            error(key,'not formatted correctly\n', type, message)
+          console.log('F: ', f, typeof f)
+          console.log('Key: ', key, typeof key)
+          console.log('message[key]: ', message[key], typeof message[key])
+          if (message.hasOwnProperty(key) && !_.isUndefined(message[key])) { 
+            // check that the data is formatted correctly
+            if (
+              (f.match(re.string) && _.isString(message[key])) ||
+              (f.match(re.integer) && _.isInteger(message[key])) ||
+              (f.match(re.float) && ( parseFloat( message[key] ) === message[key] )) ||
+              ( f.match(re.boolean) && _.isBoolean(message[key]) )
+            ){} else {
+              error(key,'not formatted correctly\n', type, message)
+            }
           }
         })
         msgObj = message;
