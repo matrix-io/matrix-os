@@ -17,7 +17,6 @@ describe('Matrix Applications', function(){
         var appRecord;
         before( function(){
           appRecord = _.find( Matrix.activeApplications, { name: 'test'});
-          console.log(appRecord)
         })
         it('should save a reference to the name', function(done){
           appRecord.name.should.equal('test');
@@ -85,6 +84,6 @@ describe('Matrix Applications', function(){
 
   })
   after(function(){
-    require('child_process').execSync('rm -r '+ __dirname +' /../apps/test.matrix');
+    require('child_process').execSync('rm -r '+ __dirname +'/../apps/test.matrix');
   })
 });
