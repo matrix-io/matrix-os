@@ -1,6 +1,10 @@
 //
 //
 describe('Matrix Applications', function(){
+  before(function(){
+    require('child_process').execSync('cp -r '+ __dirname + '/fixtures/test.matrix/ '+ __dirname +'/../apps/test.matrix/');
+  })
+
   describe('Lifecycle', function(){
     // it('should be able to install an app')
     it('should be able to update an app')
@@ -79,5 +83,8 @@ describe('Matrix Applications', function(){
     });
 
 
+  })
+  after(function(){
+    require('child_process').execSync('rm -r '+ __dirname +' /../apps/test.matrix');
   })
 });
