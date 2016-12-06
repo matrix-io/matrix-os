@@ -1,6 +1,11 @@
 {
-    "name": "test",
-    "dataTypes": {
-        "testType": "object"
+  "keywords": "test",
+  "dataTypes": {
+    "test": {
+      "foo": "integer"
     }
+  },
+  "configVersion": 2,
+  "name": "test",
+  "description": "none"
 }

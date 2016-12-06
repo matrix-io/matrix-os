@@ -231,12 +231,17 @@ var Matrix = {
   gpio: require('./lib/gpio.js'),
   file: fileManager,
   emit: interAppNotification,
-  startApp: function(name){
+  startApp: function(name, config){
     appName = name;
 
     // Config is written as JSON by MOS -
     try {
-      Matrix.config = JSON.parse( require('fs').readFileSync(__dirname + '/'+ name +'.matrix/config.json'));
+      if ( _.isUndefined(config) ){
+        Matrix.config = JSON.parse( require('fs').readFileSync( __dirname + '/'+ name +'.matrix/config.json'));
+      } else {
+        // for testing
+        Matrix.config = config;
+      }
     } catch(e){
       return error(appName, 'invalid config.json', e);
     }

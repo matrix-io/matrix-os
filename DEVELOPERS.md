@@ -202,6 +202,10 @@ vim -nb or :nbs from inside vim
 6. Update sensorTypeList in `lib/device/sensor.js`
 7. Route correctly in `apps/lib/init.js`
 
+## Testing
+
+Be sure to deploy `test/fixtures/test.matrix` to the device you are going to use.
+
 ## Maintainers
 
 Sean Canton <sean.canton@admobilize.com>
