@@ -62,7 +62,14 @@ describe('Matrix Applications', function(){
 
 
         it('should have listeners on the global event emitter for crosstalk', function(done){
-          Matrix.events.eventNames().should.matchAny(/app-message|app-test-message/);
+          if ( Matrix.events.hasOwnProperty('eventNames')){
+            // Node 6+
+            Matrix.events.eventNames().should.matchAny(/app-message|app-test-message/);
+          } else {
+            // Node <5
+            Matrix.events.listeners('app-message').length.should.equal(1)
+            Matrix.events.listeners('app-test-message').length.should.equal(1)
+          }
           done();
         })
       })
