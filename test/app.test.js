@@ -82,7 +82,7 @@ describe.only('Matrix Applications', function(){
         it('should remove an app from activeApplications on crash', function (done) {
           appRecord.process.send({test:'crash'});
           setTimeout(function () {
-            var appRecord = _.find( Matrix.activeApplications, { name: 'test'});
+            appRecord = _.find( Matrix.activeApplications, { name: 'test'});
             assert(typeof appRecord, 'undefined')
             done();
           }, 500)

@@ -96,27 +96,35 @@ var fileManager = {
 var matrixDebug = false;
 
 // For sending events to other apps
-function interAppNotification( appName, eventName, payload ){
-if (arguments.length === 1){
-  // global form
-  process.send({
-    type: 'app-message',
-    payload: arguments[0]
-  });
-} else if ( arguments.length === 2){
-  //app specific
-  process.send({
-    type: 'app-'+ appName +'-message',
-    payload: arguments[1]
-  })
-} else {
-  // app specific event namespaced
-  process.send({
-    type: 'app-'+ appName +'-message',
-    event: eventName,
+function interAppNotification( appName, eventName, p ){
+  var payload = p;
+  var type;
+  var event;
+
+  if (arguments.length === 1){
+    // global form
+    type = 'app-message';
+    payload = arguments[0]
+  } else if ( arguments.length === 2){
+    //app specific
+    type = 'app-'+ appName +'-message';
+    payload = arguments[1];
+  } else {
+    // app specific event namespaced
+    type = 'app-'+ appName +'-message';
+    event = eventName;
+  }
+
+  var sendObj = {
+    type: type,
     payload: payload
-  })
-}
+  }
+
+  if ( !_.isUndefined(event)){
+    _.extend(sendObj, {event: event});
+  }
+
+  process.send(sendObj);
 }
 
 // For recieving events from other Apps
