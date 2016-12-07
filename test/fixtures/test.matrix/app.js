@@ -91,6 +91,8 @@ process.on('message', function(msg){
       // //send namespaced message
       matrix.emit('otherapp','nameofevent', 'namedfoo');
       break;
+    case 'crash':
+      throw new Error('this is not a real error');
     default:
       break;
   }

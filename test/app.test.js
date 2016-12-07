@@ -1,6 +1,6 @@
 //
 //
-describe('Matrix Applications', function(){
+describe.only('Matrix Applications', function(){
   before(function(){
     require('child_process').execSync('cp -r '+ __dirname + '/fixtures/test.matrix/ '+ __dirname +'/../apps/test.matrix/');
   })
@@ -74,7 +74,25 @@ describe('Matrix Applications', function(){
         })
       })
 
+      describe('crash management', function(){
+        var appRecord;
+        before( function(){
+          appRecord = _.find( Matrix.activeApplications, { name: 'test'});
+        })
+        it('should remove an app from activeApplications on crash', function (done) {
+          appRecord.process.send({test:'crash'});
+          setTimeout(function () {
+            var appRecord = _.find( Matrix.activeApplications, { name: 'test'});
+            assert(typeof appRecord, 'undefined')
+            done();
+          }, 500)
+        })
+      })
+
       describe('stop an app',function(){
+        before(function(done){
+          Matrix.service.manager.start('test', done);
+        })
         it('should stop an app by name', function(done){
           Matrix.service.manager.stop('test', done)
         });
