@@ -229,6 +229,7 @@ var Matrix = {
   receive: receiveHandler,
   init: require('./lib/init.js'),
   gpio: require('./lib/gpio.js'),
+  servo: require('./lib/gpio.js').servo,
   file: fileManager,
   emit: interAppNotification,
   startApp: function(name, config){
