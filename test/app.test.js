@@ -1,6 +1,6 @@
 //
 //
-describe.only('Matrix Applications', function(){
+describe('Matrix Applications', function(){
   before(function(){
     require('child_process').execSync('cp -r '+ __dirname + '/fixtures/test.matrix/ '+ __dirname +'/../apps/test.matrix/');
   })
