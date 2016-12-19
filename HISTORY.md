@@ -4,10 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.6.5]
+## [0.7.0]
+### Added
 - Enable servo write
 - Enable GPIO Read / write
 - Add testing and Travis
+
+### Removed
+- More test applications
+- appapi test file
 
 ## [0.6.4]
 
