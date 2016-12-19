@@ -7,9 +7,7 @@ module.exports = function(name, options){
     options = {};
   }
 
-  //TODO: add catch for config.service name
-
-  //TODO: find if this init is for a detection
+  //find if this init is for a detection
   if ( !_.isNull(name.match(/(face|demographics|vehicle|palm|pinch|fist|thumb-up)/)) ){
 
     console.log('Initialize Service:'.blue , name);
@@ -18,14 +16,13 @@ module.exports = function(name, options){
       then: function(cb){
       process.on('message', function (data) {
         if ( data.eventType === 'service-emit'){
-          // TODO: add filters
           cb(data.payload);
         }
       })
     }}
   } else {
 
-    //TODO: Find if this init is for a sensor name
+    // this init is for a sensor name
     return initSensor(name,options);
   }
 

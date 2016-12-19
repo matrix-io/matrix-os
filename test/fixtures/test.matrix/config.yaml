@@ -12,8 +12,10 @@ sensors:
 integrations:
   - gpio
 
+events:
+  - global
+
 services:
   faceSvc:
     engine: detection
     type: face
-    

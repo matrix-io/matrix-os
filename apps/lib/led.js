@@ -2,6 +2,7 @@ var tc = require('tinycolor2');
 
 /*
 Usage: led( c ).render() -> Writes to STRIP. just LED will not work
+See: https://matrix-io.github.io/matrix-documentation/API/everloop/
  */
 
 module.exports = function ( c ) {
@@ -19,7 +20,6 @@ module.exports = function ( c ) {
   }
 
   // init an empty array
-  // TODO allow users to pass layers as arguments
   var colorLayers = [];
 
   // colors array prepared
