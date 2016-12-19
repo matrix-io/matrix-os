@@ -176,6 +176,7 @@ describe('App API', function(){
   })
   describe('services', function(){
     this.timeout(10000);
+
     it.skip('crosstalk', function (done) {
       testAppAPI('talk', function(r){
         if (r.payload === 'foo'){
