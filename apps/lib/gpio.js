@@ -7,7 +7,7 @@ var writePins = [];
 
 var listenerStarted = false;
 
-function setListener() { 
+function setListener() {
   if (!listenerStarted) { //Only start listening once
     listenerStarted = true;
     process.on('message', function (message) {
@@ -17,18 +17,18 @@ function setListener() {
           var resultPins = message.payload.values;
           readPins.forEach(function (element) {
             var value = 0;
-            if (resultPins.hasOwnProperty(element)) { //Only assign a value to that pin if a value is specified 
+            if (resultPins.hasOwnProperty(element)) { //Only assign a value to that pin if a value is specified
               value = resultPins[element];
             }
             pinHandlers[element](value);
-          }); 
-          
+          });
+
         } else if (message.payload.type == 'write') {
           console.log('WRITE LISTENER!:', message);
           /*var resultPins = message.payload.values;
           readPins.forEach(function (element) {
             var value = 0;
-            if (resultPins.hasOwnProperty(element)) { //Only assign a value to that pin if a value is specified 
+            if (resultPins.hasOwnProperty(element)) { //Only assign a value to that pin if a value is specified
               value = resultPins[element];
             }
             pinHandlers[element](value);
@@ -46,7 +46,7 @@ module.exports = {
     if (!_.isFunction(cb)) {
       throw new Error('matrix.gpio.read requires a callback');
     }
-    
+
     readPins.push(pin);
     readPins = _.uniq(readPins);
     pinHandlers[pin] = cb;
@@ -60,7 +60,7 @@ module.exports = {
   },
 
   write: function (pin, value, cb) {
-    console.log("PIN WRITE: ", pin, value);
+    debug("PIN WRITE: ", pin, value);
     pinWriteHandlers[pin] = cb;
     process.send({
       type: 'gpio-write',
@@ -70,8 +70,16 @@ module.exports = {
     //process.send('gpio-write', { pin: pin, value: value });
     setListener();
   },
+  servo: function(pin, angle){
+    process.send({
+      type: 'gpio-write',
+      servo: true,
+      pin: pin,
+      value: angle
+    });
+  },
   open: function () {
-    
+
    },
   close: function () { }
 }
