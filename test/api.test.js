@@ -175,8 +175,8 @@ describe('App API', function(){
     })
   })
   describe('services', function(){
-    this.timeout(10000)
-    it('crosstalk', function (done) {
+    this.timeout(10000);
+    it.skip('crosstalk', function (done) {
       testAppAPI('talk', function(r){
         if (r.payload === 'foo'){
           assert.equal( r.type, 'app-message');
