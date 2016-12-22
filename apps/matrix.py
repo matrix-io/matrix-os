@@ -11,29 +11,27 @@ import asyncio
 # #   init(line)
 #
 # def print_json(future):
-#   print( future.result() )
+  # return await future.result()
 #
 # async def read_stdin():
-#   return await input();
+  # return await input();
 #
-# async def check_stdin():
-#   # return await read_stdin()
-#   asyncio.sleep(1)
-#   print(json.dumps({ 'check': 'true' }))
+async def check_stdin():
+    while True:
+      print(input())
+
+    asyncio.sleep(1)
+    print(json.dumps({ 'check': 'true' }))
+    return await read_stdin()
 #
-#   return await read_stdin()
+loop = asyncio.get_event_loop()
 #
-# loop = asyncio.get_event_loop()
-#
-# # task = loop.create_task(check_stdin())
-# # task.add_callback(print_json)
+task = loop.create_task(check_stdin())
+# task.add_callback(print_json)
 # loop.run_until_complete(check_stdin())
 # loop.close()
-# loop.run_forever()
+loop.run_forever()
 #
-while True:
-  print(input())
-  print('\n')
 #
 # loop.close()
 
