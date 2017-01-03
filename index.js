@@ -426,7 +426,7 @@ var msg = [];
       // Sample error message in err = 'matrix A network error (such as timeout, interrupted connection or unreachable host) has occurred.'
       Matrix.haltTheMatrix();
       if (err.status_code === 400) {
-        return console.error('This device is not yet configured with registration information. Please add MATRIX_DEVICE_ID and MATRIX_DEVICE_SECRET variables. If you do not have these available, you can get them by issuing `matrix register device` with matrix CLI. \n\nIf you continue to have problems, please reach out to our support forums at http://community.matrix.one'.yellow);
+        return console.error('Incorrect or missing registration information. This device is not correctly configured. Please add MATRIX_DEVICE_ID and MATRIX_DEVICE_SECRET variables. If you do not have these available, you can get them by issuing `matrix register device` with matrix CLI. \n\nIf you continue to have problems, please reach out to our support forums at http://community.matrix.one'.yellow);
       } else {
         return error('Bad Matrix Initialization', err);
       }
