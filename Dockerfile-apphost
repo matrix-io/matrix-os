@@ -1,0 +1,5 @@
+FROM node:6.7.0
+RUN mkdir /apps
+VOLUME /apps
+
+RUN node /apps/clock.matrix/index.js
