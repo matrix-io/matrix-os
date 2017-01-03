@@ -3,7 +3,9 @@
 
 console.log('Matrix OS Application Library Loading...')
 
+// Globals
 require('colors');
+_ = require('lodash');
 
 //needs sudo for audio commands disable until we figure this out
 var request = require('request');
@@ -11,12 +13,39 @@ var lib = require('./lib');
 
 var request = require('request');
 var fs = require('fs');
-_ = require('lodash');
 var DataStore = require('nedb');
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
 
 // console.log('Env Vars:', process.env)
+
+
+// If forked, send is available.
+// Docker means no .send. Lets make a send to forward to stdout
+if ( !_.isFunction(process.send)){
+  process.send = function(obj){
+    try {
+      var send = JSON.stringify(obj);
+    } catch (e) {
+      console.error('App Data Error', e, obj);
+    } finally {
+      process.stdout.write(`${send}\n`);
+    }
+  }
+  // if forked, stdin is piped to message events
+  // Docker needs override
+  process.stdin.on('readable', function(msg){
+    try {
+      var d = JSON.parse(msg)
+    } catch (e){
+      console.error('App Data In Error:', e, msg)
+    } finally {
+      process.emit('message', d);
+    }
+  })
+}
+
+
 
 process.setMaxListeners(50);
 
