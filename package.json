@@ -24,7 +24,7 @@
     "screensaver": "START_APP=life NODE_ENV=dev node index.js",
     "clock": "START_APP=clock NODE_ENV=dev node index.js",
     "apphost-debug": "docker run -v `pwd`/apps:/apps -it matrix-apphost bash",
-    "apphost-build": "docker build -t matrix-apphost -f Dockerfile-apphost ."
+    "apphost-build": "docker build -t matrix-apphost -f Dockerfile-apphost-arm ."
   },
   "author": "Sean Canton <sean.canton@admobilize.com>",
   "contributors": [
