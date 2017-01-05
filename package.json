@@ -23,8 +23,8 @@
     "device-diagnostics": "DEBUG=*,-engine* START_APP=monitor NODE_ENV=dev node index.js",
     "screensaver": "START_APP=life NODE_ENV=dev node index.js",
     "clock": "START_APP=clock NODE_ENV=dev node index.js",
-    "apphost-debug": "docker run -v `pwd`/apps:/apps -it mos bash",
-    "apphost-build": "docker build -t mos -f Dockerfile-apphost ."
+    "apphost-debug": "docker run -v `pwd`/apps:/apps -it matrix-apphost bash",
+    "apphost-build": "docker build -t matrix-apphost -f Dockerfile-apphost ."
   },
   "author": "Sean Canton <sean.canton@admobilize.com>",
   "contributors": [
