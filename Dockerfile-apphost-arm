@@ -1,0 +1,4 @@
+FROM hypriot/rpi-node:4.7.1-slim
+# FROM node:6.7.0
+RUN mkdir /apps
+VOLUME /apps
