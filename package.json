@@ -19,7 +19,7 @@
     "deploy-image": "find apps -name '*.matrix' ! -name 'monitor.matrix' -type d -exec rm -r {} +; docker build --no-cache -t matrix/matrix-os .;docker push admobilize/matrix-os",
     "local-setup": "cd node_modules; ln -s ../../matrix-firebase ./matrix-firebase; ln -s ../../matrix-app-config-helper ./matrix-app-config-helper; ln -s ../../matrix-node-sdk ./matrix-node-sdk; ln -s ../../matrix-eventfilter ./matrix-eventfilter; cd ..",
     "sync": "rsync -e ssh --progress -u package.json index.js pi@m:mos/;rsync -ru -e ssh --progress lib proto config apps test pi@m:mos",
-    "sync-local": "rsync -e ssh --progress -u package.json index.js pi@l:mos/;rsync -ru -e ssh --progress lib proto config apps test pi@l:mos",
+    "sync-local": "rsync -e ssh --progress -u package.json index.js pi@l:matrix-os/;rsync -ru -e ssh --progress lib proto config apps test pi@l:matrix-os",
     "device-diagnostics": "DEBUG=*,-engine* START_APP=monitor NODE_ENV=dev node index.js",
     "screensaver": "START_APP=life NODE_ENV=dev node index.js",
     "clock": "START_APP=clock NODE_ENV=dev node index.js",
