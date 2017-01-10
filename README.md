@@ -14,7 +14,7 @@ https://github.com/matrix-io/matrix-os/issues
 http://community.matrix.one
 
 ###### Documentation & Installation Instructions
-http://matrix-io.github.io/matrix-documentation
+https://creator.matrix.one/#!/develop/start
 
 ## MATRIX Applications
 MATRIX applications are built in JavaScript to logically connect sensor and computer vision data streams with outputs, such as LED lights, sending voltages, integrations and data for dashboards and analysis.
