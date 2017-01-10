@@ -55,6 +55,7 @@
     "mocha": "^2.4.5",
     "mv": "^2.1.1",
     "nedb": "https://github.com/matrix-io/nedb/tarball/master",
+    "pi-wifi": "^1.0.1",
     "portfinder": "^0.4.0",
     "promise": "^7.1.1",
     "protobufjs": "^5.0.1",

@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+- Wifi Support
+- Basic Python implementation
+- Basic Docker integration. Uses DOCKER_APPS switch.
+
 ## [0.7.0]
 ### Added
 - Enable servo write
