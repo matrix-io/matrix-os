@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 - Wifi Support
+- Basic Python implementation
+- Basic Docker integration. Uses DOCKER_APPS switch.
 
 ## [0.7.0]
 ### Added
