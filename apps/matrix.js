@@ -23,7 +23,7 @@ console.log = function(){
   var o = {
     type: 'log',
     payload : _.map(arguments, (a) => {
-      return ( _.isPlainObject(a))? JSON.stringify(a) : a;
+      return ( _.isPlainObject(a)) ? JSON.stringify(a) : a;
     }).join(' ')
   }
   process.stdout.write(JSON.stringify(o) + '\n')
@@ -33,6 +33,7 @@ console.log('Matrix OS Application Library Loading...')
 // If forked, send is available.
 // Docker means no .send. Lets make a send to forward to stdout
 if ( !_.isFunction(process.send)){
+  console.log('Docker Detected');
   process.send = function(obj){
     try {
       var send = JSON.stringify(obj);
@@ -48,7 +49,6 @@ if ( !_.isFunction(process.send)){
   process.stdin.on('readable', function(){
     var msg = process.stdin.read();
     console.log({ poop: true})
-    console.log(msg)
     if ( !_.isNull(msg)){
       try {
         console.log('>>>>', msg);
