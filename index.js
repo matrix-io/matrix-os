@@ -355,6 +355,20 @@ function deviceSetup() {
 
     Matrix.device.drivers.led.stopLoader();
     Matrix.device.drivers.led.clear();
+
+    //TODO start configuration BLE advertising
+    Matrix.service.bluetooth.configuration();
+    Matrix.service.bluetooth.emitter.on('configurationAuth', function (auth) {
+      if (!auth) {
+        
+      }
+    }); 
+
+    /*Matrix.service.bluetooth.emitter.on('deviceAuth', function (options) {
+      console.log('Finished received BLE device info:', options);
+      authenticateDevice(options.id, options.secret);
+    });*/
+
     // debug('vvv MATRIX vvv \n'.yellow,
     // require('util').inspect( _.omit(Matrix, ['device','password','username','events','service','db']), { depth : 0} ), "\n^^^ MATRIX ^^^ ".yellow);
     if (err) { error(err); }
@@ -497,12 +511,16 @@ async.series([
         //TODO take into account network error
         console.warn('Incorrect or missing registration information. This device is not correctly configured. Please add MATRIX_DEVICE_ID and MATRIX_DEVICE_SECRET variables. If you do not have these available, you can get them by issuing `matrix register device` with matrix CLI or by registering your device using the mobile apps. \n\nIf you continue to have problems, please reach out to our support forums at http://community.matrix.one'.yellow);
         console.log('Waiting for pairing'.yellow);
-        //wait for mobile pairing
+        
+        //Wait for mobile pairing
         Matrix.service.bluetooth.registration();
         Matrix.service.bluetooth.emitter.on('deviceAuth', function (options) {
           console.log('Finished received BLE device info:', options);
           authenticateDevice(options.id, options.secret);
         });
+        
+        //TODO Might want to remove the listener on successful auth
+        //Matrix.service.bluetooth.emitter.removeListener('deviceAuth', refreshHandler);
 
       }
       //cb();

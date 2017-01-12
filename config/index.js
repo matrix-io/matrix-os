@@ -64,6 +64,7 @@ f.sensorRefresh = process.env['MATRIX_SENSOR_REFRESH'] || 2500;
 f.sensorSockets = true;
 f.socketCheckDelay = 60000;
 f.registrationUUID = "b1a6752152eb4d36e13e357d7c225466";
+f.configurationUUID = "b1a6752152eb4d36e13e357d7c225467";
 f.envs = configs;
 
 // for device component info
