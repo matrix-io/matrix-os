@@ -45,6 +45,8 @@ if ( !_.isFunction(process.send)){
   }
   // if forked, stdin is piped to message events
   // Docker needs override
+  //
+  console.log(process.stdin)
 
   process.stdin.on('readable', function(){
     var msg = process.stdin.read();
