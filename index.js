@@ -108,13 +108,11 @@ Matrix.db = {
   })
 }
 
-// Show whats available from MALOS
+var malosInfoOut = '';
 Matrix.device.malos.info(function(data){
-  var out = '';
   _.each(data.info, function(i){
-    out += ' ⚙ '.yellow + i.driver_name.blue + ':' + i.base_port + ' | ' + i.notes_for_human.grey + '\n';
+    malosInfoOut += ' ⚙ '.yellow + i.driver_name.blue + ':' + i.base_port + ' | ' + i.notes_for_human.grey + '\n';
   })
-  debug('MALOS COMPONENTS', '\n', out);
 })
 
 var jwt = require('jsonwebtoken');
@@ -443,6 +441,11 @@ var msg = [];
     if ( Matrix.registerOK ){
       log('MXSS Connected:'.green, Matrix.streamingServer.grey)
     }
+
+    // Show whats available from MALOS
+
+
+    log('MALOS COMPONENTS', malosInfoOut);
     log( Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
     log( '['.grey + Matrix.userId.grey + ']'.grey )
     Matrix.banner();

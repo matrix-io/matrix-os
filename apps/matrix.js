@@ -1,7 +1,8 @@
+
 // NOTE: Required by each app, so these will be seperate. Shared resources and events are managed by the Matrix one layer up.
 // see lib/services/manager
 
-console.log('Matrix OS Application Library Loading...')
+
 
 // Globals
 require('colors');
@@ -17,9 +18,18 @@ var DataStore = require('nedb');
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
 
-// console.log('Env Vars:', process.env)
+// Need to override log for Docker compatibility.
+console.log = function(){
+  var o = {
+    type: 'log',
+    payload : _.map(arguments, (a) => {
+      return ( _.isPlainObject(a))? JSON.stringify(a) : a;
+    }).join(' ')
+  }
+  process.stdout.write(JSON.stringify(o) + '\n')
+}
 
-
+console.log('Matrix OS Application Library Loading...')
 // If forked, send is available.
 // Docker means no .send. Lets make a send to forward to stdout
 if ( !_.isFunction(process.send)){
@@ -34,13 +44,20 @@ if ( !_.isFunction(process.send)){
   }
   // if forked, stdin is piped to message events
   // Docker needs override
-  process.stdin.on('readable', function(msg){
-    try {
-      var d = JSON.parse(msg)
-    } catch (e){
-      console.error('App Data In Error:', e, msg)
-    } finally {
-      process.emit('message', d);
+
+  process.stdin.on('readable', function(){
+    var msg = process.stdin.read();
+    console.log({ poop: true})
+    console.log(msg)
+    if ( !_.isNull(msg)){
+      try {
+        console.log('>>>>', msg);
+        var d = JSON.parse(msg)
+      } catch (e){
+        console.error('App Data In Error:', e, msg)
+      } finally {
+        process.emit('message', d);
+      }
     }
   })
 }
@@ -295,10 +312,13 @@ var Matrix = {
 
     // generic message handlers
     process.on('message', function(m){
+      console.log('>>>>>>>', m)
       if (m.type === 'request-config'){
         sendConfig();
       } else if ( m.type === 'container-status'){
         Matrix.pid = m.pid;
+      } else if ( m.type === 'container-ready'){
+        console.log("Matrix App Host Ready!")
       }
     })
 

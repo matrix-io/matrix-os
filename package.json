@@ -26,7 +26,8 @@
     "clock": "START_APP=clock NODE_ENV=dev node index.js",
     "apphost-debug": "docker run -v `pwd`/apps:/apps -it matrix-apphost bash",
     "apphost-build": "docker build -t matrix-apphost -f Dockerfile-apphost-arm .",
-    "upgrade": "npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase matrix-eventfilter pi-wifi"
+    "upgrade": "npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase matrix-eventfilter pi-wifi",
+    "watch":"nodemon --exec npm run sync-m1"
   },
   "author": "Sean Canton <sean.canton@admobilize.com>",
   "contributors": [
