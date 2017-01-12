@@ -30,6 +30,15 @@ To exclude engine-io from the output, do
 MATRIX_API_SERVER http://dev-demo.admobilize.com -- points to admobilize-api server
 MATRIX_STREAMING_SERVER http://dev-mxss.admobilize.com:80 - points to admatrix-streaming-server
 ```
+
+# Command Line Switches
+
+## Dockerize Matrix Apps
+```
+# Make sure to build image on device with `npm run apphost-build`
+DOCKER_APPS=true START_APP=clock node index.js
+```
+
 ## Start your MATRIX OS with a monitor App
 
 ```

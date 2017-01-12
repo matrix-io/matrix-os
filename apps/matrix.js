@@ -45,20 +45,24 @@ if ( !_.isFunction(process.send)){
   }
   // if forked, stdin is piped to message events
   // Docker needs override
-  //
-  console.log(process.stdin)
-
   process.stdin.on('readable', function(){
-    var msg = process.stdin.read();
-    console.log({ poop: true})
+    const msg = process.stdin.read();
+    // multiple msgs might be sent in one event
+    let msgs = _.compact(msg.toString().split('\n'));
+    let msgObjs = [];
     if ( !_.isNull(msg)){
       try {
-        console.log('>>>>', msg);
-        var d = JSON.parse(msg)
+        // parse each one independently! - woot working
+        msgObjs = msgs.map((m) => { return JSON.parse(m) });
       } catch (e){
-        console.error('App Data In Error:', e, msg)
+        console.error('App Data In Error:', e, msgs)
       } finally {
-        process.emit('message', d);
+        // emit one event for each msg found
+        if (msgObjs.length > 0) {
+          msgObjs.forEach((m) => {
+            process.emit('message', m);
+          });
+        }
       }
     }
   })
@@ -314,7 +318,9 @@ var Matrix = {
 
     // generic message handlers
     process.on('message', function(m){
-      console.log('>>>>>>>', m)
+      if ( _.isString(m)){
+        m = JSON.stringify(m.toString())
+      }
       if (m.type === 'request-config'){
         sendConfig();
       } else if ( m.type === 'container-status'){
