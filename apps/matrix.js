@@ -18,58 +18,6 @@ var DataStore = require('nedb');
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
 
-// Need to override log for Docker compatibility.
-console.log = function(){
-  var o = {
-    type: 'log',
-    payload : _.map(arguments, (a) => {
-      return ( _.isPlainObject(a)) ? JSON.stringify(a) : a;
-    }).join(' ')
-  }
-  process.stdout.write(JSON.stringify(o) + '\n')
-}
-
-console.log('Matrix OS Application Library Loading...')
-// If forked, send is available.
-// Docker means no .send. Lets make a send to forward to stdout
-if ( !_.isFunction(process.send)){
-  console.log('Docker Detected');
-  process.send = function(obj){
-    try {
-      var send = JSON.stringify(obj);
-    } catch (e) {
-      console.error('App Data Error', e, obj);
-    } finally {
-      process.stdout.write(`${send}\n`);
-    }
-  }
-  // if forked, stdin is piped to message events
-  // Docker needs override
-  process.stdin.on('readable', function(){
-    const msg = process.stdin.read();
-    // multiple msgs might be sent in one event
-    let msgs = _.compact(msg.toString().split('\n'));
-    let msgObjs = [];
-    if ( !_.isNull(msg)){
-      try {
-        // parse each one independently! - woot working
-        msgObjs = msgs.map((m) => { return JSON.parse(m) });
-      } catch (e){
-        console.error('App Data In Error:', e, msgs)
-      } finally {
-        // emit one event for each msg found
-        if (msgObjs.length > 0) {
-          msgObjs.forEach((m) => {
-            process.emit('message', m);
-          });
-        }
-      }
-    }
-  })
-}
-
-
-
 process.setMaxListeners(50);
 
 error = function(){
@@ -293,6 +241,59 @@ var Matrix = {
   file: fileManager,
   emit: interAppNotification,
   startApp: function(name, config){
+
+
+    // If forked, send is available.
+    // Docker means no .send. Lets make a send to forward to stdout
+    // Stupid thing will also trigger on tests, lets not do that
+    if (  !_.isFunction(process.send) && !process.env.hasOwnProperty('TEST_MODE') ){
+      // Need to override log for Docker compatibility.
+      console.log = function(){
+        var o = {
+          type: 'log',
+          payload : _.map(arguments, (a) => {
+            return ( _.isPlainObject(a)) ? JSON.stringify(a) : a;
+          }).join(' ')
+        }
+        process.stdout.write(JSON.stringify(o) + '\n')
+      }
+      console.log('Docker Detected');
+      process.send = function(obj){
+        try {
+          var send = JSON.stringify(obj);
+        } catch (e) {
+          console.error('App Data Error', e, obj);
+        } finally {
+          process.stdout.write(`${send}\n`);
+        }
+      }
+      // if forked, stdin is piped to message events
+      // Docker needs override
+      process.stdin.on('readable', function(){
+        const msg = process.stdin.read();
+        // multiple msgs might be sent in one event
+        if ( !_.isNull(msg)){
+          let msgs = _.compact(msg.toString().split('\n'));
+          let msgObjs = [];
+          try {
+            // parse each one independently! - woot working
+            msgObjs = msgs.map((m) => { return JSON.parse(m) });
+          } catch (e){
+            console.error('App Data In Error:', e, msgs)
+          } finally {
+            // emit one event for each msg found
+            if (msgObjs.length > 0) {
+              msgObjs.forEach((m) => {
+                process.emit('message', m);
+              });
+            }
+          }
+        }
+      })
+    }
+    console.log('Matrix OS Application Library Loading...')
+
+
     appName = name;
 
     // Config is written as JSON by MOS -
