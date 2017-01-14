@@ -18,7 +18,9 @@ Matrix = require('../index.js').Matrix;
 
 
 testAppAPI = function(test, cb){
-  faketrix = require('child_process').fork('./test/fixtures/test.matrix/app.js', { silent: true, stdio: 'ignore' });
+  faketrix = require('child_process').fork('./test/fixtures/testapi.matrix/app.js', { env: { TEST_MODE: true },
+  silent: true, stdio: 'ignore'
+});
   faketrix.send({ test: test });
   faketrix.on('message', function (msg) {
     faketrix.kill();

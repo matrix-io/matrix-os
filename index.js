@@ -108,13 +108,11 @@ Matrix.db = {
   })
 }
 
-// Show whats available from MALOS
+var malosInfoOut = '';
 Matrix.device.malos.info(function(data){
-  var out = '';
   _.each(data.info, function(i){
-    out += ' ⚙ '.yellow + i.driver_name.blue + ':' + i.base_port + ' | ' + i.notes_for_human.grey + '\n';
+    malosInfoOut += ' ⚙ '.yellow + i.driver_name.blue + ':' + i.base_port + ' | ' + i.notes_for_human.grey + '\n';
   })
-  debug('MALOS COMPONENTS', '\n', out);
 })
 
 var jwt = require('jsonwebtoken');
@@ -151,7 +149,7 @@ var msg = [];
 
       if ( olds.length > 0 ){
         console.log('Upgrading Dependencies....'.yellow)
-        require('child_process').execSync('npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase matrix-eventfilter');
+        require('child_process').execSync('npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase matrix-eventfilter pi-wifi');
         console.log('Upgrade Done!'.green, 'Please restart MATRIX OS.');
         process.exit();
       } else {
@@ -443,6 +441,11 @@ var msg = [];
     if ( Matrix.registerOK ){
       log('MXSS Connected:'.green, Matrix.streamingServer.grey)
     }
+
+    // Show whats available from MALOS
+
+
+    log('MALOS COMPONENTS', malosInfoOut);
     log( Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
     log( '['.grey + Matrix.userId.grey + ']'.grey )
     Matrix.banner();
