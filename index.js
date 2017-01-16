@@ -360,7 +360,9 @@ function deviceSetup() {
     Matrix.service.bluetooth.configuration();
     Matrix.service.bluetooth.emitter.on('configurationAuth', function (auth) {
       if (!auth) {
-        
+        console.log('No BT auth provided');
+      } else {
+        console.log('BT Successfully authenticated!');
       }
     }); 
 
