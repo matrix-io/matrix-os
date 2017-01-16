@@ -5,9 +5,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+- Docker virtualization for apps ( uses DOCKER_APPS flag for now )
 - Wifi Support
 - Basic Python implementation
-- Basic Docker integration. Uses DOCKER_APPS switch.
+
+### Changed
+- Prevent apps that fail on init from being added to activeApplications
+- Stopped restart on config change, will require manual restart now
 
 ## [0.7.0]
 ### Added

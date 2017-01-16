@@ -74,35 +74,35 @@ describe('Matrix Applications', function(){
         })
       })
 
+      describe('stop an app and manage applications',function(){
+
+        before(function(done){
+          Matrix.service.manager.stop('test', done)
+        });
+        it('stopped apps should not be in activeApplications', function(){
+          var appRecord = _.find( Matrix.activeApplications, { name: 'test'});
+          assert(typeof appRecord, 'undefined');
+        })
+
+      })
+
       describe('crash management', function(){
         var appRecord;
-        before( function(){
-          appRecord = _.find( Matrix.activeApplications, { name: 'test'});
+        before( function(done){
+          Matrix.service.manager.start('test', done)
         })
         it('should remove an app from activeApplications on crash', function (done) {
+          appRecord = _.find( Matrix.activeApplications, { name: 'test'});
           appRecord.process.send({test:'crash'});
           setTimeout(function () {
             appRecord = _.find( Matrix.activeApplications, { name: 'test'});
+            console.log(Matrix.activeApplications)
             assert(typeof appRecord, 'undefined')
             done();
           }, 500)
         })
       })
 
-      describe('stop an app',function(){
-        before(function(done){
-          Matrix.service.manager.start('test', done);
-        })
-        it('should stop an app by name', function(done){
-          Matrix.service.manager.stop('test', done)
-        });
-        it('should stop all apps');
-        it('stopped apps should not be in activeApplications', function(){
-          var appRecord = _.find( Matrix.activeApplications, { name: 'test'});
-          assert(typeof appRecord, 'undefined')
-        })
-
-      })
 
     });
 

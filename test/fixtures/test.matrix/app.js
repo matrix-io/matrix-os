@@ -14,10 +14,10 @@
 // matrix.emit('otherapp','nameofevent', 'namedfoo')
 
 
-matrix = require('../../../apps/matrix.js');
+matrix = require('../matrix.js');
 
 var c = JSON.parse( require('fs').readFileSync( __dirname + '/config.json'));
-matrix.startApp('test', c);
+// matrix.startApp('test', c);
 
 process.on('message', function(msg){
   if (!msg.hasOwnProperty('test')){

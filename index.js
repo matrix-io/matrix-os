@@ -108,25 +108,25 @@ Matrix.db = {
   })
 }
 
-// Show whats available from MALOS
-Matrix.device.malos.info(function (data) {
-  var out = '';
-  _.each(data.info, function (i) {
-    out += ' ⚙ '.yellow + i.driver_name.blue + ':' + i.base_port + ' | ' + i.notes_for_human.grey + '\n';
+var malosInfoOut = '';
+Matrix.device.malos.info(function(data){
+  _.each(data.info, function(i){
+    malosInfoOut += ' ⚙ '.yellow + i.driver_name.blue + ':' + i.base_port + ' | ' + i.notes_for_human.grey + '\n';
   })
-  debug('MALOS COMPONENTS', '\n', out);
 })
 
 var jwt = require('jsonwebtoken');
+
 var msg = [];
 
+//Update device id and device secret
 function authenticateDevice(id, secret) {
   console.log('Setting up device with id: ', id, ' and secret: ', secret);
   Matrix.deviceId = id;
   Matrix.deviceSecret = secret;
-  deviceSetup();
 }
-
+    
+//Authenticate with current data
 function populateToken(cb) {
   // Fetches device token from service and saves to local DB
   Matrix.service.auth.authenticate(function setupDeviceToken(err, token) {
@@ -366,19 +366,19 @@ function deviceSetup() {
       }
     }); 
 
-    /*Matrix.service.bluetooth.emitter.on('deviceAuth', function (options) {
-      console.log('Finished received BLE device info:', options);
-      authenticateDevice(options.id, options.secret);
-    });*/
-
     // debug('vvv MATRIX vvv \n'.yellow,
     // require('util').inspect( _.omit(Matrix, ['device','password','username','events','service','db']), { depth : 0} ), "\n^^^ MATRIX ^^^ ".yellow);
     if (err) { error(err); }
     if (Matrix.registerOK) {
       log('MXSS Connected:'.green, Matrix.streamingServer.grey)
     }
-    log(Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
-    log('['.grey + Matrix.userId.grey + ']'.grey)
+
+    // Show whats available from MALOS
+
+
+    log('MALOS COMPONENTS', malosInfoOut);
+    log( Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
+    log( '['.grey + Matrix.userId.grey + ']'.grey )
     Matrix.banner();
     if (msg.length > 0) {
       console.log(msg.join('\n').red);
@@ -406,11 +406,12 @@ function deviceSetup() {
   });
 }
 
+
 // Prepare device and wait for auth
-async.series([
+async.series([{
 
   // Make sure we can see the API server for auth
-  function checkApiServer(cb) {
+  checkApiServer: function(cb) {
     debug('Checking API server...'.green);
     require('http').get(Matrix.apiServer, function (res) {
       cb(null);
@@ -420,8 +421,8 @@ async.series([
     });
   },
 
-  // Check for updates to MOS and dependencies
-  function checkUpdates(cb) {
+  // Check for updates to MOS and dependencies **
+  checkUpdates: function(cb) {
 
     // in case you want to skip the upgrade for whatever reason
     if (process.env.hasOwnProperty('NO_UPGRADE')) {
@@ -436,7 +437,7 @@ async.series([
 
     if (olds.length > 0) {
       console.log('Upgrading Dependencies....'.yellow)
-      require('child_process').execSync('npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase matrix-eventfilter');
+      require('child_process').execSync('npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase matrix-eventfilter pi-wifi');
       console.log('Upgrade Done!'.green, 'Please restart MATRIX OS.');
       process.exit();
     } else {
@@ -471,7 +472,7 @@ async.series([
             if (!updateError) {
               console.log('Modules updated... '.green)
               try {
-                require('child_process').execSync('git remote prune origin ; git fetch && git pull', { stdio: 'ignore' });
+                require('child_process').execSync('git fetch && git pull', { stdio: 'ignore' });
               } catch (err) {
                 updateError = err;
               }
@@ -501,37 +502,43 @@ async.series([
       })
   },
 
-  //TODO implement function logic  
-  function checkDeviceRegistration(cb) {
+  //Verify id and secret
+  checkDeviceRegistration: function(cb) {
     //Check if device id and secret are set as env vars
     populateToken(function (err) {
+      var result = false;
       console.log('Found:', err);
       if (_.isUndefined(err)) {
         console.log('Device found!');
-        deviceSetup();
-      } else {
-        //TODO take into account network error
-        console.warn('Incorrect or missing registration information. This device is not correctly configured. Please add MATRIX_DEVICE_ID and MATRIX_DEVICE_SECRET variables. If you do not have these available, you can get them by issuing `matrix register device` with matrix CLI or by registering your device using the mobile apps. \n\nIf you continue to have problems, please reach out to our support forums at http://community.matrix.one'.yellow);
-        console.log('Waiting for pairing'.yellow);
-        
-        //Wait for mobile pairing
-        Matrix.service.bluetooth.registration();
-        Matrix.service.bluetooth.emitter.on('deviceAuth', function (options) {
-          console.log('Finished received BLE device info:', options);
-          authenticateDevice(options.id, options.secret);
-        });
-        
-        //TODO Might want to remove the listener on successful auth
-        //Matrix.service.bluetooth.emitter.removeListener('deviceAuth', refreshHandler);
-
-      }
-      //cb();
+        result = true;
+      } 
+      cb(null, result);
     });
   }
-], function (err) {
-  if (err) {
+}], function (err, results) {
+  if (err) { //Failed to initialize
     debug('Initialization error! '.red, err);
     Matrix.haltTheMatrix();
+  } else if (results.checkDeviceRegistration === false) { //Initialized properly but missing valid device id and secret
+    
+    //TODO take into account network error
+    console.warn('Incorrect or missing registration information. This device is not correctly configured. Please add MATRIX_DEVICE_ID and MATRIX_DEVICE_SECRET variables. If you do not have these available, you can get them by issuing `matrix register device` with matrix CLI or by registering your device using the mobile apps. \n\nIf you continue to have problems, please reach out to our support forums at http://community.matrix.one'.yellow);
+    console.log('Waiting for BLE pairing'.yellow);
+    
+    //Wait for mobile pairing
+    Matrix.service.bluetooth.registration();
+    Matrix.service.bluetooth.emitter.on('deviceAuth', function (options) {
+      console.log('Finished received BLE device info:', options);
+      authenticateDevice(options.id, options.secret); //Set new values
+      deviceSetup(); //Continue setup process
+    });
+    
+    //TODO Might want to remove the listener on successful auth, although it might not really be a big deal 
+    //Matrix.service.bluetooth.emitter.removeListener('deviceAuth', refreshHandler);
+
+  } else { //Correct initialization and already authenticated
+
+    deviceSetup(); //Continue setup process
   }
 });
 
