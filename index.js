@@ -338,77 +338,77 @@ function deviceSetup() {
 
   ], function (err) {
     if (err) {
-      debug('Setup error! '.red, err);
-      // Matrix.device.drivers.led.error();
-      //TODO Connectivity error needs to be handled gracefully
-      // Sample error message in err = 'matrix A network error (such as timeout, interrupted connection or unreachable host) has occurred.'
-      Matrix.haltTheMatrix();
       if (err.status_code === 400) {
-        return console.error('Incorrect or missing registration information. This device is not correctly configured. Please add MATRIX_DEVICE_ID and MATRIX_DEVICE_SECRET variables. If you do not have these available, you can get them by issuing `matrix register device` with matrix CLI. \n\nIf you continue to have problems, please reach out to our support forums at http://community.matrix.one'.yellow);
+        console.error('Unable to validate device with the information supplied, pleaase try again'.yellow);
+        // Matrix.device.drivers.led.error();
+        //TODO Connectivity error needs to be handled gracefully
+        // Sample error message in err = 'matrix A network error (such as timeout, interrupted connection or unreachable host) has occurred.'
       } else {
         return error('Bad Matrix Initialization', err);
+        Matrix.haltTheMatrix();
       }
-    }
+    } else {
+      Matrix.service.firebase.device.goOnline();
+      Matrix.service.firebase.device.ping();
 
-    Matrix.service.firebase.device.goOnline();
-    Matrix.service.firebase.device.ping();
+      Matrix.device.drivers.led.stopLoader();
+      Matrix.device.drivers.led.clear();
 
-    Matrix.device.drivers.led.stopLoader();
-    Matrix.device.drivers.led.clear();
+      //TODO start configuration BLE advertising
+      Matrix.service.bluetooth.configuration();
+      Matrix.service.bluetooth.emitter.on('configurationAuth', function (auth) {
+        if (!auth) {
+          console.log('No BT auth provided');
+        } else {
+          console.log('BT Successfully authenticated!');
+        }
+      }); 
 
-    //TODO start configuration BLE advertising
-    Matrix.service.bluetooth.configuration();
-    Matrix.service.bluetooth.emitter.on('configurationAuth', function (auth) {
-      if (!auth) {
-        console.log('No BT auth provided');
-      } else {
-        console.log('BT Successfully authenticated!');
+      // debug('vvv MATRIX vvv \n'.yellow,
+      // require('util').inspect( _.omit(Matrix, ['device','password','username','events','service','db']), { depth : 0} ), "\n^^^ MATRIX ^^^ ".yellow);
+      if (err) { error(err); }
+      if (Matrix.registerOK) {
+        log('MXSS Connected:'.green, Matrix.streamingServer.grey)
       }
-    }); 
 
-    // debug('vvv MATRIX vvv \n'.yellow,
-    // require('util').inspect( _.omit(Matrix, ['device','password','username','events','service','db']), { depth : 0} ), "\n^^^ MATRIX ^^^ ".yellow);
-    if (err) { error(err); }
-    if (Matrix.registerOK) {
-      log('MXSS Connected:'.green, Matrix.streamingServer.grey)
+      // Show whats available from MALOS
+
+
+      log('MALOS COMPONENTS', malosInfoOut);
+      log( Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
+      log( '['.grey + Matrix.userId.grey + ']'.grey )
+      Matrix.banner();
+      if (msg.length > 0) {
+        console.log(msg.join('\n').red);
+      }
+
+      //if START_APP is set
+      if (Matrix.config.fakeApp) {
+        Matrix.service.manager.start(Matrix.config.fakeApp);
+      }
+
+      //for tests
+      Matrix.events.emit('matrix-ready');
+
+      // CLI uses IPC for tests
+      if (process.hasOwnProperty('send')) {
+        process.send({ 'matrix-ready': true })
+      }
+
+      if (process.env.hasOwnProperty('REPL')) {
+        const repl = require('repl');
+        repl.start('> ').context.Matrix = Matrix;
+      }
+
+      Matrix.service.lifecycle.updateLastBootTime();
     }
 
-    // Show whats available from MALOS
-
-
-    log('MALOS COMPONENTS', malosInfoOut);
-    log( Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
-    log( '['.grey + Matrix.userId.grey + ']'.grey )
-    Matrix.banner();
-    if (msg.length > 0) {
-      console.log(msg.join('\n').red);
-    }
-
-    //if START_APP is set
-    if (Matrix.config.fakeApp) {
-      Matrix.service.manager.start(Matrix.config.fakeApp);
-    }
-
-    //for tests
-    Matrix.events.emit('matrix-ready');
-
-    // CLI uses IPC for tests
-    if (process.hasOwnProperty('send')) {
-      process.send({ 'matrix-ready': true })
-    }
-
-    if (process.env.hasOwnProperty('REPL')) {
-      const repl = require('repl');
-      repl.start('> ').context.Matrix = Matrix;
-    }
-
-    Matrix.service.lifecycle.updateLastBootTime();
   });
 }
 
 
 // Prepare device and wait for auth
-async.series([{
+async.series({
 
   // Make sure we can see the API server for auth
   checkApiServer: function(cb) {
@@ -515,7 +515,7 @@ async.series([{
       cb(null, result);
     });
   }
-}], function (err, results) {
+}, function (err, results) {
   if (err) { //Failed to initialize
     debug('Initialization error! '.red, err);
     Matrix.haltTheMatrix();
