@@ -3,6 +3,19 @@
 // for crash handling
 var destroyingProcess = false;
 var forceExit = false;
+
+// Flow handling
+var checks = {
+  registration: false,
+  connectivity: false,
+  update: false
+};
+
+var deviceSetupTimeout;
+var isRegistered = false;
+var connectivityWorks = false;
+var updateValidated = false;
+  
 /* GLOBALS */
 _ = require('lodash');
 async = require('async');
@@ -115,52 +128,115 @@ Matrix.device.malos.info(function(data){
   })
 })
 
-var jwt = require('jsonwebtoken');
-
 var msg = [];
-
-//Update device id and device secret
-function authenticateDevice(id, secret) {
-  console.log('Setting up device with id: ', id, ' and secret: ', secret);
-  Matrix.deviceId = id;
-  Matrix.deviceSecret = secret;
-}
-    
-//Authenticate with current data
-function populateToken(cb) {
-  // Fetches device token from service and saves to local DB
-  Matrix.service.auth.authenticate(function setupDeviceToken(err, token) {
-    if (err) return cb(err);
-
-    debug('PopulateToken - OK>'.green, token);
-
-    var decoded = jwt.decode(token);
-    debug('PopulateToken - decoded>'.yellow, decoded);
-
-    if (!_.has(decoded, 'claims') || !_.has(decoded.claims, 'deviceToken') ||
-      decoded.claims.deviceToken !== true) {
-      return cb('Bad device token');
-    }
-
-    if (decoded.claims.device.id !== Matrix.deviceId) {
-      return cb('Device Token Device Id does not match deviceId');
-    }
-
-    Matrix.deviceToken = token;
-    Matrix.deviceRecordId = decoded.claims.device.key;
-    Matrix.userId = decoded.uid;
-
-    debug('processDeviceToken - Matrix.userId>'.green, Matrix.userId);
-    debug('processDeviceToken - Matrix.deviceRecordId>'.green, Matrix.deviceRecordId);
-    cb();
-  });
-}
 
 //Start MATRIX init flow once a device has been configured
 function deviceSetup() {
+  //This would be required if we use the timeout strategy
+  //if(deviceSetupTimeout) clearTimeout(deviceSetupTimeout);
 
   async.series([
-    populateToken,
+    Matrix.service.token.populate, //Authenticate with current data
+
+    // Make sure we can see the API server for auth
+    function checkApiServer(cb) {
+      debug('Checking API server...'.green);
+      require('http').get(Matrix.apiServer, function (res) {
+        checks.connectivity = true;
+        cb(null);
+      }).on('error', function () {
+        error('No API Server Visible', Matrix.apiServer);
+        checks.connectivity = false;
+        cb();
+      });
+    },
+
+    // Check for updates to MOS and dependencies **
+    function checkUpdates(cb) {
+
+      // in case you want to skip the upgrade for whatever reason
+      if (process.env.hasOwnProperty('NO_UPGRADE') || checks.update === true) {
+        cb();
+        return;
+      }
+
+      // check depends - eventfilter is used for apps
+      var deps = [Matrix.service.firebase, Matrix.api, require('matrix-app-config-helper'), require('matrix-eventfilter')];
+
+      var olds = _.filter(deps, { current: false });
+
+      if (olds.length > 0) {
+        console.log('Upgrading Dependencies....'.yellow)
+        require('child_process').execSync('npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase matrix-eventfilter pi-wifi');
+        console.log('Upgrade Done!'.green, 'Please restart MATRIX OS.');
+        checks.update = true;
+        process.exit();
+      } else {
+        console.log('Dependencies up to date.')
+      }
+
+      // check MATRIX OS
+      var info = JSON.parse(require('fs').readFileSync('package.json'));
+      var currentVersion = info.version;
+
+      require('https').get(
+        'https://raw.githubusercontent.com/matrix-io/matrix-os/master/package.json'
+        , function (res) {
+          // console.log(res);
+          var write = "";
+          res.on('data', function (c) {
+            write += c;
+          })
+          res.on('end', function () {
+            var remoteVersion = JSON.parse(write).version;
+            if (currentVersion === remoteVersion) {
+              debug('Latest Version Installed. ' + currentVersion.grey)
+              checks.update = true;
+              cb()
+            } else {
+              console.log('MATRIX OS Upgrade Ready. ' + remoteVersion + ' now available.\n', 'Upgrading MATRIX OS....'.yellow)
+              var updateError, exitCode;
+              try {
+                exitCode = require('child_process').execSync('git submodule update --init', { stdio: 'ignore' });
+              } catch (err) {
+                updateError = err;
+              }
+              if (!updateError) {
+                console.log('Modules updated... '.green)
+                try {
+                  require('child_process').execSync('git fetch && git pull', { stdio: 'ignore' });
+                } catch (err) {
+                  updateError = err;
+                }
+                if (!updateError) {
+                  console.log('Main Code updated... '.green)
+                  console.log('Upgrade Complete: Restart MATRIX OS... '.green)
+                  checks.update = true;
+                  process.exit();
+                  //cb();
+                } else { //Code update failed
+                  debug('Error updating main code:\n', updateError.message);
+                  console.error('Unable to update MOS main code'.yellow);
+                  console.error('Please make sure you haven\'t modified any files ('.yellow + 'git status'.gray + '), check your connection and try again'.yellow);
+                  console.error('Alternatively, you can run MOS without the upgrade check in the meantime \''.yellow + 'NO_UPGRADE=true node index.js'.gray + '\''.yellow);
+                  checks.update = true;
+                  process.exit();
+                }
+              } else { //Git submodules update failed
+                debug('Error updating modules:\n', updateError.message);
+                console.error('Unable to update MOS submodules'.yellow);
+                console.error('Try \''.yellow + 'git submodule deinit -f ; git submodule update --init'.gray + '\' to fix your modules'.yellow);
+                console.error('Alternatively, you can run MOS without the upgrade check in the meantime \''.yellow + 'NO_UPGRADE=true node index.js'.gray + '\''.yellow);
+                checks.update = true;
+                process.exit();
+              }
+            }
+          })
+        }).on('error', function (e) {
+          console.error('Upgrade Check Error: ', e)
+        })
+    },
+
     function mxssInit(cb) {
 
       // Now that we have a token, lets login to the streaming server
@@ -338,8 +414,10 @@ function deviceSetup() {
 
   ], function (err) {
     if (err) {
-      if (err.status_code === 400) {
-        console.error('Unable to validate device with the information supplied, pleaase try again'.yellow);
+      if (checks.connectivity === false) {
+        console.error('Network error, please make sure you have a valid connection and try again'.yellow);
+        //TODO Try again after a specific time has passed
+        //deviceSetupTimeout = setTimeout(deviceSetup, 60000);
         // Matrix.device.drivers.led.error();
         //TODO Connectivity error needs to be handled gracefully
         // Sample error message in err = 'matrix A network error (such as timeout, interrupted connection or unreachable host) has occurred.'
@@ -355,8 +433,8 @@ function deviceSetup() {
       Matrix.device.drivers.led.clear();
 
       //TODO start configuration BLE advertising
-      Matrix.service.bluetooth.configuration();
-      Matrix.service.bluetooth.emitter.on('configurationAuth', function (auth) {
+      Matrix.device.bluetooth.configuration();
+      Matrix.device.bluetooth.emitter.on('configurationAuth', function (auth) {
         if (!auth) {
           console.log('No BT auth provided');
         } else {
@@ -402,144 +480,33 @@ function deviceSetup() {
 
       Matrix.service.lifecycle.updateLastBootTime();
     }
-
   });
 }
 
+//formerly checkDeviceRegistration
+//Check if device id and secret are set as env vars
+Matrix.service.token.populate(function (err) { //Authenticate with current data
 
-// Prepare device and wait for auth
-async.series({
-
-  // Make sure we can see the API server for auth
-  checkApiServer: function(cb) {
-    debug('Checking API server...'.green);
-    require('http').get(Matrix.apiServer, function (res) {
-      cb(null);
-    }).on('error', function () {
-      error('No API Server Visible', Matrix.apiServer);
-      cb();
-    });
-  },
-
-  // Check for updates to MOS and dependencies **
-  checkUpdates: function(cb) {
-
-    // in case you want to skip the upgrade for whatever reason
-    if (process.env.hasOwnProperty('NO_UPGRADE')) {
-      cb();
-      return;
-    }
-
-    // check depends - eventfilter is used for apps
-    var deps = [Matrix.service.firebase, Matrix.api, require('matrix-app-config-helper'), require('matrix-eventfilter')];
-
-    var olds = _.filter(deps, { current: false });
-
-    if (olds.length > 0) {
-      console.log('Upgrading Dependencies....'.yellow)
-      require('child_process').execSync('npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase matrix-eventfilter pi-wifi');
-      console.log('Upgrade Done!'.green, 'Please restart MATRIX OS.');
-      process.exit();
-    } else {
-      console.log('Dependencies up to date.')
-    }
-
-    // check MATRIX OS
-    var info = JSON.parse(require('fs').readFileSync('package.json'));
-    var currentVersion = info.version;
-
-    require('https').get(
-      'https://raw.githubusercontent.com/matrix-io/matrix-os/master/package.json'
-      , function (res) {
-        // console.log(res);
-        var write = "";
-        res.on('data', function (c) {
-          write += c;
-        })
-        res.on('end', function () {
-          var remoteVersion = JSON.parse(write).version;
-          if (currentVersion === remoteVersion) {
-            debug('Latest Version Installed. ' + currentVersion.grey)
-            cb()
-          } else {
-            console.log('MATRIX OS Upgrade Ready. ' + remoteVersion + ' now available.\n', 'Upgrading MATRIX OS....'.yellow)
-            var updateError, exitCode;
-            try {
-              exitCode = require('child_process').execSync('git submodule update --init', { stdio: 'ignore' });
-            } catch (err) {
-              updateError = err;
-            }
-            if (!updateError) {
-              console.log('Modules updated... '.green)
-              try {
-                require('child_process').execSync('git fetch && git pull', { stdio: 'ignore' });
-              } catch (err) {
-                updateError = err;
-              }
-              if (!updateError) {
-                console.log('Main Code updated... '.green)
-                console.log('Upgrade Complete: Restart MATRIX OS... '.green)
-                process.exit();
-                //cb();
-              } else { //Code update failed
-                debug('Error updating main code:\n', updateError.message);
-                console.error('Unable to update MOS main code'.yellow);
-                console.error('Please make sure you haven\'t modified any files ('.yellow + 'git status'.gray + '), check your connection and try again'.yellow);
-                console.error('Alternatively, you can run MOS without the upgrade check in the meantime \''.yellow + 'NO_UPGRADE=true node index.js'.gray + '\''.yellow);
-                process.exit();
-              }
-            } else { //Git submodules update failed
-              debug('Error updating modules:\n', updateError.message);
-              console.error('Unable to update MOS submodules'.yellow);
-              console.error('Try \''.yellow + 'git submodule deinit -f ; git submodule update --init'.gray + '\' to fix your modules'.yellow);
-              console.error('Alternatively, you can run MOS without the upgrade check in the meantime \''.yellow + 'NO_UPGRADE=true node index.js'.gray + '\''.yellow);
-              process.exit();
-            }
-          }
-        })
-      }).on('error', function (e) {
-        console.error('Upgrade Check Error: ', e)
-      })
-  },
-
-  //Verify id and secret
-  checkDeviceRegistration: function(cb) {
-    //Check if device id and secret are set as env vars
-    populateToken(function (err) {
-      var result = false;
-      console.log('Found:', err);
-      if (_.isUndefined(err)) {
-        console.log('Device found!');
-        result = true;
-      } 
-      cb(null, result);
-    });
-  }
-}, function (err, results) {
-  if (err) { //Failed to initialize
-    debug('Initialization error! '.red, err);
-    Matrix.haltTheMatrix();
-  } else if (results.checkDeviceRegistration === false) { //Initialized properly but missing valid device id and secret
-    
+  if (!_.isUndefined(err)) { //Initialized properly but missing valid device id and secret
     //TODO take into account network error
     console.warn('Incorrect or missing registration information. This device is not correctly configured. Please add MATRIX_DEVICE_ID and MATRIX_DEVICE_SECRET variables. If you do not have these available, you can get them by issuing `matrix register device` with matrix CLI or by registering your device using the mobile apps. \n\nIf you continue to have problems, please reach out to our support forums at http://community.matrix.one'.yellow);
     console.log('Waiting for BLE pairing'.yellow);
     
     //Wait for mobile pairing
-    Matrix.service.bluetooth.registration();
-    Matrix.service.bluetooth.emitter.on('deviceAuth', function (options) {
-      console.log('Finished received BLE device info:', options);
-      authenticateDevice(options.id, options.secret); //Set new values
+    Matrix.device.bluetooth.registration(); //Starts BLE registration advertising
+    Matrix.device.bluetooth.emitter.on('deviceAuth', function (options) {
+      console.log('Received BLE device info:', options);
+      Matrix.service.auth.set(options.id, options.secret); //Update device id and device secret
       deviceSetup(); //Continue setup process
     });
     
     //TODO Might want to remove the listener on successful auth, although it might not really be a big deal 
-    //Matrix.service.bluetooth.emitter.removeListener('deviceAuth', refreshHandler);
+    //Matrix.device.bluetooth.emitter.removeListener('deviceAuth', refreshHandler);
 
   } else { //Correct initialization and already authenticated
-
     deviceSetup(); //Continue setup process
-  }
+  } 
+  cb(null, result);
 });
 
 
