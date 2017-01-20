@@ -15,6 +15,7 @@ var lib = require('./lib');
 var request = require('request');
 var fs = require('fs');
 var DataStore = require('nedb');
+var AppStore = new DataStore('application.db')
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
 
@@ -30,11 +31,10 @@ var appName = '';
 var storeManager = {
   get: getStore,
   set: setStore,
-  delete: deleteStore,
-  remove: deleteStore
+  delete: deleteStore
 }
 
-function getStore(key){
+function getStore(key, cb){
   var q = {};
   q[key]= { $exists: true };
   AppStore.findOne(q, function(err, resp){
@@ -43,13 +43,13 @@ function getStore(key){
   });
 }
 
-function setStore(key, value){
+function setStore(key, value, cb){
   var obj = {};
   obj[key] = value;
-  AppStore.insert(obj);
+  AppStore.insert(obj, cb);
 }
 
-function deleteStore(key){
+function deleteStore(key, cb){
   var q = {};
   q[key]= { $exists: true };
   AppStore.remove(q, function(err, resp){
@@ -73,10 +73,10 @@ var fileManager = {
         cb(null, body);
       });
     },
-    stream: function(){
-      // are we doing this? yes, for streaming media
-    },
-    remove: function(filename, cb){
+  stream: function(){
+    // are we doing this? yes, for streaming media
+  },
+  remove: function(filename, cb){
     var assetPath = __dirname + '/' + appName + '.matrix/storage/';
     fs.unlink(assetPath + filename, cb);
   },

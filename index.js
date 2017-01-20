@@ -458,6 +458,10 @@ var msg = [];
       Matrix.service.manager.start(Matrix.config.fakeApp);
     }
 
+    Matrix.device.drivers.zigbee.on();
+    Matrix.device.drivers.zigbee.off();
+
+
     //for tests
     Matrix.events.emit('matrix-ready');
 
