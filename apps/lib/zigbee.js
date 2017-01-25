@@ -11,11 +11,11 @@ function hueLookup(name){
 }
 
 module.exports = {
-  light: function(id){
+  light: function(){
     return {
       light: this,
       color: function (hue) {
-        process.send({ type: 'zigbee-light-cmd', cmd: 'color-set', payload: { hue: hueLookup(hue) });
+        process.send({ type: 'zigbee-light-cmd', cmd: 'color-set', payload: { hue: hueLookup(hue) } });
       },
       colorSpin: function (hue, time, direction) {
         process.send({ type: 'zigbee-light-cmd', cmd: 'color-spin', payload: { hue: hueLookup(hue), time: time, direction: direction } });
