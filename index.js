@@ -434,9 +434,9 @@ function deviceSetup() {
 
       //TODO start configuration BLE advertising
       Matrix.device.bluetooth.configuration();
-      Matrix.device.bluetooth.emitter.on('configurationAuth', function (auth) {
-        if (!auth) {
-          console.log('No BT auth provided');
+      Matrix.device.bluetooth.emitter.on('configurationAuth', function (err, auth) {
+        if (err || !auth) {
+          console.log('No BT auth provided', err);
         } else {
           console.log('BT Successfully authenticated!');
         }
@@ -494,10 +494,19 @@ Matrix.service.token.populate(function (err) { //Authenticate with current data
     
     //Wait for mobile pairing
     Matrix.device.bluetooth.registration(); //Starts BLE registration advertising
-    Matrix.device.bluetooth.emitter.on('deviceAuth', function (options) {
-      console.log('Received BLE device info:', options);
-      Matrix.service.auth.set(options.id, options.secret); //Update device id and device secret
-      deviceSetup(); //Continue setup process
+    Matrix.device.bluetooth.emitter.on('deviceAuth', function (err, options) {
+      console.log('RECEIVED CONFIG RESPONSE!');
+      if (err) console.log(err);
+      if (options) console.log(options);
+
+      if (!err) {
+        console.log('Received BLE device info:', options);
+        Matrix.service.auth.set(options.id, options.secret); //Update device id and device secret
+        
+        deviceSetup(); //Continue setup process 
+      } else {
+        console.log('Error trying to configure the device', err);
+      }
     });
     
     //TODO Might want to remove the listener on successful auth, although it might not really be a big deal 
