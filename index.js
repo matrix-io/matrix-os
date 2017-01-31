@@ -61,6 +61,9 @@ Matrix.localApps = {};
 // Make Matrix[setting] from env settings for easy access
 parseEnvSettings(envSettings);
 
+//Matrix.deviceId = envSettings.deviceId;
+//Matrix.deviceSecret = envSettings.deviceSecret;
+
 // Configuration besides env settings
 Matrix.config = require('./config');
 
@@ -117,6 +120,11 @@ Matrix.db = {
   // used to store unsent data
   pending: new DataStore({
     filename: Matrix.config.path.db.pending,
+    autoload: true
+  }),
+  //used to store device data
+  device: new DataStore({
+    filename: Matrix.config.path.db.device,
     autoload: true
   })
 }
@@ -484,39 +492,46 @@ function deviceSetup() {
   });
 }
 
-//formerly checkDeviceRegistration
-//Check if device id and secret are set as env vars
-Matrix.service.token.populate(function (err) { //Authenticate with current data
+readLocalDeviceInfo(function (err) { 
+  if (err) console.log('Error reading local data!');
+  //Check if device id and secret are set as env vars
+  Matrix.service.token.populate(function (err) { //Authenticate with current data
 
-  if (!_.isUndefined(err)) { //Initialized properly but missing valid device id and secret
-    //TODO take into account network error
-    console.warn('Incorrect or missing registration information. This device is not correctly configured. Please add MATRIX_DEVICE_ID and MATRIX_DEVICE_SECRET variables. If you do not have these available, you can get them by issuing `matrix register device` with matrix CLI or by registering your device using the mobile apps. \n\nIf you continue to have problems, please reach out to our support forums at http://community.matrix.one'.yellow);
-    console.log('Waiting for BLE pairing'.yellow);
-    
-    //Wait for mobile pairing
-    Matrix.device.bluetooth.registration(); //Starts BLE registration advertising
-    Matrix.device.bluetooth.emitter.on('deviceAuth', function (err, options) {
-      console.log('RECEIVED CONFIG RESPONSE!');
-      if (err) console.log(err);
-      if (options) console.log(options);
+    if (!_.isUndefined(err)) { //Initialized properly but missing valid device id and secret
+      //TODO take into account network error
+      console.warn('Incorrect or missing registration information. This device is not correctly configured. Please add MATRIX_DEVICE_ID and MATRIX_DEVICE_SECRET variables. If you do not have these available, you can get them by issuing `matrix register device` with matrix CLI or by registering your device using the mobile apps. \n\nIf you continue to have problems, please reach out to our support forums at http://community.matrix.one'.yellow);
+      console.log('Waiting for BLE pairing'.yellow);
+      
+      //Wait for mobile pairing
+      Matrix.device.bluetooth.registration(); //Starts BLE registration advertising
+      Matrix.device.bluetooth.emitter.on('deviceAuth', function (err, options) {
+        console.log('RECEIVED CONFIG RESPONSE!');
+        if (err) console.log(err);
+        if (options) console.log(options);
 
-      if (!err) {
-        console.log('Received BLE device info:', options);
-        Matrix.service.auth.set(options.id, options.secret); //Update device id and device secret
-        
-        deviceSetup(); //Continue setup process 
-      } else {
-        console.log('Error trying to configure the device', err);
-      }
-    });
-    
-    //TODO Might want to remove the listener on successful auth, although it might not really be a big deal 
-    //Matrix.device.bluetooth.emitter.removeListener('deviceAuth', refreshHandler);
+        if (!err) {
+          console.log('Received BLE device info:', options);
+          Matrix.service.auth.set(options.id, options.secret, function (err) { 
+            if (!err) {
+              deviceSetup(); //Continue setup process     
+            } else {
+              console.error('Unable to store device info');
+            }
+          }); //Update device id and device secret
+          
+        } else {
+          console.log('Error trying to configure the device', err);
+        }
+      });
+      
+      //TODO Might want to remove the listener on successful auth, although it might not really be a big deal 
+      //Matrix.device.bluetooth.emitter.removeListener('deviceAuth', refreshHandler);
 
-  } else { //Correct initialization and already authenticated
-    deviceSetup(); //Continue setup process
-  } 
-  cb(null, result);
+    } else { //Correct initialization and already authenticated
+      deviceSetup(); //Continue setup process
+    } 
+    cb(null, result);
+  });
 });
 
 
@@ -687,6 +702,32 @@ function parseEnvSettings(envSettings) {
   } else {
     console.error('There is a problem with ENV', Matrix.env);
   }
+}
+
+function readLocalDeviceInfo(cb) {
+   
+  Matrix.db.device.findOne({
+    id: {
+      $exists: true
+    }, 
+    secret: {
+      $exists: true
+    }
+  }, function(err, result){
+    if (err) return cb(err);
+    if (_.isNull(result)) {
+      console.log('Sadly, we got no results :(');
+    } else {
+      if (_.has(result, 'id') && _.has(result, 'secret')) {
+        console.log('This is my device info: ', result);
+        Matrix.deviceId = result.id;
+        Matrix.deviceSecret = result.secret; 
+      } else {
+        err = new Error('No id and secret found for this device');
+      }
+    }
+    cb(err);
+  });
 }
 
 Matrix.haltTheMatrix = function () {

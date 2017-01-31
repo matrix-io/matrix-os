@@ -36,6 +36,7 @@
   "license": "ISC",
   "dependencies": {
     "async": "^1.5.2",
+    "bleno": "^0.4.1",
     "chai": "^3.5.0",
     "colors": "^1.1.2",
     "debug": "^2.2.0",
