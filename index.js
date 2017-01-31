@@ -442,8 +442,8 @@ function deviceSetup() {
       Matrix.device.drivers.led.clear();
 
       //TODO start configuration BLE advertising
-      Matrix.device.bluetooth.configuration();
-      Matrix.device.bluetooth.emitter.on('configurationAuth', function (err, auth) {
+      Matrix.device.bluetooth.start();
+      Matrix.device.bluetooth.emitter.on('configurationAuth', function (err, uuid, auth) {
         if (err || !auth) {
           console.log('No BT auth provided', err);
         } else {
@@ -503,29 +503,31 @@ readLocalDeviceInfo(function (err) {
       console.log('Waiting for BLE pairing'.yellow);
       
       //Wait for mobile pairing
-      Matrix.device.bluetooth.registration(); //Starts BLE registration advertising
-      Matrix.device.bluetooth.emitter.on('deviceAuth', function (err, options) {
-        console.log('RECEIVED CONFIG RESPONSE!');
-        if (err) console.log(err);
-        if (options) console.log(options);
+      Matrix.device.bluetooth.start(function () { 
+        Matrix.device.bluetooth.emitter.on('deviceAuth', function (err, uuid, options) {
+          if (err) console.log(err);
+          if (options) console.log(options);
 
-        if (!err) {
-          console.log('Received BLE device info:', options);
-          Matrix.service.auth.set(options.id, options.secret, function (err) { 
-            if (!err) {
-              deviceSetup(); //Continue setup process     
-            } else {
-              console.error('Unable to store device info');
-            }
-          }); //Update device id and device secret
-          
-        } else {
-          console.log('Error trying to configure the device', err);
-        }
-      });
+          if (!err) {
+            console.log('Received BLE device info:', options);
+            Matrix.service.auth.set(options.id, options.secret, function (err) { 
+              if (!err) {
+                deviceSetup(); //Continue setup process     
+              } else {
+                console.error('Unable to store device info');
+              }
+            }); //Update device id and device secret
+            
+          } else {
+            console.log('Error trying to configure the device', err.message);
+          }
+        });
+
+      }); //Starts BLE registration advertising
       
       //TODO Might want to remove the listener on successful auth, although it might not really be a big deal 
       //Matrix.device.bluetooth.emitter.removeListener('deviceAuth', refreshHandler);
+      //Matrix.device.bluetooth.emitter.removeListener('configurationAuth', refreshHandler);
 
     } else { //Correct initialization and already authenticated
       deviceSetup(); //Continue setup process
@@ -707,21 +709,18 @@ function parseEnvSettings(envSettings) {
 function readLocalDeviceInfo(cb) {
    
   Matrix.db.device.findOne({
-    id: {
-      $exists: true
-    }, 
-    secret: {
-      $exists: true
-    }
+    id: { $exists: true }, 
+    secret: { $exists: true },
+    env: Matrix.env
   }, function(err, result){
     if (err) return cb(err);
     if (_.isNull(result)) {
-      console.log('Sadly, we got no results :(');
+      debug('Sadly, we got no device records :(');
     } else {
       if (_.has(result, 'id') && _.has(result, 'secret')) {
-        console.log('This is my device info: ', result);
+        console.log('Device data found: ', result);
         Matrix.deviceId = result.id;
-        Matrix.deviceSecret = result.secret; 
+        Matrix.deviceSecret = result.secret;
       } else {
         err = new Error('No id and secret found for this device');
       }
