@@ -29,13 +29,16 @@ module.exports = {
       on: function () {
         process.send({ type: 'zigbee-light-cmd', cmd: 'on' });
       },
+      toggle: function(){
+        process.send({ type:'zigbee-light-cmd', cmd:'toggle'})
+      },
       // saturation: function (level, time, direction) {
       //   process.send({ type: 'zigbee-light-cmd', cmd: 'saturation-move', payload: { saturation: level, time: time, direction: 0 } });
       // },
       fadeOn: function( time ){
         process.send({ type: 'zigbee-light-cmd', cmd: 'fade-on', payload: { time: time, direction: 0 } });
       },
-      fadeOff: function( time )
+      fadeOff: function( time ){
         process.send({ type: 'zigbee-light-cmd', cmd: 'fade-off', payload: { time: time, direction: 1 } });
       },
       level: function (level, time, direction) {

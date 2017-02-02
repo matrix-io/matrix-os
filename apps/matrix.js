@@ -341,7 +341,8 @@ var Matrix = {
   color: require('tinycolor2'),
   static: function(){
     console.log('static not implmented uyet')
-  }
+  },
+  zigbee: require('./lib/zigbee.js')
 }
 
 module.exports = Matrix;
