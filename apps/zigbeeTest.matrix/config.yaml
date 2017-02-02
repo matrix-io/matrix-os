@@ -1,0 +1,31 @@
+# do not touch this line
+configVersion: 2
+
+name: zigbeeTest
+description: test der leds
+keywords: 'led, test'
+
+services:
+  zigbeeTest:
+    engine: detection
+    type: demographics
+
+screens:
+  - - clockScreen
+
+dataTypes:
+  clock:
+    hourAngle: integer
+    minuteAngle: integer
+    secondAngle: integer
+
+widgets:
+  clockScreen:
+    label: Clock Angle App
+    type: clock
+    display: list-group
+    groupBy: hour
+    keys:
+      - hourAngle
+      - minuteAngle
+      - secondAngle
