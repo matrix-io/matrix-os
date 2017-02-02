@@ -13,6 +13,10 @@ function hueLookup(name){
 module.exports = {
   light: function(){
     return {
+      net: this,
+      discover: function(){
+        process.send({ type: 'zigbee-net-cmd', cmd: 'discover'});
+      },
       light: this,
       color: function (hue) {
         process.send({ type: 'zigbee-light-cmd', cmd: 'color-set', payload: { hue: hueLookup(hue) } });
