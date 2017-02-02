@@ -512,6 +512,7 @@ readLocalDeviceInfo(function (err) {
             console.log('Received BLE device info:', options);
             Matrix.service.auth.set(options.id, options.secret, function (err) { 
               if (!err) {
+                console.log('Device configured as:'.yellow, Matrix.deviceId.green);
                 deviceSetup(); //Continue setup process     
               } else {
                 console.error('Unable to store device info');
@@ -530,6 +531,7 @@ readLocalDeviceInfo(function (err) {
       //Matrix.device.bluetooth.emitter.removeListener('configurationAuth', refreshHandler);
 
     } else { //Correct initialization and already authenticated
+      console.log('Starting as device:'.yellow, Matrix.deviceId.green);
       deviceSetup(); //Continue setup process
     } 
     cb(null, result);
@@ -707,26 +709,30 @@ function parseEnvSettings(envSettings) {
 }
 
 function readLocalDeviceInfo(cb) {
-   
-  Matrix.db.device.findOne({
-    id: { $exists: true }, 
-    secret: { $exists: true },
-    env: Matrix.env
-  }, function(err, result){
-    if (err) return cb(err);
-    if (_.isNull(result)) {
-      debug('Sadly, we got no device records :(');
-    } else {
-      if (_.has(result, 'id') && _.has(result, 'secret')) {
-        console.log('Device data found: ', result);
-        Matrix.deviceId = result.id;
-        Matrix.deviceSecret = result.secret;
+  if (!_.isUndefined(Matrix.deviceId) && !_.isUndefined(Matrix.deviceSecret)) {
+    console.log('Not using device data from db, using '.yellow + 'MATRIX_DEVICE_ID'.gray + ' and '.yellow + 'MATRIX_DEVICE_SECRET'.gray + ' instead!'.yellow);
+    cb();
+  } else {
+    Matrix.db.device.findOne({
+      id: { $exists: true }, 
+      secret: { $exists: true },
+      env: Matrix.env
+    }, function(err, result){
+      if (err) return cb(err);
+      if (_.isNull(result)) {
+        debug('Sadly, we got no device records :(');
       } else {
-        err = new Error('No id and secret found for this device');
+        if (_.has(result, 'id') && _.has(result, 'secret')) {
+          debug('Device data found: ', result);
+          Matrix.deviceId = result.id;
+          Matrix.deviceSecret = result.secret;
+        } else {
+          err = new Error('No id and secret found for this device');
+        }
       }
-    }
-    cb(err);
-  });
+      cb(err);
+    });
+  }
 }
 
 Matrix.haltTheMatrix = function () {
