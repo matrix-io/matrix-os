@@ -4,6 +4,9 @@
 var lightLookup;
 
 function hueLookup(name){
+  if ( _.isInteger( name ) ) {
+    return name;
+  }
   var tc = require('tinycolor2');
   var hue = tc(name).toHsv().h;
   return Math.round( hue * 360 );
@@ -11,15 +14,18 @@ function hueLookup(name){
 }
 
 module.exports = {
+  discover: function(){
+    process.send({ type: 'zigbee-net-cmd', cmd: 'discover'});
+  },
+
+  reset: function(){
+    process.send({ type: 'zigbee-net-cmd', cmd: 'reset'});
+  },
+
   light: function(){
     return {
-      net: this,
-      discover: function(){
-        process.send({ type: 'zigbee-net-cmd', cmd: 'discover'});
-      },
-      light: this,
-      color: function (hue) {
-        process.send({ type: 'zigbee-light-cmd', cmd: 'color-set', payload: { hue: hueLookup(hue) } });
+      color: function (hue, time) {
+        process.send({ type: 'zigbee-light-cmd', cmd: 'color-set', payload: { hue: hueLookup(hue), time: time } });
       },
       colorSpin: function (hue, time, direction) {
         process.send({ type: 'zigbee-light-cmd', cmd: 'color-spin', payload: { hue: hueLookup(hue), time: time, direction: direction } });
