@@ -342,7 +342,12 @@ var Matrix = {
   static: function(){
     console.log('static not implmented uyet')
   },
-  zigbee: require('./lib/zigbee.js')
+  zigbee: function(){
+    if ( Matrix.config.integrations.indexOf('zigbee') === -1 ){
+      return console.error('Zigbee is not configured for this application. Please add `zigbee` to config>integrations');
+    }
+    return require('./lib/zigbee.js')
+  }
 }
 
 module.exports = Matrix;

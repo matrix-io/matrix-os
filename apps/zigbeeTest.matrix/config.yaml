@@ -5,6 +5,9 @@ name: zigbeeTest
 description: test der leds
 keywords: 'led, test'
 
+integrations:
+  - zigbee
+
 services:
   zigbeeTest:
     engine: detection
