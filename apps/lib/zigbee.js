@@ -5,12 +5,17 @@ var lightLookup;
 
 function hueLookup(name){
   if ( _.isInteger( name ) ) {
-    return name;
+    // map 360 to int32 0-360 -> 0-255
+    return Math.round(name * ( 255/360 ));
   }
   var tc = require('tinycolor2');
   var hue = tc(name).toHsv().h;
-  return Math.round( hue * 360 );
+  return Math.round( hue  * ( 255/360 ) );
+}
 
+// 0-100 -> 0-255
+function levelConvert(level){
+  return Math.round( level * 2.55 );
 }
 
 module.exports = {
@@ -45,14 +50,14 @@ module.exports = {
       // saturation: function (level, time, direction) {
       //   process.send({ type: 'zigbee-light-cmd', cmd: 'saturation-move', payload: { saturation: level, time: time, direction: 0 } });
       // },
-      fadeOn: function( time ){
+      fadeIn: function( time ){
         process.send({ type: 'zigbee-light-cmd', cmd: 'fade-on', payload: { time: time, direction: 0 } });
       },
-      fadeOff: function( time ){
+      fadeOut: function( time ){
         process.send({ type: 'zigbee-light-cmd', cmd: 'fade-off', payload: { time: time, direction: 1 } });
       },
       level: function (level, time, direction) {
-        process.send({ type: 'zigbee-light-cmd', cmd: 'level-move', payload: { saturation: level, time: time, direction: 0 } });
+        process.send({ type: 'zigbee-light-cmd', cmd: 'level-move', payload: { level: level, time: time, direction: 0 } });
       },
     }
   }
