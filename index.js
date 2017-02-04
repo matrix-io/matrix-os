@@ -442,9 +442,6 @@ var msg = [];
       log('MXSS Connected:'.green, Matrix.streamingServer.grey)
     }
 
-    Matrix.device.drivers.zigbee.toggle();
-    // Show whats available from MALOS
-
     if ( malosInfoOut.length > 0 ){
       log('MALOS COMPONENTS', malosInfoOut);
     } else {
