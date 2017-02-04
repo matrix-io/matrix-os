@@ -2,7 +2,7 @@
 
 module.exports = function(message) {
   console.log('[M]('+ this.appName +') send ->', message);
-  if ( _.isNull(message) ){
+  if ( _.isNull(message) || _.isUndefined(message)){
     return error('null message from matrix.send')
   }
   // if (!message.hasOwnProperty('data')){
@@ -40,13 +40,13 @@ module.exports = function(message) {
 
       //regex containing object
       var re = require('matrix-app-config-helper').regex;
-      if ( _.isObject(dataTypes[type])){
+      if ( _.isPlainObject(dataTypes[type])){
         // nested datatype structure
         _.each( dataTypes[type], function(f, key){
-          console.log('F: ', f, typeof f)
-          console.log('Key: ', key, typeof key)
+          console.log('Key: ', key)
+          console.log('Type: ', f )
           console.log('message[key]: ', message[key], typeof message[key])
-          if (message.hasOwnProperty(key) && !_.isUndefined(message[key])) { 
+          if (message.hasOwnProperty(key) && !_.isUndefined(message[key])) {
             // check that the data is formatted correctly
             if (
               (f.match(re.string) && _.isString(message[key])) ||

@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Prevent apps that fail on init from being added to activeApplications
 - Stopped restart on config change, will require manual restart now
 
+### Fixed
+- Removed application folder on uninstall
+
 ## [0.7.0]
 ### Added
 - Enable servo write
