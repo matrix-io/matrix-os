@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Basic Python implementation
 - Distinct sensor support for gyroscope, accelerometer, and magnetometer
 - Adding images to detection payload
+- Message in case of no device id / secret
+
 ### Changed
 - Prevent apps that fail on init from being added to activeApplications
 - Stopped restart on config change, will require manual restart now
