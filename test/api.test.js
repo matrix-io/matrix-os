@@ -197,8 +197,9 @@ describe('App API', function(){
         done();
       });
     });
-    it('matrix.type.send', function (done) {
+    it.only('matrix.type.send', function (done) {
       testAppAPI('send', function(r){
+        console.log('send', r)
         assert.equal(r.type, 'app-emit');
         assert.equal(r.payload.foo, 1);
         assert.equal(r.payload.type, 'test');

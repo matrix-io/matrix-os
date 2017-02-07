@@ -227,7 +227,7 @@ var Matrix = {
     }
   },
   send: function(message){
-    require('./lib/send.js').apply(Matrix, [message]);
+    require('./lib/send.js').apply(Matrix, message);
   },
   type: function(type) {
     //set type, return this

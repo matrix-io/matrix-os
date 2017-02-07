@@ -18,18 +18,20 @@ Matrix = require('../index.js').Matrix;
 
 
 testAppAPI = function(test, cb){
-  faketrix = require('child_process').fork('./test/fixtures/testapi.matrix/app.js', { env: { TEST_MODE: true },
+  faketrix = require('child_process').fork('./apps/test.matrix/app.js', { env: { TEST_MODE: true },
   silent: true, stdio: 'ignore'
 });
   faketrix.send({ test: test });
   faketrix.on('message', function (msg) {
-    faketrix.kill();
     cb(msg);
+    faketrix.kill();
   })
+  faketrix.on('error', console.error)
 }
 
 
 setTimeout(function(){
+  require('child_process').exec('cp -r test/fixtures/test.matrix apps/');
   Matrix.events.on('matrix-ready', function(){
     var testDir = __dirname;
 
@@ -50,6 +52,7 @@ setTimeout(function(){
     // Run the tests.
     mocha.run(function(failures) {
       process.on('exit', function() {
+        require('child_process').exec('rm -r apps/test.matrix');
         process.exit(failures);
       });
       Matrix.haltTheMatrix();
