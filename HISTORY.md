@@ -9,13 +9,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Docker virtualization for apps ( uses DOCKER_APPS flag for now )
 - Wifi Support
 - Basic Python implementation
-
+- Distinct sensor support for gyroscope, accelerometer, and magnetometer
+- Adding images to detection payload
 ### Changed
 - Prevent apps that fail on init from being added to activeApplications
 - Stopped restart on config change, will require manual restart now
 
 ### Fixed
 - Removed application folder on uninstall
+- Tests work again
 
 ## [0.7.0]
 ### Added
