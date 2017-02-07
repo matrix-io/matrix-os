@@ -1,20 +1,10 @@
 {
-  "name": "matrix-apps",
+  "name": "matrix-test-app",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "dependencies": {
-    "colors": "^1.1.2",
-    "lodash": "^4.17.4",
-    "matrix-app-config-helper": "^0.1.6",
-    "matrix-eventfilter": "^1.0.0",
-    "nedb": "^1.8.0",
-    "request": "^2.79.0",
-    "tinycolor2": "^1.4.1"
-  },
-  "devDependencies": {},
   "scripts": {
-    "test": "mocha"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC"

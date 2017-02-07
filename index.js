@@ -531,7 +531,7 @@ function onKill() {
 @method onDestroy
 @description Stop process before stop application
 */
-function onDestroy() {
+function onDestroy(cb) {
   //TODO Consider adding a setTimeout>process.exit if all else fails
   //TODO: Implemenent cleanups
   // kill children apps\
@@ -548,6 +548,8 @@ function onDestroy() {
         // Matrix.device.drivers.clear
       ], function (err) {
         if (err) error(err);
+        // Used to Clean up Tests
+        if ( _.isFunction(cb)) { cb(); }
         console.log('Cleanup complete...');
         process.exit(0);
       });
@@ -645,6 +647,6 @@ function parseEnvSettings(envSettings){
   }
 }
 
-Matrix.haltTheMatrix = function(){
+Matrix.haltTheMatrix = function(cb){
   onDestroy();
 }
