@@ -18,8 +18,8 @@ Matrix = require('../index.js').Matrix;
 
 
 testAppAPI = function(test, cb){
-  faketrix = require('child_process').fork('./test/fixtures/testapi.matrix/app.js', { env: { TEST_MODE: true },
-  silent: true, stdio: 'ignore'
+  faketrix = require('child_process').fork('./apps/test.matrix/index.js', { env: { TEST_MODE: true },
+  // silent: true, stdio: 'ignore'
 });
   faketrix.send({ test: test });
   faketrix.on('message', function (msg) {
@@ -30,6 +30,7 @@ testAppAPI = function(test, cb){
 
 
 setTimeout(function(){
+  require('child_process').execSync('cp -r ./test/fixtures/test.matrix/ ./apps/test.matrix/')
   Matrix.events.on('matrix-ready', function(){
     var testDir = __dirname;
 
@@ -52,7 +53,10 @@ setTimeout(function(){
       process.on('exit', function() {
         process.exit(failures);
       });
-      Matrix.haltTheMatrix();
+      Matrix.haltTheMatrix(function(){
+        console.log("Woot Tests Done!~".rainbow)
+        require('child_process').execSync('rm -r ./apps/test.matrix')
+      });
     });
   })
 }, 500 )

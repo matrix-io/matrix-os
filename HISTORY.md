@@ -4,15 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [0.9.0]
 ### Added
 - Docker virtualization for apps ( uses DOCKER_APPS flag for now )
 - Wifi Support
 - Basic Python implementation
+- Distinct sensor support for gyroscope, accelerometer, and magnetometer
+- Adding images to detection payload
+- Message in case of no device id / secret
 
 ### Changed
 - Prevent apps that fail on init from being added to activeApplications
 - Stopped restart on config change, will require manual restart now
+
+### Fixed
+- Removed application folder on uninstall
+- Tests work again
 
 ## [0.7.0]
 ### Added

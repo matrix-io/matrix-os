@@ -349,8 +349,9 @@ var msg = [];
         // app to uninstall!
         // refresh app ids in case of recent install
         Matrix.service.manager.stop(app.name, function (err) {
+          console.log('app stopped', app.name)
           Matrix.service.firebase.app.getUserAppIds(function (appIds) {
-            if (_.keys(appIds).indexOf(app.id) !== -1) {
+            if (_.keys(appIds).indexOf(app.id) === -1) {
               console.log('uninstalling ', app.name + '...');
               Matrix.service.manager.uninstall(app.name, function (err) {
                 if (err) return error(err);
@@ -530,7 +531,7 @@ function onKill() {
 @method onDestroy
 @description Stop process before stop application
 */
-function onDestroy() {
+function onDestroy(cb) {
   //TODO Consider adding a setTimeout>process.exit if all else fails
   //TODO: Implemenent cleanups
   // kill children apps\
@@ -547,6 +548,8 @@ function onDestroy() {
         // Matrix.device.drivers.clear
       ], function (err) {
         if (err) error(err);
+        // Used to Clean up Tests
+        if ( _.isFunction(cb)) { cb(); }
         console.log('Cleanup complete...');
         process.exit(0);
       });
@@ -644,6 +647,6 @@ function parseEnvSettings(envSettings){
   }
 }
 
-Matrix.haltTheMatrix = function(){
+Matrix.haltTheMatrix = function(cb){
   onDestroy();
 }
