@@ -594,7 +594,7 @@ function onKill() {
 @method onDestroy
 @description Stop process before stop application
 */
-function onDestroy() {
+function onDestroy(cb) {
   //TODO Consider adding a setTimeout>process.exit if all else fails
   //TODO: Implemenent cleanups
   // kill children apps\
@@ -611,6 +611,8 @@ function onDestroy() {
         // Matrix.device.drivers.clear
       ], function (err) {
         if (err) error(err);
+        // Used to Clean up Tests
+        if ( _.isFunction(cb)) { cb(); }
         console.log('Cleanup complete...');
         process.exit(0);
       });
@@ -708,6 +710,7 @@ function parseEnvSettings(envSettings) {
   }
 }
 
+
 function readLocalDeviceInfo(cb) {
   if (!_.isUndefined(Matrix.deviceId) && !_.isUndefined(Matrix.deviceSecret)) {
     console.log('Not using device data from db, using '.yellow + 'MATRIX_DEVICE_ID'.gray + ' and '.yellow + 'MATRIX_DEVICE_SECRET'.gray + ' instead!'.yellow);
@@ -735,6 +738,6 @@ function readLocalDeviceInfo(cb) {
   }
 }
 
-Matrix.haltTheMatrix = function () {
+Matrix.haltTheMatrix = function(cb){
   onDestroy();
 }

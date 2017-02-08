@@ -273,8 +273,8 @@ var Matrix = {
         const msg = process.stdin.read();
         // multiple msgs might be sent in one event
         if ( !_.isNull(msg)){
-          let msgs = _.compact(msg.toString().split('\n'));
-          let msgObjs = [];
+          var msgs = _.compact(msg.toString().split('\n'));
+          var msgObjs = [];
           try {
             // parse each one independently! - woot working
             msgObjs = msgs.map((m) => { return JSON.parse(m) });
