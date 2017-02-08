@@ -2,9 +2,10 @@
 // matrix.init()....
 //
 // have fun
-matrix.on('train', function(){
-  console.log('training started>>>>>')
+//
+matrix.on('train', function(d){
+  console.log('training started>>>>>', d);
   matrix.train('test').then(function(d){
-    console.log('trained!', d)
-  })
-})
+    console.log('trained!', d);
+  });
+});

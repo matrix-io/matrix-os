@@ -5,3 +5,8 @@ description: recognition demo
 keywords: cv
 name: recog
 displayName: Recog
+
+services:
+  re:
+    engine: recognition
+    type: face
