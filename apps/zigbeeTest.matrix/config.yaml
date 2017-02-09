@@ -8,6 +8,20 @@ keywords: 'led, test'
 integrations:
   - zigbee
 
+events:
+  -spin
+  -stop
+  -discover
+  -reset
+  -toggle
+  -off
+  -on
+  -dim
+  -royal
+  -work
+  -wake
+  -sleep
+
 services:
   zigbeeTest:
     engine: detection
