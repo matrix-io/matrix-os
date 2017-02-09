@@ -349,8 +349,9 @@ var msg = [];
         // app to uninstall!
         // refresh app ids in case of recent install
         Matrix.service.manager.stop(app.name, function (err) {
+          console.log('app stopped', app.name)
           Matrix.service.firebase.app.getUserAppIds(function (appIds) {
-            if (_.keys(appIds).indexOf(app.id) !== -1) {
+            if (_.keys(appIds).indexOf(app.id) === -1) {
               console.log('uninstalling ', app.name + '...');
               Matrix.service.manager.uninstall(app.name, function (err) {
                 if (err) return error(err);
