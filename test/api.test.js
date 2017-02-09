@@ -48,6 +48,15 @@ describe('App API', function(){
   describe('init', function(){
     describe('services', function(){
 
+      it('recog', function(done){
+        testAppAPI(
+          'recog', function(msg){
+            assert.equal(msg.type, 'service-init')
+            assert.equal(msg.name, 'recognition')
+            done();
+          });
+      })
+
       it('face', function (done){
         testAppAPI('face', function(msg){
           assert.equal(msg.type, 'service-init')

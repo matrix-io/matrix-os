@@ -30,6 +30,9 @@ process.on('message', function(msg){
     case 'face':
       matrix.init('face');
       break;
+    case 'recog':
+      matrix.init('recognition');
+      break;
     case 'demographics':
       matrix.init('demographics');
       break;
