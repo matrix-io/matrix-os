@@ -6,6 +6,9 @@ keywords: cv
 name: recog
 displayName: Recog
 
+events:
+  - train
+  
 services:
   re:
     engine: recognition
