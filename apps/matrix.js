@@ -321,6 +321,7 @@ var Matrix = {
   on: interAppResponse,
   trigger: doTrigger,
   color: require('tinycolor2'),
+<<<<<<< HEAD
   static: function() {
     console.log('static not implmented uyet')
   },
@@ -330,6 +331,12 @@ var Matrix = {
     }
     return require('./lib/zigbee.js')
   }
+=======
+  static: function(){
+    console.log('static not implmented yet')
+  },
+  train: require('./lib/recognition.js').train
+>>>>>>> App launch
 }
 
 module.exports = Matrix;

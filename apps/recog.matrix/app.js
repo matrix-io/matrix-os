@@ -6,7 +6,7 @@
 
 matrix.on('train', function(d){
   console.log('training started>>>>>', d);
-  matrix.train('test').then(function(d){
+  matrix.init('recognition', { mode: 'train', tag: 'test' }).then(function(d){
     console.log('trained!', d);
   });
 });
