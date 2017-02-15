@@ -497,8 +497,7 @@ function deviceSetup() {
         //Matrix.haltTheMatrix();
       }
     } else {
-      Matrix.service.firebase.device.goOnline();
-      Matrix.service.firebase.device.ping();
+      Matrix.service.firebase.device.goCompleted();
       Matrix.device.drivers.led.stopLoader();
       Matrix.device.drivers.led.clear();
 
@@ -695,8 +694,7 @@ function disconnectFirebase(cb) {
   if (!_.isUndefined(Matrix.service.firebase.initialized) && Matrix.service.firebase.initialized) {
     debug('Disconnecting firebase');
     Matrix.service.manager.resetAppStatus();
-    Matrix.service.firebase.device.ping();
-    Matrix.service.firebase.device.goOffline(cb);
+    cb();
   } else {
     debug('Firebase wasn\'t initialized');
     cb();
