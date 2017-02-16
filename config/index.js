@@ -52,7 +52,7 @@ _.extend(Matrix, configs);
 
 f.jwt = { secret : process.env.JWT_SECRET }
 
-f.version = JSON.parse( fs.readFileSync('./package.json') ).version;
+f.version = JSON.parse( fs.readFileSync(__dirname + '/../package.json') ).version;
 
 f.local = require('./env');
 f.version = JSON.parse(fs.readFileSync(__dirname + '/../package.json')).version;

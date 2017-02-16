@@ -14,7 +14,7 @@ var lib = require('./lib');
 
 var request = require('request');
 var fs = require('fs');
-var DataStore = require('nedb');
+//var DataStore = require('nedb');
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
 
