@@ -136,6 +136,17 @@ Matrix.device.malos.info(function(data) {
   })
 })
 
+<<<<<<< HEAD
+=======
+if ( malosInfoOut.length === 0){
+  Matrix.malosPresent = false;
+} else {
+  Matrix.malosPresent = true;
+}
+
+var jwt = require('jsonwebtoken');
+
+>>>>>>> some updates for mxss connection
 var msg = [];
 
 function upgradeDependencies(cb) {
@@ -288,6 +299,38 @@ function deviceSetup() {
             console.error('Unable to upgrade dependencies:'.red, err);
             process.exit();
           }
+<<<<<<< HEAD
+=======
+        })
+      }).on('error', function (e) {
+        console.error('Upgrade Check Error: ', e)
+      })
+    },
+
+
+    function populateToken(cb) {
+
+      // Expose this function for reconnections
+      Matrix.populateToken = populateToken;
+
+      // Fetches device token from service and saves to local DB
+      Matrix.service.auth.authenticate(function setupDeviceToken(err, token) {
+        if (err) return cb(err);
+
+        debug('PopulateToken - OK>'.green, token);
+
+        var decoded = jwt.decode(token);
+        debug('PopulateToken - decoded>'.yellow, decoded);
+
+        if (!_.has(decoded, 'claims') || !_.has(decoded.claims, 'deviceToken') ||
+            decoded.claims.deviceToken !== true) {
+          return cb('Bad device token');
+        }
+
+        if ( decoded.claims.device.id !== Matrix.deviceId ) {
+          return cb('Device Token Device Id does not match deviceId');
+        }
+>>>>>>> some updates for mxss connection
 
           if (updated) {
             debug('Stopping after upgrade');
@@ -539,6 +582,7 @@ function deviceSetup() {
       //for tests
       Matrix.events.emit('matrix-ready');
 
+<<<<<<< HEAD
       // CLI uses IPC for tests
       if (process.hasOwnProperty('send')) {
         process.send({ 'matrix-ready': true })
@@ -548,6 +592,20 @@ function deviceSetup() {
         const repl = require('repl');
         repl.start('> ').context.Matrix = Matrix;
       }
+=======
+    if ( Matrix.malosPresent === false ){
+      error('No MALOS Available. You may need to restart MALOS or your MATRIX device.'.red)
+    } else {
+      log('MALOS COMPONENTS', malosInfoOut);
+    }
+
+    log( Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
+    log( '['.grey + Matrix.userId.grey + ']'.grey )
+    Matrix.banner();
+    if (msg.length > 0){
+      console.log(msg.join('\n').red);
+    }
+>>>>>>> some updates for mxss connection
 
       Matrix.service.lifecycle.updateLastBootTime();
     }
@@ -618,12 +676,24 @@ module.exports = {
 // Process Level Event Listeners
 
 //Triggered when the application is killed by a [CRTL+C] from keyboard
+<<<<<<< HEAD
 process.on('SIGINT', function() {
   log('Matrix -- CTRL+C kill detected');
+=======
+var keycount = 0;
+process.on("SIGINT", function() {
+  log("Matrix -- CTRL+C kill detected");
+>>>>>>> some updates for mxss connection
   Matrix.device.drivers.led.clear();
   disconnectFirebase(function() {
     process.exit(0);
   });
+  if ( keycount++ > 3 ){
+    process.exit(1);
+  }
+  setTimeout(function(){
+    keycount = 0;
+  }, 1000 );
 });
 
 //Triggered when the application is killed with a -15
