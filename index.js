@@ -443,10 +443,11 @@ var msg = [];
       log('MXSS Connected:'.green, Matrix.streamingServer.grey)
     }
 
-    // Show whats available from MALOS
-
-
-    log('MALOS COMPONENTS', malosInfoOut);
+    if ( malosInfoOut.length > 0 ){
+      log('MALOS COMPONENTS', malosInfoOut);
+    } else {
+      error('MALOS Unavailable'.red)
+    }
     log( Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
     log( '['.grey + Matrix.userId.grey + ']'.grey )
     Matrix.banner();
