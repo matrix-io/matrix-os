@@ -14,9 +14,8 @@ var lib = require('./lib');
 
 var request = require('request');
 var fs = require('fs');
-//var DataStore = require('nedb');
-var events = require('events');
-var eventEmitter = new events.EventEmitter();
+var DataStore = require('nedb');
+var AppStore = new DataStore('application.db')
 
 process.setMaxListeners(50);
 
@@ -30,11 +29,10 @@ var appName = '';
 var storeManager = {
   get: getStore,
   set: setStore,
-  delete: deleteStore,
-  remove: deleteStore
+  delete: deleteStore
 }
 
-function getStore(key){
+function getStore(key, cb){
   var q = {};
   q[key]= { $exists: true };
   AppStore.findOne(q, function(err, resp){
@@ -43,13 +41,13 @@ function getStore(key){
   });
 }
 
-function setStore(key, value){
+function setStore(key, value, cb){
   var obj = {};
   obj[key] = value;
-  AppStore.insert(obj);
+  AppStore.insert(obj, cb);
 }
 
-function deleteStore(key){
+function deleteStore(key, cb){
   var q = {};
   q[key]= { $exists: true };
   AppStore.remove(q, function(err, resp){
@@ -73,19 +71,20 @@ var fileManager = {
         cb(null, body);
       });
     },
-    stream: function(){
-      // are we doing this? yes, for streaming media
-    },
-    remove: function(filename, cb){
+  stream: function(){
+    // are we doing this? yes, for streaming media
+  },
+  remove: function(filename, cb){
     var assetPath = __dirname + '/' + appName + '.matrix/storage/';
     fs.unlink(assetPath + filename, cb);
   },
-  load: function(cb){
+  load: function(filename, cb){
     var assetPath = __dirname + '/' + appName + '.matrix/storage/';
     //todo: handle async and sync based on usage
     fs.readFile(assetPath + filename, cb);
   },
-  list: function(cb){
+  list: function (cb) {
+    var assetPath = __dirname + '/' + appName + '.matrix/storage/';
     fs.readdir(assetPath, function(err, files){
       if (err) error(err);
       cb(null, files);
@@ -137,7 +136,7 @@ function interAppResponse( name, cb ){
   process.on('message', function(m){
       console.log('[M]->app'.blue, m, 'app-'+appName+'-message')
       // is global or app-specific
-    if (m.type === 'trigger' || m.type === "app-message" || m.type === 'app-'+appName+'-message'){
+    if (m.type === 'trigger' || m.type === 'app-message' || m.type === 'app-'+appName+'-message'){
       console.log('[M]->app(msg)'.blue, m)
       if ( _.isString(name) ){
         // if an event name was specified in the on()
@@ -176,13 +175,15 @@ function receiveHandler(cb) {
   });
   }
 
+  /*
   function setupCVHandlers(cb){
-  process.on('message', function(m){
-    if(m.type=== 'cv-data'){
+    process.on('message', function(m){
+      if(m.type=== 'cv-data'){
 
-    }
-  })
-}
+      }
+    })
+  }
+  */
 
 
 function sendConfig(config){
@@ -258,9 +259,10 @@ var Matrix = {
         process.stdout.write(JSON.stringify(o) + '\n')
       }
       console.log('Docker Detected');
-      process.send = function(obj){
+      process.send = function (obj) {
+        var send;
         try {
-          var send = JSON.stringify(obj);
+          send = JSON.stringify(obj);
         } catch (e) {
           console.error('App Data Error', e, obj);
         } finally {
@@ -327,7 +329,7 @@ var Matrix = {
       } else if ( m.type === 'container-status'){
         Matrix.pid = m.pid;
       } else if ( m.type === 'container-ready'){
-        console.log("Matrix App Host Ready!")
+        console.log('Matrix App Host Ready!');
       }
     })
 
@@ -341,6 +343,12 @@ var Matrix = {
   color: require('tinycolor2'),
   static: function(){
     console.log('static not implmented uyet')
+  },
+  zigbee: function(){
+    if ( Matrix.config.integrations.indexOf('zigbee') === -1 ){
+      return console.error('Zigbee is not configured for this application. Please add `zigbee` to config>integrations');
+    }
+    return require('./lib/zigbee.js')
   }
 }
 
@@ -350,8 +358,8 @@ module.exports = Matrix;
 Matrix.ready = function(cb){
   // handle ready
   process.on('message', function(m){
-    if (m.eventType === "container-ready"){
-      console.log("Matrix OS Handlers Ready")
+    if (m.eventType === 'container-ready'){
+      console.log('Matrix OS Handlers Ready');
       cb();
     }
   })

@@ -10,11 +10,6 @@ var checks = {
   connectivity: false,
   update: false
 };
-
-var deviceSetupTimeout;
-var isRegistered = false;
-var connectivityWorks = false;
-var updateValidated = false;
   
 /* GLOBALS */
 _ = require('lodash');
@@ -140,9 +135,7 @@ var msg = [];
 
 //Start MATRIX init flow once a device has been configured
 function deviceSetup() {
-  //This would be required if we use the timeout strategy
-  //if(deviceSetupTimeout) clearTimeout(deviceSetupTimeout);
-
+  
   async.series([
     Matrix.service.token.populate, //Authenticate with current data
 
@@ -191,7 +184,7 @@ function deviceSetup() {
         'https://raw.githubusercontent.com/matrix-io/matrix-os/master/package.json'
         , function (res) {
           // console.log(res);
-          var write = "";
+          var write = '';
           res.on('data', function (c) {
             write += c;
           })
@@ -286,7 +279,7 @@ function deviceSetup() {
       //   debug('device apps records', _.keys(apps));
       // })
 
-      var appsDir = fs.readdirSync('apps');
+      var appsDir = require('fs').readdirSync('apps');
       var appFolders = _.filter(appsDir, function (a) {
         return (a.indexOf('.matrix') > -1)
       });
@@ -352,6 +345,7 @@ function deviceSetup() {
         // app to uninstall!
         // refresh app ids in case of recent install
         Matrix.service.manager.stop(app.name, function (err) {
+          if (err) console.error('Unable to stop app');
           console.log('app stopped', app.name)
           Matrix.service.firebase.app.getUserAppIds(function (appIds) {
             if (_.keys(appIds).indexOf(app.id) === -1) {
@@ -432,7 +426,7 @@ function deviceSetup() {
         // Sample error message in err = 'matrix A network error (such as timeout, interrupted connection or unreachable host) has occurred.'
       } else {
         return error('Bad Matrix Initialization', err);
-        Matrix.haltTheMatrix();
+        //Matrix.haltTheMatrix();
       }
     } else {
       Matrix.service.firebase.device.goOnline();
@@ -458,21 +452,22 @@ function deviceSetup() {
         log('MXSS Connected:'.green, Matrix.streamingServer.grey)
       }
 
-      // Show whats available from MALOS
-
-
+if ( malosInfoOut.length > 0 ){
       log('MALOS COMPONENTS', malosInfoOut);
-      log( Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
-      log( '['.grey + Matrix.userId.grey + ']'.grey )
-      Matrix.banner();
-      if (msg.length > 0) {
-        console.log(msg.join('\n').red);
-      }
+    } else {
+      error('MALOS Unavailable'.red)
+    }
+    log( Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
+    log( '['.grey + Matrix.userId.grey + ']'.grey )
+    Matrix.banner();
+    if (msg.length > 0){
+      console.log(msg.join('\n').red);
+    }
 
-      //if START_APP is set
-      if (Matrix.config.fakeApp) {
-        Matrix.service.manager.start(Matrix.config.fakeApp);
-      }
+    //if START_APP is set
+    if (Matrix.config.fakeApp) {
+      Matrix.service.manager.start(Matrix.config.fakeApp);
+    }
 
       //for tests
       Matrix.events.emit('matrix-ready');
@@ -492,7 +487,7 @@ function deviceSetup() {
   });
 }
 
-readLocalDeviceInfo(function (err) { 
+readLocalDeviceInfo(function (err) {
   if (err) console.log('Error reading local data!');
   //Check if device id and secret are set as env vars
   Matrix.service.token.populate(function (err) { //Authenticate with current data
@@ -534,7 +529,7 @@ readLocalDeviceInfo(function (err) {
       console.log('Starting as device:'.yellow, Matrix.deviceId.green);
       deviceSetup(); //Continue setup process
     } 
-    cb(null, result);
+
   });
 });
 
@@ -556,8 +551,8 @@ module.exports = {
 // Process Level Event Listeners
 
 //Triggered when the application is killed by a [CRTL+C] from keyboard
-process.on("SIGINT", function () {
-  log("Matrix -- CTRL+C kill detected");
+process.on('SIGINT', function () {
+  log('Matrix -- CTRL+C kill detected');
   Matrix.device.drivers.led.clear();
   disconnectFirebase(function () {
     process.exit(0);
@@ -565,14 +560,14 @@ process.on("SIGINT", function () {
 });
 
 //Triggered when the application is killed with a -15
-process.on("SIGTERM", function () {
-  log("Matrix -- Kill detected");
+process.on('SIGTERM', function () {
+  log('Matrix -- Kill detected');
   onKill();
 });
 
 //Triggered when the application is killed by a [CRTL+\] from keyboard
-process.on("SIGQUIT", function () {
-  log("Matrix -- CRTL+\\ kill detected");
+process.on('SIGQUIT', function () {
+  log('Matrix -- CRTL+\\ kill detected');
   onKill();
 });
 
@@ -583,10 +578,10 @@ process.on("SIGQUIT", function () {
 */
 function onKill() {
   if (!destroyingProcess) {
-    log("Matrix -- Application Closing...");
+    log('Matrix -- Application Closing...');
     onDestroy();
   } else {
-    log("Matrix -- Already closing, please wait a few seconds...");
+    log('Matrix -- Already closing, please wait a few seconds...');
   }
 }
 
@@ -598,7 +593,7 @@ function onDestroy(cb) {
   //TODO Consider adding a setTimeout>process.exit if all else fails
   //TODO: Implemenent cleanups
   // kill children apps\
-  debug("DESTROYING".red);
+  debug('DESTROYING'.red);
   destroyingProcess = true;
 
   Matrix.device.drivers.led.clear();
@@ -649,22 +644,22 @@ setInterval(function maintenance() {
 //Also called when a DNS error is presented
 process.on('uncaughtException', function (err) {
   console.error('Uncaught exception: ', err, err.stack);
-  if (err.code && err.code == "ENOTFOUND") {
+  if (err.code && err.code === 'ENOTFOUND') {
     error('ENOTFOUND (Connectivity error)');
     //TODO Attempt to restablish connectivity? Matrix.device.manager.setupDNS();
-  } else if (err.code && err.code == "EAFNOSUPPORT") {
+  } else if (err.code && err.code === 'EAFNOSUPPORT') {
     error('EAFNOSUPPORT (Connectivity error)');
     //TODO Attempt to restablish connectivity? Matrix.device.manager.setupDNS();
-  } else if (err.code && err.code == "ETIMEDOUT") {
+  } else if (err.code && err.code === 'ETIMEDOUT') {
     error('ETIMEDOUT (Connectivity error)');
     //TODO Attempt to restablish connectivity? Matrix.device.manager.setupDNS();
-  } else if (err.code && err.code == "ENOMEM") {
+  } else if (err.code && err.code === 'ENOMEM') {
     error('ENOMEM was detected (Out of memory)');
     // error(err.stack);
-    Matrix.device.system.reboot("Memory clean up");
+    Matrix.device.system.reboot('Memory clean up');
   } else {
     forceExit = true;
-    console.error("UNKNOWN ERROR!".red, err.stack);
+    console.error('UNKNOWN ERROR!'.red, err.stack);
 
     // TODO: bad update? revert to last
     //revert old
@@ -688,7 +683,7 @@ process.on('uncaughtException', function (err) {
 // UTILITY
 function getEnvSettings(env) {
   // Change to production after leaving alpha
-  var environmentSetting = env || process.env['NODE_ENV'] || 'rc';
+  var environmentSetting = env || process.env.NODE_ENV || 'rc';
   var validEnvList = require('fs').readdirSync('./config/env');
 
   if (_.intersection(environmentSetting, validEnvList).length > -1) {

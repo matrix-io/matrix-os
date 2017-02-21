@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.9.0]
 ### Added
+- Zigbee Support
+- Passing image buffers to apps
 - Docker virtualization for apps ( uses DOCKER_APPS flag for now )
 - Wifi Support
 - Basic Python implementation
