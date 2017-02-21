@@ -505,6 +505,7 @@ process.on("SIGINT", function() {
 //Triggered when the application is killed with a -15
 process.on("SIGTERM", function() {
   log("Matrix -- Kill detected");
+  Matrix.device.drivers.led.clear();
   onKill();
 });
 
