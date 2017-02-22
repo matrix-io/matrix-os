@@ -1,5 +1,7 @@
 // Welcome to MatrixOS - A JavaScript environment for IoT Applications
 
+const mosRepoURL = 'https://raw.githubusercontent.com/matrix-io/matrix-os/master/package.json';
+
 // for crash handling
 var destroyingProcess = false;
 var forceExit = false;
@@ -14,8 +16,11 @@ var checks = {
 /* GLOBALS */
 _ = require('lodash');
 async = require('async');
+exec = require('child_process').exec;
 
 require('colors');
+
+var fs = require('fs');
 
 // Logging Utilities
 ulog = function () {
@@ -32,12 +37,12 @@ error = console.error;
 var envSettings = getEnvSettings();
 // if NODE_ENV=dev then set sane debug
 if (envSettings.debug === true && !_.has(process.env, 'DEBUG')) {
-  process.env.DEBUG = '*,-engine*,-Component*,-*led*,-gatt,-bleno,-bt-characteristic';
+  process.env.DEBUG = '*,-engine*,-Component*,-*led*,-gatt,-bleno,-bt-characteristic,-hci';
   // process.env.DEBUG = '*,-engine*';
 }
 
 debugLog = require('debug');
-var debug = debugLog('matrix');
+debug = debugLog('matrix');
 
 // Core Library - Creates Matrix.device, Matrix.event, Matrix.service
 Matrix = require('./lib/index.js');
@@ -95,7 +100,7 @@ Matrix.service.init();
 Matrix.device.init();
 
 // start loading LED animation
-Matrix.device.drivers.led.loader();
+Matrix.device.drivers.led.loader3();
 
 // Node-SDK - Use for API Server Communication
 // SDK is used mainly for AUTH
@@ -133,6 +138,118 @@ Matrix.device.malos.info(function(data){
 
 var msg = [];
 
+function upgradeDependencies(cb) {
+  var err;
+  var updated = false;
+  var deps = [Matrix.service.firebase, Matrix.api, require('matrix-app-config-helper'), require('matrix-eventfilter'), require('pi-wifi')];
+  var olds = _.filter(deps, { current: false });
+
+  if (olds.length > 0) {
+    console.log('Upgrading Dependencies....'.yellow)
+    exec('npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase matrix-eventfilter pi-wifi', function(error, stdout, stderr) {
+      if (error) {
+        console.error('Error upgrading dependencies: '.red + error);
+        err = error;
+      } else {
+        checks.update = true;
+        updated = true;
+        console.log('Upgrade Done!'.green, 'Please restart MATRIX OS.');
+      }
+      cb(err);
+    });
+  } else {
+    console.log('Dependencies up to date.')
+    cb(err, updated);
+  }
+}
+
+function upgradeMOS(cb) { 
+  fs.readFile('package.json', function (err, info) {
+    if (err) {
+      console.error('Unable to read package.json file'.red, err.message);
+      return cb(err, false);
+    }
+        
+    try {
+      info = JSON.parse(info); 
+    } catch (error) {
+      err = error;
+    }
+    if (err) {
+      console.error('Unable to parse package.json file'.red, err.message);
+      return cb(err, false);
+    }
+    var currentVersion = info.version;
+
+    //Check the MOS 
+    function processMOSVersion(remoteVersion, cb) {
+      var err;
+      var updated = false;
+      if (currentVersion === remoteVersion) {
+        debug('Latest Version Installed. ' + currentVersion.grey)
+        checks.update = true;
+        cb(err, updated);
+      } else {
+        //TODO Start Update LED motion
+        updated = true;
+        checks.update = true;
+        console.log('MATRIX OS Upgrade Ready. ' + remoteVersion + ' now available.\n', 'Upgrading MATRIX OS....'.yellow)
+        exec('git submodule update --init', function(error, stdout, stderr) {
+          err = error;
+          if (!err) {
+            console.log('Modules updated... '.green)
+            exec('git fetch && git pull', function (error, stdout, stderr) {
+              err = error;
+              if (!err) {
+                console.log('Main Code updated... '.green)
+                console.log('Upgrade Complete: Restart MATRIX OS... '.green)
+              } else { //Code update failed
+                debug('Error updating main code:\n', err.message);
+                console.error('Unable to update MOS main code'.yellow);
+                console.error('Please make sure you haven\'t modified any files ('.yellow + 'git status'.gray + '), check your connection and try again'.yellow);
+                console.error('Alternatively, you can run MOS without the upgrade check in the meantime \''.yellow + 'NO_UPGRADE=true node index.js'.gray + '\''.yellow);
+              }
+              cb(err);
+            });
+          } else { //Git submodules update failed
+            debug('Error updating modules:\n', err.message);
+            console.error('Unable to update MOS submodules'.yellow);
+            console.error('Try \''.yellow + 'git submodule deinit -f ; git submodule update --init'.gray + '\' to fix your modules'.yellow);
+            console.error('Alternatively, you can run MOS without the upgrade check in the meantime \''.yellow + 'NO_UPGRADE=true node index.js'.gray + '\''.yellow);
+            cb(err, updated);
+          }
+
+        });
+      }
+    }
+
+    //Send the actual request
+    require('https').get( mosRepoURL, function (res) {
+      // console.log(res);
+      var write = '';
+      res.on('data', function (c) { write += c; })
+      res.on('end', function () {
+        //Get version from results
+        var version, err;
+        try {
+          version = JSON.parse(write).version;
+        } catch (error) {
+          console.error('Unable to parse MOS version file:', error.message);
+          err = error;
+        }
+
+        //If successful, process version
+        if (!err) processMOSVersion(version, cb);
+        else return cb(err);
+      });
+    }).on('error', function (e) {
+      console.error('Upgrade Check Error: ', e);
+      return cb(e);
+    })
+
+  });
+}
+
 //Start MATRIX init flow once a device has been configured
 function deviceSetup() {
   
@@ -154,88 +271,32 @@ function deviceSetup() {
 
     // Check for updates to MOS and dependencies **
     function checkUpdates(cb) {
-
       // in case you want to skip the upgrade for whatever reason
       if (process.env.hasOwnProperty('NO_UPGRADE') || checks.update === true) {
         cb();
         return;
       }
 
-      // check depends - eventfilter is used for apps
-      var deps = [Matrix.service.firebase, Matrix.api, require('matrix-app-config-helper'), require('matrix-eventfilter')];
+      // check dependencies - eventfilter is used for apps
+      
+      upgradeDependencies(function (err, updated) {
+        if (err) console.error('Unable to upgrade dependencies:'.red, err);
+        if (updated) process.exit();
+        
+        upgradeMOS(function (err, updated) {
+          if (err) {
+            console.error('Unable to upgrade dependencies:'.red, err);
+            process.exit();
+          }
+          
+          if (updated) {
+            debug('Stopping after upgrade');
+            process.exit();
+          }
+          cb(err);
+        });
 
-      var olds = _.filter(deps, { current: false });
-
-      if (olds.length > 0) {
-        console.log('Upgrading Dependencies....'.yellow)
-        require('child_process').execSync('npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase matrix-eventfilter pi-wifi');
-        console.log('Upgrade Done!'.green, 'Please restart MATRIX OS.');
-        checks.update = true;
-        process.exit();
-      } else {
-        console.log('Dependencies up to date.')
-      }
-
-      // check MATRIX OS
-      var info = JSON.parse(require('fs').readFileSync('package.json'));
-      var currentVersion = info.version;
-
-      require('https').get(
-        'https://raw.githubusercontent.com/matrix-io/matrix-os/master/package.json'
-        , function (res) {
-          // console.log(res);
-          var write = '';
-          res.on('data', function (c) {
-            write += c;
-          })
-          res.on('end', function () {
-            var remoteVersion = JSON.parse(write).version;
-            if (currentVersion === remoteVersion) {
-              debug('Latest Version Installed. ' + currentVersion.grey)
-              checks.update = true;
-              cb()
-            } else {
-              console.log('MATRIX OS Upgrade Ready. ' + remoteVersion + ' now available.\n', 'Upgrading MATRIX OS....'.yellow)
-              var updateError, exitCode;
-              try {
-                exitCode = require('child_process').execSync('git submodule update --init', { stdio: 'ignore' });
-              } catch (err) {
-                updateError = err;
-              }
-              if (!updateError) {
-                console.log('Modules updated... '.green)
-                try {
-                  require('child_process').execSync('git fetch && git pull', { stdio: 'ignore' });
-                } catch (err) {
-                  updateError = err;
-                }
-                if (!updateError) {
-                  console.log('Main Code updated... '.green)
-                  console.log('Upgrade Complete: Restart MATRIX OS... '.green)
-                  checks.update = true;
-                  process.exit();
-                  //cb();
-                } else { //Code update failed
-                  debug('Error updating main code:\n', updateError.message);
-                  console.error('Unable to update MOS main code'.yellow);
-                  console.error('Please make sure you haven\'t modified any files ('.yellow + 'git status'.gray + '), check your connection and try again'.yellow);
-                  console.error('Alternatively, you can run MOS without the upgrade check in the meantime \''.yellow + 'NO_UPGRADE=true node index.js'.gray + '\''.yellow);
-                  checks.update = true;
-                  process.exit();
-                }
-              } else { //Git submodules update failed
-                debug('Error updating modules:\n', updateError.message);
-                console.error('Unable to update MOS submodules'.yellow);
-                console.error('Try \''.yellow + 'git submodule deinit -f ; git submodule update --init'.gray + '\' to fix your modules'.yellow);
-                console.error('Alternatively, you can run MOS without the upgrade check in the meantime \''.yellow + 'NO_UPGRADE=true node index.js'.gray + '\''.yellow);
-                checks.update = true;
-                process.exit();
-              }
-            }
-          })
-        }).on('error', function (e) {
-          console.error('Upgrade Check Error: ', e)
-        })
+      });
     },
 
     function mxssInit(cb) {
@@ -279,53 +340,60 @@ function deviceSetup() {
       //   debug('device apps records', _.keys(apps));
       // })
 
-      var appsDir = require('fs').readdirSync('apps');
-      var appFolders = _.filter(appsDir, function (a) {
-        return (a.indexOf('.matrix') > -1)
-      });
+      
+      fs.readdir('apps', function (err, appsDir) {
+        if (err) {
+          console.error('Unable to read apps folder: ', err.message);
+          return cb(err);
+        }
 
-      console.log('Local Apps:'.yellow, appFolders.join(', ').grey);
-      var fileSystemVariance = appFolders.length - _.map(Matrix.localApps, 'name').length;
-
-      console.log('Local / Installed Δ', fileSystemVariance)
-      if (fileSystemVariance === 0) {
-        debug('Invariance. Clean System. Matching Records')
-      } else {
-        debug('Variance detected between registered applications and applications on device.')
-
-        // sync new installs to device
-        // find apps which aren't on the device yet
-        var newApps = _.pickBy(Matrix.localApps, function (a) {
-          return (appFolders.indexOf(a.name + '.matrix') === -1)
-        })
-
-        _.forIn(newApps, function (a, id) {
-          Matrix.service.firebase.appstore.get(id, function (appRecord) {
-
-            // for version id in firebase 1_0_0
-            var vStr = _.snakeCase(a.version || '1.0.0');
-            var vId = id + '-' + vStr;
-
-            var url = appRecord.versions[vId].file;
-
-            // filter out test appstore records
-            if (url.indexOf('...') === -1) {
-              console.log('=== Offline Installation === ['.yellow, a.name.toUpperCase(), a.version, ']'.yellow)
-
-              Matrix.service.manager.install({
-                name: a.name,
-                version: a.version || '1.0.0',
-                url: url,
-                id: id
-              }, function (err) {
-                //cb(err);
-                if (err) console.log('Local app update failed ', err);
-              });
-            }
-          })
+        var appFolders = _.filter(appsDir, function (a) {
+          return (a.indexOf('.matrix') > -1)
         });
-      }
-      cb();
+
+        console.log('Local Apps:'.yellow, appFolders.join(', ').grey);
+        var fileSystemVariance = appFolders.length - _.map(Matrix.localApps, 'name').length;
+
+        console.log('Local / Installed Δ', fileSystemVariance)
+        if (fileSystemVariance === 0) {
+          debug('Invariance. Clean System. Matching Records')
+        } else {
+          debug('Variance detected between registered applications and applications on device.')
+
+          // sync new installs to device
+          // find apps which aren't on the device yet
+          var newApps = _.pickBy(Matrix.localApps, function (a) {
+            return (appFolders.indexOf(a.name + '.matrix') === -1)
+          })
+
+          _.forIn(newApps, function (a, id) {
+            Matrix.service.firebase.appstore.get(id, function (appRecord) {
+
+              // for version id in firebase 1_0_0
+              var vStr = _.snakeCase(a.version || '1.0.0');
+              var vId = id + '-' + vStr;
+
+              var url = appRecord.versions[vId].file;
+
+              // filter out test appstore records
+              if (url.indexOf('...') === -1) {
+                console.log('=== Offline Installation === ['.yellow, a.name.toUpperCase(), a.version, ']'.yellow)
+
+                Matrix.service.manager.install({
+                  name: a.name,
+                  version: a.version || '1.0.0',
+                  url: url,
+                  id: id
+                }, function (err) {
+                  //cb(err);
+                  if (err) console.log('Local app update failed ', err);
+                });
+              }
+            })
+          });
+        }
+        cb();
+      });
     },
 
     //Stop apps in firebase if started
@@ -431,7 +499,6 @@ function deviceSetup() {
     } else {
       Matrix.service.firebase.device.goOnline();
       Matrix.service.firebase.device.ping();
-
       Matrix.device.drivers.led.stopLoader();
       Matrix.device.drivers.led.clear();
 
@@ -684,8 +751,7 @@ process.on('uncaughtException', function (err) {
 function getEnvSettings(env) {
   // Change to production after leaving alpha
   var environmentSetting = env || process.env.NODE_ENV || 'rc';
-  var validEnvList = require('fs').readdirSync('./config/env');
-
+  var validEnvList = fs.readdirSync('./config/env');
   if (_.intersection(environmentSetting, validEnvList).length > -1) {
     console.log('Environment Selected:'.grey, environmentSetting.blue);
     return require('./config/env/' + environmentSetting + '.js');

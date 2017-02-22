@@ -8,7 +8,7 @@
   "homepage": "http://creator.matrix.one",
   "bugs": "https://github.com/matrix-io/matrix-os/issues/new",
   "scripts": {
-    "debug": "DEBUG=*,-engine*,-Component*,-gatt,-bleno,-bt-characteristic NODE_ENV=dev node index.js",
+    "debug": "DEBUG=*,-engine*,-Component*,-gatt,-bleno,-bt-characteristic,-hci NODE_ENV=dev node index.js",
     "local-debug": "DEBUG=*,-engine*,-Component* NODE_ENV=local node index.js",
     "local": "NODE_ENV=local node index.js",
     "start": "nodemon --watch lib --watch config",
@@ -21,7 +21,7 @@
     "sync": "rsync -e ssh --progress -u package.json index.js pi@m:mos/;rsync -ru -e ssh --progress lib proto config apps test pi@m:mos",
     "sync-local": "rsync -e ssh --progress -u package.json index.js pi@l:matrix-os/;rsync -ru -e ssh --progress lib proto config apps test pi@l:matrix-os",
     "sync-m1": "rsync -e ssh --progress -u package.json index.js pi@m1:matrix-os/;rsync -ru -e ssh --progress lib proto config apps test pi@m1:matrix-os",
-    "device-diagnostics": "DEBUG=*,-engine* START_APP=monitor NODE_ENV=dev node index.js",
+    "device-diagnostics": "DEBUG=*,-engine*,-gatt,-bleno,-bt-characteristic,-hci START_APP=monitor NODE_ENV=dev node index.js",
     "screensaver": "START_APP=life NODE_ENV=dev node index.js",
     "clock": "START_APP=clock NODE_ENV=dev node index.js",
     "apphost-debug": "docker run -v `pwd`/apps:/apps -it matrix-apphost bash",
