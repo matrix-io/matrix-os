@@ -8,7 +8,11 @@
   "homepage": "http://creator.matrix.one",
   "bugs": "https://github.com/matrix-io/matrix-os/issues/new",
   "scripts": {
+<<<<<<< HEAD
     "debug": "DEBUG=*,-engine*,-Component*,-gatt,-bleno,-bt-characteristic,-hci NODE_ENV=dev node index.js",
+=======
+    "debug": "DEBUG=*,-engine*,-Component* NODE_ENV=dev node --debug index.js",
+>>>>>>> Recog Works in apps
     "local-debug": "DEBUG=*,-engine*,-Component* NODE_ENV=local node index.js",
     "local": "NODE_ENV=local node index.js",
     "start": "nodemon --watch lib --watch config",

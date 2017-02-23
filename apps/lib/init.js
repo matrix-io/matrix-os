@@ -2,6 +2,7 @@ var EventFilter = require('matrix-eventfilter').EventFilter;
 var applyFilter = require('matrix-eventfilter').apply;
 
 module.exports = function(name, options){
+  var self = this;
 
   if (_.isUndefined(options)){
     options = {};
@@ -11,7 +12,15 @@ module.exports = function(name, options){
   if ( !_.isNull(name.match(/(face|demographics|recognition|vehicle|palm|pinch|fist|thumb-up)/)) ){
 
     console.log('Initialize Service:'.blue , name);
-    process.send({type:'service-init', name: name, options: options });
+
+    // find the service definition
+    var service = _.map( self.config.services, function(v, k){
+      if ( v.engine === name || v.type === name || k === name ){
+        return { type: v.type, engine: v.engine }
+      }
+    })[0];
+
+    process.send({type:'service-init', name: name, service: service, options: options });
     return {
       then: function(cb){
       process.on('message', function (data) {

@@ -1,0 +1,15 @@
+# do not touch this line
+configVersion: 2
+
+description: recognition demo
+keywords: cv
+name: recog
+displayName: Recog
+
+events:
+  - train
+  
+services:
+  re:
+    engine: recognition
+    type: face

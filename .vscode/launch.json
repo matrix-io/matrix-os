@@ -1,0 +1,43 @@
+{
+  // Use IntelliSense to learn about possible Node.js debug attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+  {
+    "type": "node",
+    "request": "attach",
+    "name": "Attach to Device",
+    "port": 5858,
+    "address": "m",
+    "localRoot": "${workspaceRoot}",
+    "remoteRoot": "mos/",
+    "timeout": 30000
+  },
+    {
+    "type": "node",
+    "request": "launch",
+    "name": "Launch App On Device",
+    "runtimeArgs": [ "--debug" ],
+    "runtimeExecutable": "npm",
+    "cwd": "home/pi/mos/",
+    "port": 5858,
+    "address": "m",
+    "timeout": 30000,
+    "restart": true
+  },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Program",
+      "program": "${workspaceRoot}/index.js",
+      "cwd": "${workspaceRoot}"
+    },
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach to Process",
+      "port": 5858
+    }
+  ]
+}
