@@ -6,28 +6,27 @@
 var ledState = {};
 var arcDeg = 15;
 
-setInterval(function () {
+setInterval(function() {
   arcDeg += 5;
-  if ( arcDeg > 60 ){
+  if (arcDeg > 60) {
     arcDeg = 10;
   }
 
   matrix.led(_.values(ledState)).render();
 }, 1000);
 
-matrix.init('temperature').then(function(data){
+matrix.init('temperature').then(function(data) {
   console.log('temperature >', data);
   matrix.type('temperature').send(data.value);
   ledState.temp = {
     arc: arcDeg,
     color: 'blue',
     start: 1,
-spin: arcDeg
-}
-;
+    spin: arcDeg
+  };
 });
 
-matrix.init('pressure').then(function(data){
+matrix.init('pressure').then(function(data) {
   console.log('pressure >', data);
 
   matrix.type('pressure').send(data.value);
@@ -35,15 +34,15 @@ matrix.init('pressure').then(function(data){
     arc: arcDeg,
     color: 'purple',
     start: 60,
-spin: arcDeg
-};
+    spin: arcDeg
+  };
 
 });
 
 
-matrix.init('gyroscope').then(function(data){
+matrix.init('gyroscope').then(function(data) {
   console.log('gyroscope >', data);
-matrix.type('gyroscope').send(data);
+  matrix.type('gyroscope').send(data);
   ledState.g = {
     arc: arcDeg,
     color: 'green',
@@ -56,7 +55,7 @@ matrix.type('gyroscope').send(data);
 
 
 
-matrix.init('uv').then(function(data){
+matrix.init('uv').then(function(data) {
   console.log('uv >', data);
   matrix.type('uv').send(data.value);
   ledState.u = {
@@ -69,7 +68,7 @@ matrix.init('uv').then(function(data){
 
 
 
-matrix.init('altitude').then(function(data){
+matrix.init('altitude').then(function(data) {
   console.log('altitude >', data);
   matrix.type('altitude').send(data.value);
   ledState.a = {
@@ -82,7 +81,7 @@ matrix.init('altitude').then(function(data){
 
 
 
-matrix.init('humidity').then(function(data){
+matrix.init('humidity').then(function(data) {
   console.log('humidity >', data);
 
   matrix.type('humidity').send(data.value);
