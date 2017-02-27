@@ -499,6 +499,10 @@ function deviceSetup() {
     } else {
       Matrix.service.firebase.device.goOnline();
       Matrix.service.firebase.device.ping();
+
+      //get network information
+      Matrix.device.network.start();
+
       Matrix.device.drivers.led.stopLoader();
       Matrix.device.drivers.led.clear();
 
@@ -665,6 +669,7 @@ function onDestroy(cb) {
   destroyingProcess = true;
 
   Matrix.device.drivers.led.clear();
+  Matrix.device.network.stop();
   if (!forceExit) {
     disconnectFirebase(function() {
       async.series([
