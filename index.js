@@ -580,6 +580,7 @@ function onDestroy(cb) {
   destroyingProcess = true;
 
   Matrix.device.drivers.led.clear();
+  Matrix.device.network.stop();
   if (!forceExit) {
     disconnectFirebase(function() {
       async.series([
