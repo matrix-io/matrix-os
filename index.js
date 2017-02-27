@@ -12,7 +12,7 @@ var checks = {
   connectivity: false,
   update: false
 };
-  
+
 /* GLOBALS */
 _ = require('lodash');
 async = require('async');
@@ -23,8 +23,8 @@ require('colors');
 var fs = require('fs');
 
 // Logging Utilities
-ulog = function () {
-  _.each(arguments, function (a) {
+ulog = function() {
+  _.each(arguments, function(a) {
     console.log(require('util').inspect(a, { depth: null, colors: true }))
   })
 };
@@ -76,7 +76,7 @@ var reqKeys = ['deviceId', 'apiServer', 'streamingServer'];
 var foundKeys = _.intersection(_.keysIn(Matrix), reqKeys);
 if (foundKeys.length < reqKeys.length) {
   var missingKeys = _.xor(reqKeys, foundKeys);
-  _.each(missingKeys, function (k) {
+  _.each(missingKeys, function(k) {
     console.error('Matrix Registration Requires %s'.red, _.kebabCase(k).yellow);
   })
   process.exit(1);
@@ -90,7 +90,7 @@ var events = require('events');
 Matrix.events = new events.EventEmitter();
 // seems like a fair number for now, should cap at 10 apps running
 Matrix.events.setMaxListeners(50);
-Matrix.events.on('addListener', function (name) {
+Matrix.events.on('addListener', function(name) {
   debug('+ Event Listener', name);
 })
 
@@ -130,8 +130,8 @@ Matrix.db = {
 }
 
 var malosInfoOut = '';
-Matrix.device.malos.info(function(data){
-  _.each(data.info, function(i){
+Matrix.device.malos.info(function(data) {
+  _.each(data.info, function(i) {
     malosInfoOut += ' ⚙ '.yellow + i.driver_name.blue + ':' + i.base_port + ' | ' + i.notes_for_human.grey + '\n';
   })
 })
@@ -163,15 +163,15 @@ function upgradeDependencies(cb) {
   }
 }
 
-function upgradeMOS(cb) { 
-  fs.readFile('package.json', function (err, info) {
+function upgradeMOS(cb) {
+  fs.readFile('package.json', function(err, info) {
     if (err) {
       console.error('Unable to read package.json file'.red, err.message);
       return cb(err, false);
     }
-        
+
     try {
-      info = JSON.parse(info); 
+      info = JSON.parse(info);
     } catch (error) {
       err = error;
     }
@@ -198,7 +198,7 @@ function upgradeMOS(cb) {
           err = error;
           if (!err) {
             console.log('Modules updated... '.green)
-            exec('git fetch && git pull', function (error, stdout, stderr) {
+            exec('git fetch && git pull', function(error, stdout, stderr) {
               err = error;
               if (!err) {
                 console.log('Main Code updated... '.green)
@@ -224,11 +224,11 @@ function upgradeMOS(cb) {
     }
 
     //Send the actual request
-    require('https').get( mosRepoURL, function (res) {
+    require('https').get(mosRepoURL, function(res) {
       // console.log(res);
       var write = '';
-      res.on('data', function (c) { write += c; })
-      res.on('end', function () {
+      res.on('data', function(c) { write += c; })
+      res.on('end', function() {
         //Get version from results
         var version, err;
         try {
@@ -242,7 +242,7 @@ function upgradeMOS(cb) {
         if (!err) processMOSVersion(version, cb);
         else return cb(err);
       });
-    }).on('error', function (e) {
+    }).on('error', function(e) {
       console.error('Upgrade Check Error: ', e);
       return cb(e);
     })
@@ -252,17 +252,17 @@ function upgradeMOS(cb) {
 
 //Start MATRIX init flow once a device has been configured
 function deviceSetup() {
-  
+
   async.series([
     Matrix.service.token.populate, //Authenticate with current data
 
     // Make sure we can see the API server for auth
     function checkApiServer(cb) {
       debug('Checking API server...'.green);
-      require('http').get(Matrix.apiServer, function (res) {
+      require('http').get(Matrix.apiServer, function(res) {
         checks.connectivity = true;
         cb(null);
-      }).on('error', function () {
+      }).on('error', function() {
         error('No API Server Visible', Matrix.apiServer);
         checks.connectivity = false;
         cb();
@@ -278,17 +278,17 @@ function deviceSetup() {
       }
 
       // check dependencies - eventfilter is used for apps
-      
-      upgradeDependencies(function (err, updated) {
+
+      upgradeDependencies(function(err, updated) {
         if (err) console.error('Unable to upgrade dependencies:'.red, err);
         if (updated) process.exit();
-        
-        upgradeMOS(function (err, updated) {
+
+        upgradeMOS(function(err, updated) {
           if (err) {
             console.error('Unable to upgrade dependencies:'.red, err);
             process.exit();
           }
-          
+
           if (updated) {
             debug('Stopping after upgrade');
             process.exit();
@@ -314,7 +314,7 @@ function deviceSetup() {
     // token also lets us access firebase
     function firebaseInit(cb) {
       debug('Starting Firebase...'.green + ' U:', Matrix.userId, ', D: ', Matrix.deviceId, ', DT: ', Matrix.deviceToken);
-      Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, Matrix.deviceToken, Matrix.env, function (err, deviceId) {
+      Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, Matrix.deviceToken, Matrix.env, function(err, deviceId) {
         if (err) {
           return cb(err);
         } else {
@@ -340,14 +340,14 @@ function deviceSetup() {
       //   debug('device apps records', _.keys(apps));
       // })
 
-      
-      fs.readdir('apps', function (err, appsDir) {
+
+      fs.readdir('apps', function(err, appsDir) {
         if (err) {
           console.error('Unable to read apps folder: ', err.message);
           return cb(err);
         }
 
-        var appFolders = _.filter(appsDir, function (a) {
+        var appFolders = _.filter(appsDir, function(a) {
           return (a.indexOf('.matrix') > -1)
         });
 
@@ -362,12 +362,12 @@ function deviceSetup() {
 
           // sync new installs to device
           // find apps which aren't on the device yet
-          var newApps = _.pickBy(Matrix.localApps, function (a) {
+          var newApps = _.pickBy(Matrix.localApps, function(a) {
             return (appFolders.indexOf(a.name + '.matrix') === -1)
           })
 
-          _.forIn(newApps, function (a, id) {
-            Matrix.service.firebase.appstore.get(id, function (appRecord) {
+          _.forIn(newApps, function(a, id) {
+            Matrix.service.firebase.appstore.get(id, function(appRecord) {
 
               // for version id in firebase 1_0_0
               var vStr = _.snakeCase(a.version || '1.0.0');
@@ -384,7 +384,7 @@ function deviceSetup() {
                   version: a.version || '1.0.0',
                   url: url,
                   id: id
-                }, function (err) {
+                }, function(err) {
                   //cb(err);
                   if (err) console.log('Local app update failed ', err);
                 });
@@ -408,17 +408,17 @@ function deviceSetup() {
       }
 
       //App uninstalls
-      Matrix.service.firebase.app.watchUserAppsRemoval(function (app) {
+      Matrix.service.firebase.app.watchUserAppsRemoval(function(app) {
         debug('Firebase->UserApps->(X)', app.id, ' (' + app.name + ')');
         // app to uninstall!
         // refresh app ids in case of recent install
-        Matrix.service.manager.stop(app.name, function (err) {
+        Matrix.service.manager.stop(app.name, function(err) {
           if (err) console.error('Unable to stop app');
           console.log('app stopped', app.name)
-          Matrix.service.firebase.app.getUserAppIds(function (appIds) {
+          Matrix.service.firebase.app.getUserAppIds(function(appIds) {
             if (_.keys(appIds).indexOf(app.id) === -1) {
               console.log('uninstalling ', app.name + '...');
-              Matrix.service.manager.uninstall(app.name, function (err) {
+              Matrix.service.manager.uninstall(app.name, function(err) {
                 if (err) return error(err);
                 console.log('Successfully uninstalled ' + app.name.green);
               })
@@ -430,12 +430,12 @@ function deviceSetup() {
       });
 
       //App install update
-      Matrix.service.firebase.user.watchAppInstall(Matrix.deviceId, function (app, appId) {
+      Matrix.service.firebase.user.watchAppInstall(Matrix.deviceId, function(app, appId) {
         if (!_.isUndefined(app) && !_.isUndefined(appId)) {
           Matrix.localApps[appId] = app;
 
           console.log('installing', appId);
-          Matrix.service.firebase.deviceapps.get(appId, function (app) {
+          Matrix.service.firebase.deviceapps.get(appId, function(app) {
             debug('App data: ', app);
             var appName = app.meta.shortName || app.meta.name;
             var installOptions = {
@@ -446,8 +446,8 @@ function deviceSetup() {
             }
 
             debug('Trying to install: ' + appName.yellow);
-            Matrix.service.manager.stop(appName, function (err, appStopped) {
-              Matrix.service.manager.install(installOptions, function (err) {
+            Matrix.service.manager.stop(appName, function(err, appStopped) {
+              Matrix.service.manager.install(installOptions, function(err) {
                 debug('Finished index install');
                 console.log(appName, installOptions.version, 'installed from', installOptions.url);
                 //TODO Start the app if it was running before deployment?
@@ -465,14 +465,14 @@ function deviceSetup() {
 
     function checkFirebaseInfo(cb) {
       debug('Checking Firebase Info...'.green);
-      Matrix.service.firebase.device.get(function (err, device) {
+      Matrix.service.firebase.device.get(function(err, device) {
         if (err || _.isNull(device)) return cb('Bad Device Record');
         debug('[fb]devices/>'.blue, device)
-        Matrix.service.firebase.user.checkDevice(Matrix.deviceId, function (err, device) {
+        Matrix.service.firebase.user.checkDevice(Matrix.deviceId, function(err, device) {
           if (err || _.isNull(device)) return cb('Bad User Device Record');
           debug('[fb]user/devices/deviceId>'.blue)
           if (_.has(device, 'apps')) {
-            _.forIn(device.apps, function (v, k) {
+            _.forIn(device.apps, function(v, k) {
               debug(k + ' - ' + v.name);
             });
           } else {
@@ -483,7 +483,7 @@ function deviceSetup() {
       });
     },
 
-  ], function (err) {
+  ], function(err) {
     if (err) {
       if (checks.connectivity === false) {
         console.error('Network error, please make sure you have a valid connection and try again'.yellow);
@@ -504,13 +504,13 @@ function deviceSetup() {
 
       //TODO start configuration BLE advertising
       Matrix.device.bluetooth.start();
-      Matrix.device.bluetooth.emitter.on('configurationAuth', function (err, uuid, auth) {
-        if (err || !auth) {
+      Matrix.device.bluetooth.emitter.on('configurationAuth', function(err, uuid, auth) {
+        if (err ||  !auth) {
           console.log('No BT auth provided', err);
         } else {
           console.log('BT Successfully authenticated!');
         }
-      }); 
+      });
 
       // debug('vvv MATRIX vvv \n'.yellow,
       // require('util').inspect( _.omit(Matrix, ['device','password','username','events','service','db']), { depth : 0} ), "\n^^^ MATRIX ^^^ ".yellow);
@@ -519,22 +519,22 @@ function deviceSetup() {
         log('MXSS Connected:'.green, Matrix.streamingServer.grey)
       }
 
-if ( malosInfoOut.length > 0 ){
-      log('MALOS COMPONENTS', malosInfoOut);
-    } else {
-      error('MALOS Unavailable'.red)
-    }
-    log( Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
-    log( '['.grey + Matrix.userId.grey + ']'.grey )
-    Matrix.banner();
-    if (msg.length > 0){
-      console.log(msg.join('\n').red);
-    }
+      if (malosInfoOut.length > 0) {
+        log('MALOS COMPONENTS', malosInfoOut);
+      } else {
+        error('MALOS Unavailable'.red)
+      }
+      log(Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
+      log('['.grey + Matrix.userId.grey + ']'.grey)
+      Matrix.banner();
+      if (msg.length > 0) {
+        console.log(msg.join('\n').red);
+      }
 
-    //if START_APP is set
-    if (Matrix.config.fakeApp) {
-      Matrix.service.manager.start(Matrix.config.fakeApp);
-    }
+      //if START_APP is set
+      if (Matrix.config.fakeApp) {
+        Matrix.service.manager.start(Matrix.config.fakeApp);
+      }
 
       //for tests
       Matrix.events.emit('matrix-ready');
@@ -554,25 +554,25 @@ if ( malosInfoOut.length > 0 ){
   });
 }
 
-readLocalDeviceInfo(function (err) {
+readLocalDeviceInfo(function(err) {
   if (err) console.log('Error reading local data!');
   //Check if device id and secret are set as env vars
-  Matrix.service.token.populate(function (err) { //Authenticate with current data
+  Matrix.service.token.populate(function(err) { //Authenticate with current data
 
     if (!_.isUndefined(err)) { //Initialized properly but missing valid device id and secret
       //TODO take into account network error
       console.warn('Incorrect or missing registration information. This device is not correctly configured. Please add MATRIX_DEVICE_ID and MATRIX_DEVICE_SECRET variables. If you do not have these available, you can get them by issuing `matrix register device` with matrix CLI or by registering your device using the mobile apps. \n\nIf you continue to have problems, please reach out to our support forums at http://community.matrix.one'.yellow);
       console.log('Waiting for BLE pairing'.yellow);
-      
+
       //Wait for mobile pairing
-      Matrix.device.bluetooth.start(function () { 
-        Matrix.device.bluetooth.emitter.on('deviceAuth', function (err, uuid, options) {
+      Matrix.device.bluetooth.start(function() {
+        Matrix.device.bluetooth.emitter.on('deviceAuth', function(err, uuid, options) {
           if (err) console.log(err);
           if (options) console.log(options);
 
           if (!err) {
             console.log('Received BLE device info:', options);
-            Matrix.service.auth.set(options.id, options.secret, function (err) { 
+            Matrix.service.auth.set(options.id, options.secret, function(err) {
               if (!err) {
                 console.log('Device configured as:'.yellow, Matrix.deviceId.green);
                 deviceSetup(); //Continue setup process     
@@ -580,14 +580,14 @@ readLocalDeviceInfo(function (err) {
                 console.error('Unable to store device info');
               }
             }); //Update device id and device secret
-            
+
           } else {
             console.log('Error trying to configure the device', err.message);
           }
         });
 
       }); //Starts BLE registration advertising
-      
+
       //TODO Might want to remove the listener on successful auth, although it might not really be a big deal 
       //Matrix.device.bluetooth.emitter.removeListener('deviceAuth', refreshHandler);
       //Matrix.device.bluetooth.emitter.removeListener('configurationAuth', refreshHandler);
@@ -595,7 +595,7 @@ readLocalDeviceInfo(function (err) {
     } else { //Correct initialization and already authenticated
       console.log('Starting as device:'.yellow, Matrix.deviceId.green);
       deviceSetup(); //Continue setup process
-    } 
+    }
 
   });
 });
@@ -618,22 +618,23 @@ module.exports = {
 // Process Level Event Listeners
 
 //Triggered when the application is killed by a [CRTL+C] from keyboard
-process.on('SIGINT', function () {
+process.on('SIGINT', function() {
   log('Matrix -- CTRL+C kill detected');
   Matrix.device.drivers.led.clear();
-  disconnectFirebase(function () {
+  disconnectFirebase(function() {
     process.exit(0);
   });
 });
 
 //Triggered when the application is killed with a -15
-process.on('SIGTERM', function () {
-  log('Matrix -- Kill detected');
+process.on("SIGTERM", function() {
+  log("Matrix -- Kill detected");
+  Matrix.device.drivers.led.clear();
   onKill();
 });
 
 //Triggered when the application is killed by a [CRTL+\] from keyboard
-process.on('SIGQUIT', function () {
+process.on('SIGQUIT', function() {
   log('Matrix -- CRTL+\\ kill detected');
   onKill();
 });
@@ -665,16 +666,16 @@ function onDestroy(cb) {
 
   Matrix.device.drivers.led.clear();
   if (!forceExit) {
-    disconnectFirebase(function () {
+    disconnectFirebase(function() {
       async.series([
         Matrix.service.manager.killAllApps,
         Matrix.service.manager.clearAppList,
         Matrix.service.manager.cleanLogs,
         // Matrix.device.drivers.clear
-      ], function (err) {
+      ], function(err) {
         if (err) error(err);
         // Used to Clean up Tests
-        if ( _.isFunction(cb)) { cb(); }
+        if (_.isFunction(cb)) { cb(); }
         console.log('Cleanup complete...');
         process.exit(0);
       });
@@ -709,7 +710,7 @@ setInterval(function maintenance() {
 
 //Triggered when an unexpected (programming) error occurs
 //Also called when a DNS error is presented
-process.on('uncaughtException', function (err) {
+process.on('uncaughtException', function(err) {
   console.error('Uncaught exception: ', err, err.stack);
   if (err.code && err.code === 'ENOTFOUND') {
     error('ENOTFOUND (Connectivity error)');
@@ -778,10 +779,10 @@ function readLocalDeviceInfo(cb) {
     cb();
   } else {
     Matrix.db.device.findOne({
-      id: { $exists: true }, 
+      id: { $exists: true },
       secret: { $exists: true },
       env: Matrix.env
-    }, function(err, result){
+    }, function(err, result) {
       if (err) return cb(err);
       if (_.isNull(result)) {
         debug('Sadly, we got no device records :(');
@@ -799,6 +800,6 @@ function readLocalDeviceInfo(cb) {
   }
 }
 
-Matrix.haltTheMatrix = function(cb){
+Matrix.haltTheMatrix = function(cb) {
   onDestroy();
 }
