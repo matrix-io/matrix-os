@@ -464,6 +464,9 @@ async.series([
     Matrix.device.drivers.led.stopLoader();
     Matrix.device.drivers.led.clear();
 
+    //get network information
+    Matrix.device.network.start();
+
     //TODO start configuration BLE advertising
     Matrix.device.bluetooth.start();
     Matrix.device.bluetooth.emitter.on('configurationAuth', function(err, uuid, auth) {
@@ -580,6 +583,7 @@ function onDestroy(cb) {
   destroyingProcess = true;
 
   Matrix.device.drivers.led.clear();
+  Matrix.device.network.stop();
   if (!forceExit) {
     disconnectFirebase(function() {
       async.series([
