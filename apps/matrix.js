@@ -1,4 +1,3 @@
-
 // NOTE: Required by each app, so these will be seperate. Shared resources and events are managed by the Matrix one layer up.
 // see lib/services/manager
 
@@ -16,12 +15,10 @@ var request = require('request');
 var fs = require('fs');
 var DataStore = require('nedb');
 var AppStore = new DataStore('application.db')
-var events = require('events');
-var eventEmitter = new events.EventEmitter();
 
 process.setMaxListeners(50);
 
-error = function(){
+error = function() {
   console.error('[(%s)]⁊', appName);
   console.error.apply(null, arguments);
 }
@@ -34,25 +31,25 @@ var storeManager = {
   delete: deleteStore
 }
 
-function getStore(key, cb){
+function getStore(key, cb) {
   var q = {};
-  q[key]= { $exists: true };
-  AppStore.findOne(q, function(err, resp){
+  q[key] = { $exists: true };
+  AppStore.findOne(q, function(err, resp) {
     if (err) cb(err);
     cb(null, resp);
   });
 }
 
-function setStore(key, value, cb){
+function setStore(key, value, cb) {
   var obj = {};
   obj[key] = value;
   AppStore.insert(obj, cb);
 }
 
-function deleteStore(key, cb){
+function deleteStore(key, cb) {
   var q = {};
-  q[key]= { $exists: true };
-  AppStore.remove(q, function(err, resp){
+  q[key] = { $exists: true };
+  AppStore.remove(q, function(err, resp) {
     if (err) cb(err);
     cb(null, resp);
   });
@@ -60,33 +57,34 @@ function deleteStore(key, cb){
 
 
 var fileManager = {
-    save: function(url, filename, cb){
-      var assetPath = __dirname + '/' + appName + '.matrix/storage/';
-      request.get(url, function(err, resp, body){
-        if (err) error(err);
-        try {
-          fs.accessSync(assetPath)
-        } catch (e) {
-          fs.mkdirSync(assetPath);
-        }
-        fs.writeFileSync(assetPath + filename, body);
-        cb(null, body);
-      });
-    },
-  stream: function(){
+  save: function(url, filename, cb) {
+    var assetPath = __dirname + '/' + appName + '.matrix/storage/';
+    request.get(url, function(err, resp, body) {
+      if (err) error(err);
+      try {
+        fs.accessSync(assetPath)
+      } catch (e) {
+        fs.mkdirSync(assetPath);
+      }
+      fs.writeFileSync(assetPath + filename, body);
+      cb(null, body);
+    });
+  },
+  stream: function() {
     // are we doing this? yes, for streaming media
   },
-  remove: function(filename, cb){
+  remove: function(filename, cb) {
     var assetPath = __dirname + '/' + appName + '.matrix/storage/';
     fs.unlink(assetPath + filename, cb);
   },
-  load: function(cb){
+  load: function(filename, cb) {
     var assetPath = __dirname + '/' + appName + '.matrix/storage/';
     //todo: handle async and sync based on usage
     fs.readFile(assetPath + filename, cb);
   },
-  list: function(cb){
-    fs.readdir(assetPath, function(err, files){
+  list: function(cb) {
+    var assetPath = __dirname + '/' + appName + '.matrix/storage/';
+    fs.readdir(assetPath, function(err, files) {
       if (err) error(err);
       cb(null, files);
     });
@@ -96,22 +94,22 @@ var fileManager = {
 var matrixDebug = false;
 
 // For sending events to other apps
-function interAppNotification( appName, eventName, p ){
+function interAppNotification(appName, eventName, p) {
   var payload = p;
   var type;
   var event;
 
-  if (arguments.length === 1){
+  if (arguments.length === 1) {
     // global form
     type = 'app-message';
     payload = arguments[0]
-  } else if ( arguments.length === 2){
+  } else if (arguments.length === 2) {
     //app specific
-    type = 'app-'+ appName +'-message';
+    type = 'app-' + appName + '-message';
     payload = arguments[1];
   } else {
     // app specific event namespaced
-    type = 'app-'+ appName +'-message';
+    type = 'app-' + appName + '-message';
     event = eventName;
   }
 
@@ -120,28 +118,28 @@ function interAppNotification( appName, eventName, p ){
     payload: payload
   }
 
-  if ( !_.isUndefined(event)){
-    _.extend(sendObj, {event: event});
+  if (!_.isUndefined(event)) {
+    _.extend(sendObj, { event: event });
   }
 
   process.send(sendObj);
 }
 
 // For recieving events from other Apps
-function interAppResponse( name, cb ){
-  if (_.isUndefined(cb)){
+function interAppResponse(name, cb) {
+  if (_.isUndefined(cb)) {
     // for globals
     cb = name;
   }
 
-  process.on('message', function(m){
-      console.log('[M]->app'.blue, m, 'app-'+appName+'-message')
+  process.on('message', function(m) {
+    console.log('[M]->app'.blue, m, 'app-' + appName + '-message')
       // is global or app-specific
-    if (m.type === 'trigger' || m.type === "app-message" || m.type === 'app-'+appName+'-message'){
+    if (m.type === 'trigger' || m.type === 'app-message' || m.type === 'app-' + appName + '-message') {
       console.log('[M]->app(msg)'.blue, m)
-      if ( _.isString(name) ){
+      if (_.isString(name)) {
         // if an event name was specified in the on()
-        if ( m.eventName == name ){
+        if (m.eventName == name) {
           cb(m);
         }
         // no event name match, no fire listener
@@ -174,59 +172,42 @@ function receiveHandler(cb) {
     //handle exit
     console.log(appName, ': exit', arguments);
   });
-  }
-
-  function setupCVHandlers(cb){
-  process.on('message', function(m){
-    if(m.type=== 'cv-data'){
-
-    }
-  })
 }
 
 
-function sendConfig(config){
+function sendConfig(config) {
   process.send({
     type: 'app-config',
     payload: config || Matrix.config
   });
 }
 
-function doTrigger(group, payload){
+function doTrigger(group, payload) {
 
   // assume if no group, hit all of same group
   process.send({
-    type:'trigger',
+    type: 'trigger',
     group: group,
-    payload:payload
+    payload: payload
   })
 }
 
 var Matrix = {
   appName: appName,
-  name: function(name){ appName = name; return appName; },
+  name: function(name) { appName = name; return appName; },
   _: _,
   camera: lib.cv,
   request: request,
   led: require('./lib/led'),
   audio: {
-    say: function(msg){
+    say: function(msg) {
       console.log('say() is not implemented yet')
     },
-    play: function(file, volume){
-      console.log('play() is not implemented yet' )
-      // var assetPath = __dirname + '/' + appName + '.matrix/storage/';
-      // var volume = ( !_.isUndefined(volume)) ? volume: 80;
-      // require('loudness').setVolume( volume, function(){});
-      // var soundPlayer = new player( assetPath + file );
-      // soundPlayer.play( function(err, played){
-      //   if (err) error(err);
-      //   console.log('played');
-      // });
-      // return soundPlayer;
+    play: function(file, volume) {
+      console.log('play() is not implemented yet')
     }
   },
-  send: function(message){
+  send: function(message) {
     require('./lib/send.js').apply(Matrix, [message]);
   },
   type: function(type) {
@@ -240,45 +221,46 @@ var Matrix = {
   servo: require('./lib/gpio.js').servo,
   file: fileManager,
   emit: interAppNotification,
-  startApp: function(name, config){
+  startApp: function(name, config) {
 
 
     // If forked, send is available.
     // Docker means no .send. Lets make a send to forward to stdout
     // Stupid thing will also trigger on tests, lets not do that
-    if (  !_.isFunction(process.send) && !process.env.hasOwnProperty('TEST_MODE') ){
+    if (!_.isFunction(process.send) && !process.env.hasOwnProperty('TEST_MODE')) {
       // Need to override log for Docker compatibility.
-      console.log = function(){
+      console.log = function() {
         var o = {
           type: 'log',
-          payload : _.map(arguments, (a) => {
-            return ( _.isPlainObject(a)) ? JSON.stringify(a) : a;
+          payload: _.map(arguments, (a) => {
+            return (_.isPlainObject(a)) ? JSON.stringify(a) : a;
           }).join(' ')
         }
         process.stdout.write(JSON.stringify(o) + '\n')
       }
       console.log('Docker Detected');
-      process.send = function(obj){
-        try {
-          var send = JSON.stringify(obj);
-        } catch (e) {
-          console.error('App Data Error', e, obj);
-        } finally {
-          process.stdout.write(`${send}\n`);
+      process.send = function(obj) {
+          var send;
+          try {
+            send = JSON.stringify(obj);
+          } catch (e) {
+            console.error('App Data Error', e, obj);
+          } finally {
+            process.stdout.write(`${send}\n`);
+          }
         }
-      }
-      // if forked, stdin is piped to message events
-      // Docker needs override
-      process.stdin.on('readable', function(){
+        // if forked, stdin is piped to message events
+        // Docker needs override
+      process.stdin.on('readable', function() {
         const msg = process.stdin.read();
         // multiple msgs might be sent in one event
-        if ( !_.isNull(msg)){
+        if (!_.isNull(msg)) {
           var msgs = _.compact(msg.toString().split('\n'));
           var msgObjs = [];
           try {
             // parse each one independently! - woot working
             msgObjs = msgs.map((m) => { return JSON.parse(m) });
-          } catch (e){
+          } catch (e) {
             console.error('App Data In Error:', e, msgs)
           } finally {
             // emit one event for each msg found
@@ -298,36 +280,36 @@ var Matrix = {
 
     // Config is written as JSON by MOS -
     try {
-      if ( _.isUndefined(config) ){
-        Matrix.config = JSON.parse( require('fs').readFileSync( __dirname + '/'+ name +'.matrix/config.json'));
+      if (_.isUndefined(config)) {
+        Matrix.config = JSON.parse(require('fs').readFileSync(__dirname + '/' + name + '.matrix/config.json'));
       } else {
         // for testing
         Matrix.config = config;
       }
-    } catch(e){
+    } catch (e) {
       return error(appName, 'invalid config.json', e);
     }
 
-    if ( Matrix.config.name !== appName ){
-      return console.error(appName + '.matrix is not the same as config name:', Matrix.config.name );
+    if (Matrix.config.name !== appName) {
+      return console.error(appName + '.matrix is not the same as config name:', Matrix.config.name);
     }
 
     // make configuration available globally `Matrix.services.vehicle.engine`
-    _.each( _.keys(Matrix.config.settings), function(k){
-        Matrix[k] = Matrix.config.settings[k];
+    _.each(_.keys(Matrix.config.settings), function(k) {
+      Matrix[k] = Matrix.config.settings[k];
     })
 
     // generic message handlers
-    process.on('message', function(m){
-      if ( _.isString(m)){
+    process.on('message', function(m) {
+      if (_.isString(m)) {
         m = JSON.stringify(m.toString())
       }
-      if (m.type === 'request-config'){
+      if (m.type === 'request-config') {
         sendConfig();
-      } else if ( m.type === 'container-status'){
+      } else if (m.type === 'container-status') {
         Matrix.pid = m.pid;
-      } else if ( m.type === 'container-ready'){
-        console.log("Matrix App Host Ready!")
+      } else if (m.type === 'container-ready') {
+        console.log('Matrix App Host Ready!');
       }
     })
 
@@ -339,11 +321,11 @@ var Matrix = {
   on: interAppResponse,
   trigger: doTrigger,
   color: require('tinycolor2'),
-  static: function(){
+  static: function() {
     console.log('static not implmented uyet')
   },
-  zigbee: function(){
-    if ( Matrix.config.integrations.indexOf('zigbee') === -1 ){
+  zigbee: function() {
+    if (Matrix.config.integrations.indexOf('zigbee') === -1) {
       return console.error('Zigbee is not configured for this application. Please add `zigbee` to config>integrations');
     }
     return require('./lib/zigbee.js')
@@ -353,11 +335,11 @@ var Matrix = {
 module.exports = Matrix;
 
 
-Matrix.ready = function(cb){
+Matrix.ready = function(cb) {
   // handle ready
-  process.on('message', function(m){
-    if (m.eventType === "container-ready"){
-      console.log("Matrix OS Handlers Ready")
+  process.on('message', function(m) {
+    if (m.eventType === 'container-ready') {
+      console.log('Matrix OS Handlers Ready');
       cb();
     }
   })

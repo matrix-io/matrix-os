@@ -27,15 +27,19 @@
   "-W058": true,
   "-W003": true,
   "globals": {
+    "async": true,
     "angular": true,
     "app" : true,
     "$": true,
     "_": true,
+    "debug": true,
     "debugLog": true,
+    "exec": true,
     "Matrix": true,
     "error": true,
     "log": true,
     "warn": true,
+    "ulog": true,
     "matrix": true
   }
 }
