@@ -1,3 +1,7 @@
+matrix.on('reset', function(){
+  matrix.service('recognition').untrain('test')
+})
+
 matrix.on('train', function(d) {
   var trained = false;
   console.log('training started>>>>>', d);
