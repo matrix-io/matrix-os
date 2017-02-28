@@ -138,9 +138,7 @@ Matrix.device.malos.info(function(data) {
 
 var msg = [];
 
-
 async.series([
-
 
   function readLocalDeviceInfo(cb) {
     if (!_.isUndefined(Matrix.deviceId) && !_.isUndefined(Matrix.deviceSecret)) {
@@ -153,18 +151,20 @@ async.series([
         env: Matrix.env
       }, function(err, result) {
         if (err) console.log('Error reading local data!');
-        if (err) return cb(err);
-        if (_.isNull(result)) {
-          debug('Sadly, we got no device records :(');
-        } else {
-          if (_.has(result, 'id') && _.has(result, 'secret')) {
-            debug('Device data found: ', result);
-            Matrix.deviceId = result.id;
-            Matrix.deviceSecret = result.secret;
+        if (!err){
+          if (_.isNull(result)) {
+            debug('Sadly, we got no device records :(');
           } else {
-            err = new Error('No id and secret found for this device');
+            if (_.has(result, 'id') && _.has(result, 'secret')) {
+              debug('Device data found: ', result);
+              Matrix.deviceId = result.id;
+              Matrix.deviceSecret = result.secret;
+            } else {
+              err = new Error('No id and secret found for this device');
+            }
           }
         }
+        cb(err);
       });
     }
   },
