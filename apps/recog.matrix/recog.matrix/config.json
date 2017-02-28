@@ -1,1 +1,0 @@
-{"configVersion":2,"description":"recognition demo","displayName":"Recog","events":["train"],"keywords":"cv","name":"recog","services":{"re":{"engine":"recognition","type":"face"}},"validated":true}
