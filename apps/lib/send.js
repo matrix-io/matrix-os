@@ -2,7 +2,6 @@
 
 
 module.exports = function(message) {
-  console.log(message,this.config)
   console.log('[M]('+ this.appName +') send ->', message);
   if ( _.isNull(message) || _.isUndefined(message)){
     return error('null message from matrix.send')

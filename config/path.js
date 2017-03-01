@@ -8,7 +8,8 @@ var p = {
     config: root + 'db/config.db',
     user: root + 'db/user.db',
     service: root + 'db/service.db',
-    pending: root + 'db/pending.db'
+    pending: root + 'db/pending.db',
+    device: root + 'db/device.db'
   },
   pendingFiles: root + 'public/pending_files',
   update: '/tmp/matrix-update/',
