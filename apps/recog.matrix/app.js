@@ -1,5 +1,9 @@
-matrix.on('reset', function(){
+matrix.on('reset', function() {
   matrix.service('recognition').untrain('test')
+  matrix.led('red').render()
+  setTimeout(function() {
+    matrix.led('black').render();
+  }, 1000)
 })
 
 matrix.on('train', function(d) {
