@@ -1,5 +1,5 @@
 var fs = require('fs'),
-path = require('path');
+  path = require('path');
 _ = require('lodash');
 should = require('should');
 assert = require('chai').assert;
@@ -8,7 +8,7 @@ var Mocha = require('mocha');
 var mocha = new Mocha();
 
 
-log=console.log;
+log = console.log;
 
 // Instantiate a Mocha instance.
 
@@ -17,21 +17,22 @@ process.env.DEBUG = '*';
 Matrix = require('../index.js').Matrix;
 
 
-testAppAPI = function(test, cb){
-  faketrix = require('child_process').fork('./apps/test.matrix/index.js', { env: { TEST_MODE: true },
-  // silent: true, stdio: 'ignore'
-});
+testAppAPI = function(test, cb) {
+  faketrix = require('child_process').fork('./apps/test.matrix/index.js', {
+    env: { TEST_MODE: true },
+    // silent: true, stdio: 'ignore'
+  });
   faketrix.send({ test: test });
-  faketrix.on('message', function (msg) {
+  faketrix.on('message', function(msg) {
     faketrix.kill();
     cb(msg);
   })
 }
 
 
-setTimeout(function(){
+setTimeout(function() {
   require('child_process').execSync('cp -r ./test/fixtures/test.matrix/ ./apps/test.matrix/')
-  Matrix.events.on('matrix-ready', function(){
+  Matrix.events.on('matrix-ready', function() {
     var testDir = __dirname;
 
     log('ready')
@@ -53,10 +54,10 @@ setTimeout(function(){
       process.on('exit', function() {
         process.exit(failures);
       });
-      Matrix.haltTheMatrix(function(){
+      Matrix.haltTheMatrix(function() {
         console.log("Woot Tests Done!~".rainbow)
-        require('child_process').execSync('rm -r ./apps/test.matrix')
+          // require('child_process').execSync('rm -r ./apps/test.matrix')
       });
     });
   })
-}, 500 )
+}, 500)

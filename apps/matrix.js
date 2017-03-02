@@ -325,15 +325,17 @@ var Matrix = {
     console.log('static not implmented uyet')
   },
 
-  zigbee: function(){
-    if ( Matrix.config.integrations.indexOf('zigbee') === -1 ){
+  zigbee: function() {
+    if (Matrix.config.integrations.indexOf('zigbee') === -1) {
       return console.error('Zigbee is not configured for this application. Please add `zigbee` to config>integrations');
     }
     return require('./lib/zigbee.js')
   },
-  static: function(){
+  static: function() {
     console.log('static not implmented yet')
-  }
+  },
+  service: require('./lib/service.js'),
+  sensor: require('./lib/sensor.js')
 }
 
 module.exports = Matrix;

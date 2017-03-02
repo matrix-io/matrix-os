@@ -6,10 +6,16 @@ matrix.on('reset', function() {
   }, 1000)
 })
 
+matrix.on('listtag', function() {
+  matrix.service('recognition').getTags().then(function(tags) {
+    console.log('>>>>>>>>>>TAGS>>>>>>>>>>>>>>', tags);
+  })
+})
+
 matrix.on('train', function(d) {
   var trained = false;
   console.log('training started>>>>>', d);
-  matrix.init('recognition', { mode: 'train', tag: 'test' }).then(function(d) {
+  matrix.service('recognition').train('test').then(function(d) {
     if (!trained && d.hasOwnProperty('count')) {
       // means it's partially done
       matrix.led({
