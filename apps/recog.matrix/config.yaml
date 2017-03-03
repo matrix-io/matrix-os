@@ -13,3 +13,21 @@ services:
   re:
     engine: recognition
     type: face
+
+screens: 
+  - train
+  - recognize
+  
+widgets:
+  train:
+    event: train
+    control: button
+    label: 'Train your Face'
+    value: 'Train'
+  recognize:
+    event: recog
+    control: button
+    label: Recognize Your Face
+    value: Recognize
+  
+  
