@@ -41,8 +41,11 @@ var service = function(name, options) {
     untrain: function(tags) {
       if (_.isString(tags)) {
         tags = [tags];
-      } else if (_.isArray(tags)) {
-        // delete is a more computational friendly cmd name then untrain
+      }
+
+      if (_.isArray(tags)) {
+        console.log('Untrain: ', tags)
+          // delete is a more computational friendly cmd name then untrain
         _.assign(self.sendObj, {
           cmd: 'delete',
           options: tags

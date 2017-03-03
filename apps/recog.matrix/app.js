@@ -3,16 +3,16 @@ var a = 180;
 var a2 = 0;
 var l = setInterval(function() {
   matrix.led([{
-    arc: Math.round(145 * Math.sin(a)),
-    color: 'green',
+    arc: Math.round(175 * Math.sin(a)),
+    color: 'red',
     start: a2
   }, {
-    arc: -Math.round(145 * Math.sin(a)),
+    arc: -Math.round(175 * Math.sin(a)),
     color: 'blue',
-    start: a2 + 180
+    start: a2 + 270
   }]).render();
   a = (a < 0) ? 180 : a - 0.1;
-  a2 = (a2 > 360) ? 0 : a2 + 1;
+  //a2 = (a2 > 360) ? 0 : a2 + 5;
 }, 25);
 
 function stopLights() {
@@ -48,19 +48,20 @@ matrix.on('train', function(d) {
   stopLights();
   var trained = false;
   console.log('training started>>>>>', d);
-  matrix.service('recognition').train('test').then(function(d) {
-    if (!trained && d.hasOwnProperty('count')) {
-      // means it's partially done
-      matrix.led({
-        arc: Math.round(360 * (d.count / d.target)),
-        color: 'blue'
-      }).render();
-    } else {
-      trained = true;
-      matrix.led('blue');
-      console.log('trained!', d);
-    }
-  });
+  console.log(matrix.service('recognition').train('test'));
+  // matrix.service('recognition').train('test').then(function(d) {
+  //   if (!trained && d.hasOwnProperty('count')) {
+  //     // means it's partially done
+  //     matrix.led({
+  //       arc: Math.round(360 * (d.count / d.target)),
+  //       color: 'blue'
+  //     }).render();
+  //   } else {
+  //     trained = true;
+  //     matrix.led('blue');
+  //     console.log('trained!', d);
+  //   }
+  // });
 });
 
 //
