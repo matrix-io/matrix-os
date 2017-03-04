@@ -72,7 +72,9 @@ var service = function(name, options) {
     train: function(tags, cb) {
       if (_.isString(tags)) {
         tags = [tags];
-      } else if (_.isArray(tags)) {
+      }
+
+      if (_.isArray(tags)) {
         _.assign(self.sendObj, {
           cmd: 'train',
           payload: tags
@@ -89,11 +91,11 @@ var service = function(name, options) {
 
     start: function(options, cb) {
       if (!_.isUndefined(options)) {
-        self.options = options;
+        self.options = options
       }
       _.assign(self.sendObj, {
         cmd: 'start',
-        payload: tags
+        payload: self.options
       })
       process.send(self.sendObj);
       self.activeSubserviceType = 'recognition-recognize';
@@ -105,9 +107,10 @@ var service = function(name, options) {
     //chain to
     then: function(cb) {
       process.on('message', function(data) {
-        console.log('RECOG SERVICE THEN', data)
+        // console.log('RECOG SERVICE THEN', data)
         if (data.eventType === 'service-emit' && data.serviceType === self.activeSubserviceType) {
-          cb(data.payload);
+
+          cb(_.omit(data.payload, 'serviceType', 'engine', 'type'));
         }
       })
     }
@@ -118,5 +121,6 @@ var service = function(name, options) {
   } else {
     console.error('Unrecognized Service Name', name);
   }
+
 }
 module.exports = service;

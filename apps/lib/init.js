@@ -14,7 +14,7 @@ module.exports = function(name, options) {
   }
 
   //find if this init is for a detection
-  if (!_.isNull(name.match(/(face|demographics|recognition|vehicle|palm|pinch|fist|thumb-up)/))) {
+  if (!_.isNull(name.match(/(face|demographics|vehicle|palm|pinch|fist|thumb-up)/))) {
 
     console.log('Initialize Service:'.blue, name);
 
@@ -25,7 +25,7 @@ module.exports = function(name, options) {
       }
     })[0];
 
-    process.send({ type: 'service-init', name: name, type: service.type, options: options });
+    process.send({ type: 'service-init', name: name, engine: service.engine, type: service.type, options: options });
     return {
       then: function(cb) {
         process.on('message', function(data) {
