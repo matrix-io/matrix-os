@@ -1,0 +1,26 @@
+# do not touch this line
+configVersion: 2
+
+name: ledTest
+description: test der leds
+keywords: 'led, test'
+
+screens:
+  - - clockScreen
+
+dataTypes:
+  clock:
+    hourAngle: integer
+    minuteAngle: integer
+    secondAngle: integer
+
+widgets:
+  clockScreen:
+    label: Clock Angle App
+    type: clock
+    display: list-group
+    groupBy: hour
+    keys:
+      - hourAngle
+      - minuteAngle
+      - secondAngle

@@ -16,19 +16,31 @@
 
 matrix = require('../matrix.js');
 
-var c = JSON.parse( require('fs').readFileSync( __dirname + '/config.json'));
+var c = JSON.parse(require('fs').readFileSync(__dirname + '/config.json'));
 // matrix.startApp('test', c);
 
-process.on('message', function(msg){
-  if (!msg.hasOwnProperty('test')){
+process.on('message', function(msg) {
+  if (!msg.hasOwnProperty('test')) {
     return console.error('no test passed to faketrix');
   }
-  switch ( msg.test ) {
+  switch (msg.test) {
     case 'led':
       matrix.led('red').render();
       break;
     case 'face':
       matrix.init('face');
+      break;
+    case 'recog-start':
+      matrix.service('recognition').start();
+      break;
+    case 'recog-train':
+      matrix.service('recognition').train();
+      break;
+    case 'recog-untrain':
+      matrix.service('recognition').untrain();
+      break;
+    case 'recog-stop':
+      matrix.service('recognition').stop();
       break;
     case 'demographics':
       matrix.init('demographics');
@@ -89,7 +101,7 @@ process.on('message', function(msg){
       matrix.emit('otherapp', 'otherfoo');
       //
       // //send namespaced message
-      matrix.emit('otherapp','nameofevent', 'namedfoo');
+      matrix.emit('otherapp', 'nameofevent', 'namedfoo');
       break;
     case 'crash':
       throw new Error('this is not a real error');

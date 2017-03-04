@@ -45,6 +45,31 @@ DOCKER_APPS=true START_APP=clock node index.js
 START_APP=monitor node index.js
 ```
 
+# Workflow
+```
+# find local rpi ip via arp -a, look at first 3 pairs of MAC
+>arp -a
+raspberrypi.domain (192.168.0.22) at b8:27:eb:84:7c:49
+
+> echo "192.168.0.22 m" >> /etc/hosts
+
+> ssh pi@m
+
+should login
+
+now `npm run sync` and `npm run watch` will auto upload code changes to your pi@m in the `/mos` folder
+
+to bypass the password prompts
+copy your public key
+`scp ~/.ssh/id_rsa.pub pi@m:~/.ssh/otherkey`
+on pi, add it to the authorized keys file
+`cd ~/.ssh; cat otherkey >> authorized_keys`
+
+```
+
+
+
+
 ## Disable upgrades
 ```
 NO_UPGRADE=true node index.js
