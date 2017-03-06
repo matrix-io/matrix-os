@@ -136,7 +136,11 @@ Matrix.device.malos.info(function(data) {
   })
 })
 
+
+
 var msg = [];
+
+
 
 async.series([
 
@@ -151,7 +155,7 @@ async.series([
         env: Matrix.env
       }, function(err, result) {
         if (err) console.log('Error reading local data!');
-        if (!err){
+        if (!err) {
           if (_.isNull(result)) {
             debug('Sadly, we got no device records :(');
           } else {
