@@ -159,13 +159,7 @@ describe('App API', function() {
           done();
         })
       })
-      it('mic', function(done) {
-        testAppAPI('mic', function(msg) {
-          assert.equal(msg.type, 'sensor-init')
-          assert.equal(msg.name, 'mic')
-          done();
-        })
-      })
+
       it('ir', function(done) {
         testAppAPI('ir', function(msg) {
           assert.equal(msg.type, 'sensor-init')
