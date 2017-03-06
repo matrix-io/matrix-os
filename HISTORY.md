@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Can use debugger without app conflicts on port
 - Routing for data rich events from dashboard
+### Changed
+- Zigbee Port Number
+- Handling for Dashboard events
 ## [0.9.0]
 ### Added
 - Zigbee Support
