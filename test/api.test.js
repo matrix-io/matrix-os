@@ -111,7 +111,6 @@ describe('App API', function() {
       })
       it('altitude', function(done) {
         testAppAPI('altitude', function(msg) {
-          console.log('alt sensor fun times <>', msg)
           assert.equal(msg.type, 'sensor-init')
           assert.equal(msg.name, 'altitude')
           done();
