@@ -468,15 +468,18 @@ async.series([
     Matrix.device.drivers.led.stopLoader();
     Matrix.device.drivers.led.clear();
 
-    //TODO start configuration BLE advertising
-    Matrix.device.bluetooth.start();
-    Matrix.device.bluetooth.emitter.on('configurationAuth', function(err, uuid, auth) {
-      if (err ||  !auth) {
-        console.log('No BT auth provided', err);
-      } else {
-        console.log('BT Successfully authenticated!');
-      }
-    });
+    if (!process.env.hasOwnProperty('TEST_MODE')) {
+      //TODO start configuration BLE advertising
+      Matrix.device.bluetooth.start();
+      Matrix.device.bluetooth.emitter.on('configurationAuth', function(err, uuid, auth) {
+        if (err ||  !auth) {
+          console.log('No BT auth provided', err);
+        } else {
+          console.log('BT Successfully authenticated!');
+        }
+      });
+    }
+
 
     // debug('vvv MATRIX vvv \n'.yellow,
     // require('util').inspect( _.omit(Matrix, ['device','password','username','events','service','db']), { depth : 0} ), "\n^^^ MATRIX ^^^ ".yellow);
