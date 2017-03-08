@@ -11,7 +11,20 @@ describe('App API', function() {
     describe('base matrix methods', function() {
       it('init()', function() {
         matrix.should.have.ownProperty('init')
-      });
+      }); <<
+      <<
+      << < HEAD
+        ===
+        ===
+        =
+        it('sensor()', function() {
+          matrix.should.have.ownProperty('sensor')
+        });
+      it('service()', function() {
+        matrix.should.have.ownProperty('service')
+      }); >>>
+      >>>
+      > sc / recog
       it('type()', function() {
         matrix.should.have.ownProperty('type')
       })
@@ -47,6 +60,53 @@ describe('App API', function() {
 
   describe('init', function() {
     describe('services', function() {
+
+      describe.only('recog', function(done) {
+        it('start', function(done) {
+          testAppAPI(
+            'recog-start',
+            function(msg) {
+              assert.equal(msg.type, 'service-cmd')
+              assert.equal(msg.name, 'recognition')
+              assert.equal(msg.cmd, 'start')
+              assert.equal(msg.type, 'face')
+              done();
+            });
+        });
+        it('stop', function(done) {
+          testAppAPI(
+            'recog-stop',
+            function(msg) {
+              assert.equal(msg.type, 'service-cmd')
+              assert.equal(msg.name, 'recognition')
+              assert.equal(msg.cmd, 'stop')
+              assert.equal(msg.type, 'face')
+              done();
+            });
+        });
+        it('train', function(done) {
+          testAppAPI(
+            'recog-train',
+            function(msg) {
+              assert.equal(msg.type, 'service-cmd')
+              assert.equal(msg.name, 'recognition')
+              assert.equal(msg.cmd, 'train')
+              assert.equal(msg.type, 'face')
+              done();
+            });
+        });
+        it('untrain', function(done) {
+          testAppAPI(
+            'recog-untrain',
+            function(msg) {
+              assert.equal(msg.type, 'service-cmd')
+              assert.equal(msg.name, 'recognition')
+              assert.equal(msg.cmd, 'untrain')
+              assert.equal(msg.type, 'face')
+              done();
+            });
+        });
+      });
 
       it('face', function(done) {
         testAppAPI('face', function(msg) {
@@ -152,13 +212,27 @@ describe('App API', function() {
         })
       })
       it('uv', function(done) {
-        testAppAPI('uv', function(msg) {
-          assert.equal(msg.type, 'sensor-init')
-          assert.equal(msg.name, 'uv')
-          done();
-        })
-      })
+          testAppAPI('uv', function(msg) {
+            assert.equal(msg.type, 'sensor-init')
+            assert.equal(msg.name, 'uv')
+            done();
+          })
+        }) <<
+        <<
+        << < HEAD
 
+        ===
+        ===
+        =
+        it('mic', function(done) {
+          testAppAPI('mic', function(msg) {
+            assert.equal(msg.type, 'sensor-init')
+            assert.equal(msg.name, 'mic')
+            done();
+          })
+        }) >>>
+        >>>
+        > sc / recog
       it('ir', function(done) {
         testAppAPI('ir', function(msg) {
           assert.equal(msg.type, 'sensor-init')

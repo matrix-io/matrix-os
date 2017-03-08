@@ -1,11 +1,30 @@
 {
-  "keywords": "test",
+  "name": "test",
   "dataTypes": {
     "test": {
       "foo": "integer"
     }
   },
+  "description": "none",
   "configVersion": 2,
-  "name": "test",
-  "description": "none"
+  "keywords": "test",
+  "sensors": [
+    "temperature"
+  ],
+  "integrations": [
+    "gpio"
+  ],
+  "events": [
+    "global"
+  ],
+  "services": {
+    "faceSvc": {
+      "engine": "detection",
+      "type": "face"
+    },
+    "recogSvc": {
+      "engine": "recognition",
+      "type": "face"
+    }
+  }
 }

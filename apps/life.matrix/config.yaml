@@ -1,0 +1,7 @@
+name: life
+version: 1
+keywords: cellular
+configVersion: 2
+description: Matrix stats
+widgets:
+  poop: 123

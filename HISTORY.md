@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+<<<<<<< HEAD
 ## [0.9.4]
 ### Fixed
 - Can use debugger without app conflicts on port
@@ -11,6 +12,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Zigbee Port Number
 - Handling for Dashboard events
+=======
+## [0.10.0]
+Queue the magic.
+### Added
+- Bluetooth Support for Pairing Workflow(!!)
+- Save credentials to device database
+- Binary script in `bin/` for local reset
+
+# Changed 
+- Login sequence adapted to start with bluetooth pair if no id/secret
+- New Pretty Loader
+
+>>>>>>> sc/recog
 ## [0.9.0]
 ### Added
 - Zigbee Support

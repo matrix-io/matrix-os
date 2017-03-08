@@ -706,17 +706,42 @@ function upgradeDependencies(cb) {
 
   if (olds.length > 0) {
     console.log('Upgrading Dependencies....'.yellow)
-    exec('npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase matrix-eventfilter pi-wifi', function(error, stdout, stderr) {
-      if (error) {
-        console.error('Error upgrading dependencies: '.red + error);
-        err = error;
-      } else {
-        checks.update = true;
-        updated = true;
+    async.parallel([
+
+      // upgrade local modules
+      function(cb) {
+        exec('npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase matrix-eventfilter pi-wifi', function(error, stdout, stderr) {
+          if (error) {
+            console.error('Error upgrading dependencies: '.red + error);
+            err = error;
+          } else {
+            checks.update = true;
+            updated = true;
+          }
+          cb(err);
+        });
+      },
+
+      // upgrade MOS API modules
+      function(cb) {
+        exec('npm upgrade matrix-app-config-helper matrix-eventfilter', { cwd: __dirname + 'apps/' }, function(error, stdout, stderr) {
+          if (error) {
+            console.error('Error upgrading MOS API dependencies: '.red + error);
+            err = error;
+          } else {
+            checks.update = true;
+            updated = true;
+          }
+          cb(err);
+        })
+      },
+      function(err) {
+        if (err) return console.error(err);
         console.log('Upgrade Done!'.green, 'Please restart MATRIX OS.');
+        cb(err, updated);
       }
-      cb(err);
-    });
+    ]);
+
   } else {
     console.log('Dependencies up to date.')
     cb(err, updated);

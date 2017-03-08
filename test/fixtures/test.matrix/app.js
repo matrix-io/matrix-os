@@ -30,6 +30,18 @@ process.on('message', function(msg) {
     case 'face':
       matrix.init('face');
       break;
+    case 'recog-start':
+      matrix.service('recognition').start();
+      break;
+    case 'recog-train':
+      matrix.service('recognition').train();
+      break;
+    case 'recog-untrain':
+      matrix.service('recognition').untrain();
+      break;
+    case 'recog-stop':
+      matrix.service('recognition').stop();
+      break;
     case 'demographics':
       matrix.init('demographics');
       break;
