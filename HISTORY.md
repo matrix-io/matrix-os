@@ -4,15 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-<<<<<<< HEAD
-## [0.9.4]
-### Fixed
-- Can use debugger without app conflicts on port
-- Routing for data rich events from dashboard
+## [0.11.0]
+### Added
+- Recognition support in apps
+
 ### Changed
-- Zigbee Port Number
-- Handling for Dashboard events
-=======
+- Init has been divided into service and sensor
+
+### Removed
+- matrix.init is deprecated, but will not fail yet
+
 ## [0.10.0]
 Queue the magic.
 ### Added
@@ -24,7 +25,14 @@ Queue the magic.
 - Login sequence adapted to start with bluetooth pair if no id/secret
 - New Pretty Loader
 
->>>>>>> sc/recog
+## [0.9.4]
+### Fixed
+- Can use debugger without app conflicts on port
+- Routing for data rich events from dashboard
+### Changed
+- Zigbee Port Number
+- Handling for Dashboard events
+
 ## [0.9.0]
 ### Added
 - Zigbee Support
