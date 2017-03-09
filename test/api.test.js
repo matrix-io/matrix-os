@@ -51,7 +51,7 @@ describe('App API', function() {
   describe('init', function() {
     describe('services', function() {
 
-      describe.only('recog', function(done) {
+      describe.skip('recog', function(done) {
         it('start', function(done) {
           testAppAPI(
             'recog-start',
@@ -100,6 +100,7 @@ describe('App API', function() {
 
       it('face', function(done) {
         testAppAPI('face', function(msg) {
+          console.log(msg)
           assert.equal(msg.type, 'service-init')
           assert.equal(msg.name, 'face')
           done();
@@ -107,13 +108,15 @@ describe('App API', function() {
       })
       it('demographics', function(done) {
         testAppAPI('demographics', function(msg) {
+          console.log(msg);
           assert.equal(msg.type, 'service-init')
           assert.equal(msg.name, 'demographics')
           done();
         })
       })
-      it('vehicle', function(done) {
+      it.skip('vehicle', function(done) {
         testAppAPI('vehicle', function(msg) {
+          console.log(msg)
           assert.equal(msg.type, 'service-init')
           assert.equal(msg.name, 'vehicle')
           done();

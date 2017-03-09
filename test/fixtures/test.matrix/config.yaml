@@ -22,3 +22,21 @@ services:
   recogSvc:
     engine: recognition
     type: face
+  vehicleSvc:
+    engine: recognition
+    type: vehicle
+  demoSvc:
+    engine: recognition
+    type: demographics
+  palmSvc:
+    engine: detection
+    type: palm
+  thumbSvc:
+    engine: detection
+    type: thumb-up
+  pinchSvc:
+    engine: detection
+    type: pinch
+  fistSvc:
+    engine: detection
+    type: fist
