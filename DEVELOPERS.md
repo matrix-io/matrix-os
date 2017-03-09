@@ -1,6 +1,12 @@
-
 # Developer Information
 The below is intended for developers working on this repository.
+
+## Easy Mode
+
+`npm run debug` - runs debug mode in dev
+`npm run debug-test` - runs debugged tests 
+
+  
 
 # First
 

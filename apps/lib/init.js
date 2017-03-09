@@ -25,7 +25,7 @@ module.exports = function(name, options) {
       }
     });
 
-    process.send({ type: 'service-init', name: name, engine: service.engine, options: options });
+    process.send({ type: 'service-init', name: name, options: service });
     return {
       then: function(cb) {
         process.on('message', function(data) {
