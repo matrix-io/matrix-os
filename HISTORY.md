@@ -6,14 +6,29 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.10.0]
 Queue the magic.
+
 ### Added
+- Recognition support in apps
 - Bluetooth Support for Pairing Workflow(!!)
 - Save credentials to device database
 - Binary script in `bin/` for local reset
 
 # Changed 
+
+- Init has been divided into service and sensor
 - Login sequence adapted to start with bluetooth pair if no id/secret
 - New Pretty Loader
+
+### Removed
+- matrix.init is deprecated, but will not fail yet
+
+## [0.9.4]
+### Fixed
+- Can use debugger without app conflicts on port
+- Routing for data rich events from dashboard
+### Changed
+- Zigbee Port Number
+- Handling for Dashboard events
 
 ## [0.9.0]
 ### Added

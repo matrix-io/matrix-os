@@ -19,13 +19,13 @@ module.exports = function(name, options) {
     console.log('Initialize Service:'.blue, name);
 
     // find the service definition
-    var service = _.map(self.config.services, function(v, k) {
-      if (v.engine === name || v.type === name || k === name) {
+    var service = _.mapValues(self.config.services, function(v) {
+      if (v.engine == name || v.type == name) {
         return { type: v.type, engine: v.engine }
       }
-    })[0];
+    });
 
-    process.send({ type: 'service-init', name: name, engine: service.engine, type: service.type, options: options });
+    process.send({ type: 'service-init', name: name, engine: service.engine, options: options });
     return {
       then: function(cb) {
         process.on('message', function(data) {

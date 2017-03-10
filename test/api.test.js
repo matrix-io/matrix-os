@@ -9,22 +9,12 @@ describe('App API', function() {
     })
 
     describe('base matrix methods', function() {
-      it('init()', function() {
-        matrix.should.have.ownProperty('init')
-      }); <<
-      <<
-      << < HEAD
-        ===
-        ===
-        =
-        it('sensor()', function() {
-          matrix.should.have.ownProperty('sensor')
-        });
+      it('sensor()', function() {
+        matrix.should.have.ownProperty('sensor')
+      });
       it('service()', function() {
         matrix.should.have.ownProperty('service')
-      }); >>>
-      >>>
-      > sc / recog
+      });
       it('type()', function() {
         matrix.should.have.ownProperty('type')
       })
@@ -61,7 +51,7 @@ describe('App API', function() {
   describe('init', function() {
     describe('services', function() {
 
-      describe.only('recog', function(done) {
+      describe.skip('recog', function(done) {
         it('start', function(done) {
           testAppAPI(
             'recog-start',
@@ -110,6 +100,7 @@ describe('App API', function() {
 
       it('face', function(done) {
         testAppAPI('face', function(msg) {
+          console.log(msg)
           assert.equal(msg.type, 'service-init')
           assert.equal(msg.name, 'face')
           done();
@@ -117,13 +108,15 @@ describe('App API', function() {
       })
       it('demographics', function(done) {
         testAppAPI('demographics', function(msg) {
+          console.log(msg);
           assert.equal(msg.type, 'service-init')
           assert.equal(msg.name, 'demographics')
           done();
         })
       })
-      it('vehicle', function(done) {
+      it.skip('vehicle', function(done) {
         testAppAPI('vehicle', function(msg) {
+          console.log(msg)
           assert.equal(msg.type, 'service-init')
           assert.equal(msg.name, 'vehicle')
           done();
@@ -212,27 +205,13 @@ describe('App API', function() {
         })
       })
       it('uv', function(done) {
-          testAppAPI('uv', function(msg) {
-            assert.equal(msg.type, 'sensor-init')
-            assert.equal(msg.name, 'uv')
-            done();
-          })
-        }) <<
-        <<
-        << < HEAD
+        testAppAPI('uv', function(msg) {
+          assert.equal(msg.type, 'sensor-init')
+          assert.equal(msg.name, 'uv')
+          done();
+        })
+      })
 
-        ===
-        ===
-        =
-        it('mic', function(done) {
-          testAppAPI('mic', function(msg) {
-            assert.equal(msg.type, 'sensor-init')
-            assert.equal(msg.name, 'mic')
-            done();
-          })
-        }) >>>
-        >>>
-        > sc / recog
       it('ir', function(done) {
         testAppAPI('ir', function(msg) {
           assert.equal(msg.type, 'sensor-init')
