@@ -1,5 +1,5 @@
 describe('App API', function() {
-  this.timeout(5000)
+  this.timeout(10000)
 
 
   describe('matrix lib', function() {
@@ -32,7 +32,7 @@ describe('App API', function() {
       })
     })
 
-    describe('matrix modules', function() {
+    describe('matrix modules structure ok', function() {
       it('led', function() {
         matrix.should.have.ownProperty('led')
       })
@@ -48,10 +48,18 @@ describe('App API', function() {
     })
   })
 
-  describe('init', function() {
+  describe.only('init', function() {
     describe('services', function() {
+      describe('service module structure ok', function(){
+        it('should have recog commands start(), train(), untrain(), reset()', function(){
+          matrix.service('recognition').should.have.ownProperty('start');
+          matrix.service('recognition').should.have.ownProperty('train');
+          matrix.service('recognition').should.have.ownProperty('untrain');
+          matrix.service('recognition').should.have.ownProperty('reset');
+        })
+      });
 
-      describe.skip('recog', function(done) {
+      describe('recognition service-cmd generation', function(done) {
         it('start', function(done) {
           testAppAPI(
             'recog-start',
@@ -59,7 +67,7 @@ describe('App API', function() {
               assert.equal(msg.type, 'service-cmd')
               assert.equal(msg.name, 'recognition')
               assert.equal(msg.cmd, 'start')
-              assert.equal(msg.type, 'face')
+              assert.equal(msg.serviceType, 'face')
               done();
             });
         });
@@ -70,7 +78,7 @@ describe('App API', function() {
               assert.equal(msg.type, 'service-cmd')
               assert.equal(msg.name, 'recognition')
               assert.equal(msg.cmd, 'stop')
-              assert.equal(msg.type, 'face')
+              assert.equal(msg.serviceType, 'face')
               done();
             });
         });
@@ -81,7 +89,7 @@ describe('App API', function() {
               assert.equal(msg.type, 'service-cmd')
               assert.equal(msg.name, 'recognition')
               assert.equal(msg.cmd, 'train')
-              assert.equal(msg.type, 'face')
+              assert.equal(msg.serviceType, 'face')
               done();
             });
         });
@@ -101,53 +109,60 @@ describe('App API', function() {
       it('face', function(done) {
         testAppAPI('face', function(msg) {
           console.log(msg)
-          assert.equal(msg.type, 'service-init')
-          assert.equal(msg.name, 'face')
+          assert.equal(msg.type, 'service-cmd')
+          assert.equal(msg.serviceType, 'face')
+          assert.equal(msg.engine, 'detection')
           done();
         })
       })
       it('demographics', function(done) {
         testAppAPI('demographics', function(msg) {
           console.log(msg);
-          assert.equal(msg.type, 'service-init')
-          assert.equal(msg.name, 'demographics')
+          assert.equal(msg.type, 'service-cmd')
+          assert.equal(msg.serviceType, 'demographics')
+          assert.equal(msg.engine, 'recognition')
           done();
         })
       })
       it.skip('vehicle', function(done) {
         testAppAPI('vehicle', function(msg) {
           console.log(msg)
-          assert.equal(msg.type, 'service-init')
-          assert.equal(msg.name, 'vehicle')
+          assert.equal(msg.type, 'service-cmd')
+          assert.equal(msg.serviceType, 'vehicle')
+          assert.equal(msg.engine, 'detection')
           done();
         })
       })
       it('palm', function(done) {
         testAppAPI('palm', function(msg) {
-          assert.equal(msg.type, 'service-init')
-          assert.equal(msg.name, 'palm')
+          assert.equal(msg.type, 'service-cmd')
+          assert.equal(msg.serviceType, 'palm')
+          assert.equal(msg.engine, 'detection')
           done();
         })
       })
       it('pinch', function(done) {
         testAppAPI('pinch', function(msg) {
-          assert.equal(msg.type, 'service-init')
-          assert.equal(msg.name, 'pinch')
+          assert.equal(msg.type, 'service-cmd')
+          assert.equal(msg.serviceType, 'pinch')
+          assert.equal(msg.engine, 'detection')
           done();
         })
       })
       it('fist', function(done) {
         testAppAPI('fist', function(msg) {
-          assert.equal(msg.type, 'service-init')
-          assert.equal(msg.name, 'fist')
+          assert.equal(msg.type, 'service-cmd')
+          assert.equal(msg.serviceType, 'fist')
+          assert.equal(msg.engine, 'detection')
           done();
         })
       })
       it('thumb-up', function(done) {
         testAppAPI('thumb-up', function(msg) {
           console.log(msg);
-          assert.equal(msg.type, 'service-init')
-          assert.equal(msg.name, 'thumb-up')
+          assert.equal(msg.type, 'service-cmd')
+          assert.equal(msg.serviceType, 'thumb-up')
+          assert.equal(msg.engine, 'detection')
           done();
         })
       })
