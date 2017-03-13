@@ -14,7 +14,7 @@ Queue the magic.
 - Binary script in `bin/` for local reset
 
 # Changed 
-
+- Preventing apps from sending data without dataTypes entry
 - Init has been divided into service and sensor
 - Login sequence adapted to start with bluetooth pair if no id/secret
 - New Pretty Loader
