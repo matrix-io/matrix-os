@@ -34,10 +34,10 @@ process.on('message', function(msg) {
       matrix.service('recognition').start();
       break;
     case 'recog-train':
-      matrix.service('recognition').train();
+      matrix.service('recognition').train('test');
       break;
     case 'recog-untrain':
-      matrix.service('recognition').untrain();
+      matrix.service('recognition').untrain('test');
       break;
     case 'recog-stop':
       matrix.service('recognition').stop();

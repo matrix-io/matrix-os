@@ -5,7 +5,7 @@ var service = function(name, options) {
 
     // find the service definition
   var service = _.find(matrix.config.services, function(v, k) {
-    console.log(name, k, v)
+    // console.log(name, k, v)
     if (k === name || v.engine === name || v.type === name) {
       return true
     }

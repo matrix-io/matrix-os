@@ -1,8 +1,8 @@
-describe('App API', function() {
+describe.only('App API', function() {
   this.timeout(10000)
 
 
-  describe('matrix lib', function() {
+  describe('matrix lib method structure', function() {
 
     before(function() {
       matrix = require(__dirname + '/../apps/matrix.js');
@@ -46,26 +46,17 @@ describe('App API', function() {
         matrix.should.have.ownProperty('gpio')
       })
     })
+  
   })
 
-  describe.only('init', function() {
-    describe('services', function() {
-      describe('service module structure ok', function(){
-        it('should have recog commands start(), train(), untrain(), reset()', function(){
-          matrix.service('recognition').should.have.ownProperty('start');
-          matrix.service('recognition').should.have.ownProperty('train');
-          matrix.service('recognition').should.have.ownProperty('untrain');
-          matrix.service('recognition').should.have.ownProperty('reset');
-        })
-      });
-
+  describe('matrix.service', function() {
       describe('recognition service-cmd generation', function(done) {
         it('start', function(done) {
           testAppAPI(
             'recog-start',
             function(msg) {
+              console.log(msg);
               assert.equal(msg.type, 'service-cmd')
-              assert.equal(msg.name, 'recognition')
               assert.equal(msg.cmd, 'start')
               assert.equal(msg.serviceType, 'face')
               done();
@@ -76,7 +67,6 @@ describe('App API', function() {
             'recog-stop',
             function(msg) {
               assert.equal(msg.type, 'service-cmd')
-              assert.equal(msg.name, 'recognition')
               assert.equal(msg.cmd, 'stop')
               assert.equal(msg.serviceType, 'face')
               done();
@@ -87,7 +77,6 @@ describe('App API', function() {
             'recog-train',
             function(msg) {
               assert.equal(msg.type, 'service-cmd')
-              assert.equal(msg.name, 'recognition')
               assert.equal(msg.cmd, 'train')
               assert.equal(msg.serviceType, 'face')
               done();
@@ -98,9 +87,8 @@ describe('App API', function() {
             'recog-untrain',
             function(msg) {
               assert.equal(msg.type, 'service-cmd')
-              assert.equal(msg.name, 'recognition')
-              assert.equal(msg.cmd, 'untrain')
-              assert.equal(msg.type, 'face')
+              assert.equal(msg.cmd, 'delete')
+              assert.equal(msg.serviceType, 'face')
               done();
             });
         });
@@ -108,7 +96,6 @@ describe('App API', function() {
 
       it('face', function(done) {
         testAppAPI('face', function(msg) {
-          console.log(msg)
           assert.equal(msg.type, 'service-cmd')
           assert.equal(msg.serviceType, 'face')
           assert.equal(msg.engine, 'detection')
@@ -268,5 +255,4 @@ describe('App API', function() {
         done();
       })
     })
-  })
 })
