@@ -3,7 +3,7 @@ var service = function(name, options) {
   var self = {};
   self.name = name;
 
-    // find the service definition
+  // find the service definition
   var service = _.find(matrix.config.services, function(v, k) {
     // console.log(name, k, v)
     if (k === name || v.engine === name || v.type === name) {
@@ -106,11 +106,24 @@ var service = function(name, options) {
     },
 
 
-    then: self.thenFn
+    then: process.on('message', function(data) {
+
+      // console.log('RECOG SERVICE THEN', data)
+      if (data.eventType === 'service-emit' &&
+        data.type === self.type &&
+        data.engine === self.engine &&
+        data.serviceType === self.activeSubserviceType) {
+        if (_.isFunction(cb)) {
+          cb(_.omit(data.payload, 'serviceType', 'engine', 'type'));
+        } else {
+          console.log('No callback passed to service>%s.then', self.name);
+        }
+      }
+    })
   }
 
 
-    /** 
+  /** 
    * MOS sending back to the application
    * @param data.eventType - lands it on service handler
    * @param data.payload - what to return to the application
@@ -120,65 +133,91 @@ var service = function(name, options) {
    */
   self.thenFn = function(cb) {
     process.on('message', function(data) {
-        // console.log('RECOG SERVICE THEN', data)
-        if (data.eventType === 'service-emit' && 
-            data.type === self.type && 
-            data.engine === self.engine && 
-            data.serviceType === self.activeSubserviceType ) {
-          cb(_.omit(data.payload, 'serviceType', 'engine', 'type'));
-        }
-      })
-    }
 
-    self.startFn = function(options){
-       if (!_.isUndefined(options)) {
+      console.log('APP>SERVICE>', data)
+      if (data.eventType === 'service-emit' &&
+        data.type === self.type &&
+        data.engine === self.engine) {
+        if (_.isFunction(cb)) {
+          cb(_.omit(data.payload, 'serviceType', 'engine', 'type'));
+        } else {
+          console.log('No callback passed to service>%s.then', self.name);
+        }
+      }
+    })
+  }
+
+
+  self.stopFn = function() {
+    _.assign(self.sendObj, {
+      cmd: 'stop',
+    })
+    process.send(self.sendObj);
+  }
+
+
+  var detectionMethods = {
+    start: function(options, cb) {
+      if (!_.isUndefined(options)) {
         self.options = options
       }
       _.assign(self.sendObj, {
         cmd: 'start',
         payload: self.options
       })
-      console.log('start')
       process.send(self.sendObj);
       // support multiple declarations, callback or promises
       if (_.isFunction(cb)) { detectionMethods.then(cb); }
       return _.pick(detectionMethods, 'then', 'stop');
-    }
-    
-    self.stopFn = function(){
-      _.assign(self.sendObj, {
-        cmd: 'stop',
-      })
-      process.send(self.sendObj);
-    }
-
-
-  var detectionMethods = {
-    start: self.startFn,
+    },
     stop: self.stopFn,
     then: self.thenFn
   }
 
   var vehicleMethods = {
-    start: self.startFn,
+    start: function(options, cb) {
+      if (!_.isUndefined(options)) {
+        self.options = options
+      }
+      _.assign(self.sendObj, {
+        cmd: 'start',
+        payload: self.options
+      })
+      process.send(self.sendObj);
+      // support multiple declarations, callback or promises
+      if (_.isFunction(cb)) { vehicleMethods.then(cb); }
+      return _.pick(vehicleMethods, 'then', 'stop');
+    },
     stop: self.stopFn,
     then: self.thenFn
   }
 
   var gestureMethods = {
-    start: self.startFn,
+    start: function(options, cb) {
+      if (!_.isUndefined(options)) {
+        self.options = options
+      }
+      _.assign(self.sendObj, {
+        cmd: 'start',
+        payload: self.options
+      });
+      process.send(self.sendObj);
+      // support multiple declarations, callback or promises
+      if (_.isFunction(cb)) { gestureMethods.then(cb); }
+      return _.pick(gestureMethods, 'then', 'stop');
+    },
     stop: self.stopFn,
     then: self.thenFn
   }
 
   if (name === 'recognition') {
     return _.omit(recognitionMethods, 'then');
-  } else if ( name === 'face' || name === 'demographics' ) { 
+  } else if (name === 'face' || name === 'demographics') {
     return _.omit(detectionMethods, 'then');
-  } else if ( name === 'vehicle') {
+  } else if (name === 'vehicle') {
     return _.omit(vehicleMethods, 'then');
-  } else if ( !_.isNull(name.match(/fist|thumb-up|palm|pinch/))) {
-    return _.omit(vehicleMethods, 'then');
+  } else if (!_.isNull(name.match(/fist|thumb-up|palm|pinch/))) {
+    return _.omit(gestureMethods, 'then');
   } else {
     console.error('Unrecognized Service Name', name);
   }
@@ -187,4 +226,3 @@ var service = function(name, options) {
 
 }
 module.exports = service;
-

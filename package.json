@@ -8,7 +8,7 @@
   "homepage": "http://creator.matrix.one",
   "bugs": "https://github.com/matrix-io/matrix-os/issues/new",
   "scripts": {
-    "debug": "DEBUG=*,-engine*,-Component*,-gatt,-bleno,-bt-characteristic,-hci NODE_ENV=dev node index.js",
+    "debug": "DEBUG=*,-engine*,-gatt,-bleno,-Component,-bt-characteristic,-hci NODE_ENV=dev node --debug index.js",
     "debug-test": "DEBUG=*,-engine*,-Component*,-gatt,-bleno,-bt-characteristic,-hci node test/_runner.js",
     "local-debug": "DEBUG=*,-engine*,-Component* NODE_ENV=local node index.js",
     "local": "NODE_ENV=local node index.js",
