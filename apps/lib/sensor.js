@@ -2,6 +2,10 @@
 function initSensor(name, options) {
   console.log('Initialize Sensor:'.blue, name);
 
+  if ( _.isUndefined(options)){
+    options = {};
+  }
+
   var filter, sensorOptions;
 
   var sensors = [];

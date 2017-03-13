@@ -28,64 +28,64 @@ process.on('message', function(msg) {
       matrix.led('red').render();
       break;
     case 'face':
-      matrix.init('face');
+      matrix.service('face').start();
       break;
     case 'recog-start':
       matrix.service('recognition').start();
       break;
     case 'recog-train':
-      matrix.service('recognition').train();
+      matrix.service('recognition').train('test');
       break;
     case 'recog-untrain':
-      matrix.service('recognition').untrain();
+      matrix.service('recognition').untrain('test');
       break;
     case 'recog-stop':
       matrix.service('recognition').stop();
       break;
     case 'demographics':
-      matrix.init('demographics');
+      matrix.service('demographics').start();
       break;
     case 'vehicle':
-      matrix.init('vehicle');
+      matrix.service('vehicle').start();
       break;
     case 'palm':
-      matrix.init('palm');
+      matrix.service('palm').start();
       break;
     case 'pinch':
-      matrix.init('pinch');
+      matrix.service('pinch').start();
       break;
     case 'fist':
-      matrix.init('fist');
+      matrix.service('fist').start();
       break;
     case 'thumb-up':
-      matrix.init('thumb-up');
+      matrix.service('thumb-up').start();
       break;
     case 'temperature':
-      matrix.init('temperature');
+      matrix.sensor('temperature');
       break;
     case 'altitude':
-      matrix.init('altitude');
+      matrix.sensor('altitude');
       break;
     case 'humidity':
-      matrix.init('humidity');
+      matrix.sensor('humidity');
       break;
     case 'gyroscope':
-      matrix.init('gyroscope');
+      matrix.sensor('gyroscope');
       break;
     case 'accellerometer':
-      matrix.init('accellerometer');
+      matrix.sensor('accellerometer');
       break;
     case 'nfc':
-      matrix.init('nfc');
+      matrix.sensor('nfc');
       break;
     case 'pressure':
-      matrix.init('pressure');
+      matrix.sensor('pressure');
       break;
     case 'uv':
-      matrix.init('uv');
+      matrix.sensor('uv');
       break;
     case 'ir':
-      matrix.init('ir');
+      matrix.sensor('ir');
       break;
     case 'send':
       matrix.type('test').send({ foo: 1 });
