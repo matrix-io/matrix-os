@@ -1,8 +1,11 @@
+var EventFilter = require('matrix-eventfilter').EventFilter;
+var applyFilter = require('matrix-eventfilter').apply;
+
 // name can be array or string
 function initSensor(name, options) {
   console.log('Initialize Sensor:'.blue, name);
 
-  if ( _.isUndefined(options)){
+  if (_.isUndefined(options)) {
     options = {};
   }
 
