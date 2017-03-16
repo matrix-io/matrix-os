@@ -7,3 +7,4 @@ assets/*
 .env
 .envz
 .e*
+apps/*.matrix

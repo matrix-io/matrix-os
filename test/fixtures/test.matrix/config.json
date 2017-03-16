@@ -1,11 +1,54 @@
 {
-  "keywords": "test",
+  "name": "test",
   "dataTypes": {
     "test": {
       "foo": "integer"
     }
   },
+  "description": "none",
   "configVersion": 2,
-  "name": "test",
-  "description": "none"
+  "keywords": "test",
+  "sensors": [
+    "temperature"
+  ],
+  "integrations": [
+    "gpio"
+  ],
+  "events": [
+    "global"
+  ],
+  "services": {
+    "faceSvc": {
+      "engine": "detection",
+      "type": "face"
+    },
+    "recogSvc": {
+      "engine": "recognition",
+      "type": "face"
+    },
+    "vehicleSvc": {
+      "engine": "recognition",
+      "type": "vehicle"
+    },
+    "demoSvc": {
+      "engine": "recognition",
+      "type": "demographics"
+    },
+    "palmSvc": {
+      "engine": "detection",
+      "type": "palm"
+    },
+    "thumbSvc": {
+      "engine": "detection",
+      "type": "thumb-up"
+    },
+    "pinchSvc": {
+      "engine": "detection",
+      "type": "pinch"
+    },
+    "fistSvc": {
+      "engine": "detection",
+      "type": "fist"
+    }
+  }
 }

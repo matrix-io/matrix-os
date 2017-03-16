@@ -23,3 +23,6 @@ before_install:
 
 before_script:
   - git submodule update --init
+
+script:
+  npm run debug-test
