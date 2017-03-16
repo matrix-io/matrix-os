@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Removed .init in App API for services. Replaced with services
 - Updated test apps and documentation
+- Depreciated init for sensors, replaced with `sensor`. init still works
 
 ## [0.10.0]
 Queue the magic.
