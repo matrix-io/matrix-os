@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+### Removed
+- Deprecated applicationConfigs on register
+
+### Added
+- Emit app-config to mxss on app start
+
 ## [0.11.0]
 ### Changed
 - Removed .init in App API for services. Replaced with services
