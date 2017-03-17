@@ -106,20 +106,22 @@ var service = function(name, options) {
     },
 
 
-    then: process.on('message', function(data) {
+    then: function(cb) {
+      process.on('message', function(data) {
 
-      // console.log('RECOG SERVICE THEN', data)
-      if (data.eventType === 'service-emit' &&
-        data.type === self.type &&
-        data.engine === self.engine &&
-        data.serviceType === self.activeSubserviceType) {
-        if (_.isFunction(cb)) {
-          cb(_.omit(data.payload, 'serviceType', 'engine', 'type'));
-        } else {
-          console.log('No callback passed to service>%s.then', self.name);
+        // console.log('RECOG SERVICE THEN', data)
+        if (data.eventType === 'service-emit' &&
+          data.type === self.type &&
+          data.engine === self.engine &&
+          data.serviceType === self.activeSubserviceType) {
+          if (_.isFunction(cb)) {
+            cb(_.omit(data.payload, 'serviceType', 'engine', 'type'));
+          } else {
+            console.log('No callback passed to service>%s.then', self.name);
+          }
         }
-      }
-    })
+      })
+    }
   }
 
 
@@ -212,11 +214,13 @@ var service = function(name, options) {
 
   if (name === 'recognition') {
     return _.omit(recognitionMethods, 'then');
-  } else if (name === 'face' || name === 'demographics') {
+  }
+  elseif(name === 'face' || name === 'demographics') {
     return _.omit(detectionMethods, 'then');
   } else if (name === 'vehicle') {
     return _.omit(vehicleMethods, 'then');
-  } else if (!_.isNull(name.match(/fist|thumb-up|palm|pinch/))) {
+  } else
+  if (!_.isNull(name.match(/fist|thumb-up|palm|pinch/))) {
     return _.omit(gestureMethods, 'then');
   } else {
     console.error('Unrecognized Service Name', name);
