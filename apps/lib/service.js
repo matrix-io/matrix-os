@@ -214,13 +214,11 @@ var service = function(name, options) {
 
   if (name === 'recognition') {
     return _.omit(recognitionMethods, 'then');
-  }
-  elseif(name === 'face' || name === 'demographics') {
+  } else if (name === 'face' || name === 'demographics') {
     return _.omit(detectionMethods, 'then');
   } else if (name === 'vehicle') {
     return _.omit(vehicleMethods, 'then');
-  } else
-  if (!_.isNull(name.match(/fist|thumb-up|palm|pinch/))) {
+  } else if (!_.isNull(name.match(/fist|thumb-up|palm|pinch/))) {
     return _.omit(gestureMethods, 'then');
   } else {
     console.error('Unrecognized Service Name', name);
