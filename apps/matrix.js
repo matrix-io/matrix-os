@@ -286,6 +286,7 @@ var Matrix = {
         // for testing
         Matrix.config = config;
       }
+      Matrix.settings = Matrix.config.settings;
     } catch (e) {
       return error(appName, 'invalid config.json', e);
     }
@@ -331,6 +332,7 @@ var Matrix = {
     }
     return require('./lib/zigbee.js')
   },
+  ir: require('./lib/ir.js').ir,
   static: function() {
     console.log('static not implmented yet')
   },
