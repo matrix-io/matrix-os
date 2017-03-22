@@ -186,9 +186,6 @@ async.series([
         //Wait for mobile pairing
         Matrix.device.bluetooth.start(function() {
           Matrix.device.bluetooth.emitter.on('deviceAuth', function(err, uuid, options) {
-            if (err) cb(err);
-            if (options) console.log(options);
-
             if (!err) {
               console.log('Received BLE device info:', options);
               Matrix.service.auth.set(options.id, options.secret, function(err) {
