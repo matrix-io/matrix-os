@@ -21,10 +21,11 @@ var IR = {
     if (options.hasOwnProperty('brand')) {
       debugger;
       IR.brand = options.brand.replace(/-./, '_').toLowerCase();
-      IR.model = options.model.toUpperCase() + '.lircd.conf';
+      IR.model = options.model.toUpperCase();
+      var ext = '.lircd.conf';
 
       // https://storage.googleapis.com/assets.admobilize.com/lirc-remotes/sony/RM-AAU014.lircd.conf
-      var url = ['https://storage.googleapis.com/assets.admobilize.com/lirc-remotes', IR.brand, IR.model].join('/');
+      var url = ['https://storage.googleapis.com/assets.admobilize.com/lirc-remotes', IR.brand, IR.model + ext].join('/');
       // console.log(url);
 
       if (!IR.hasOwnProperty('cmds')) {
@@ -38,6 +39,9 @@ var IR = {
               config += d;
             })
             res.on('end', function() {
+
+              // expose
+              IR.config = config;
               var startI = config.indexOf('begin codes') + 11;
               var endI = config.indexOf('end codes');
               var codes = config.slice(startI, endI);
@@ -78,7 +82,8 @@ var IR = {
           cmd: 'send',
           payload: {
             brand: IR.brand,
-            model: IR.model
+            model: IR.model,
+            config: IR.config
           }
         });
 
