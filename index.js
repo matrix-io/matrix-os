@@ -186,9 +186,6 @@ async.series([
         //Wait for mobile pairing
         Matrix.device.bluetooth.start(function() {
           Matrix.device.bluetooth.emitter.on('deviceAuth', function(err, uuid, options) {
-            if (err) cb(err);
-            if (options) console.log(options);
-
             if (!err) {
               console.log('Received BLE device info:', options);
               Matrix.service.auth.set(options.id, options.secret, function(err) {
@@ -468,6 +465,9 @@ async.series([
     Matrix.device.drivers.led.stopLoader();
     Matrix.device.drivers.led.clear();
 
+    //get network information
+    Matrix.device.network.start();
+
     if (!process.env.hasOwnProperty('TEST_MODE')) {
       //TODO start configuration BLE advertising
       Matrix.device.bluetooth.start();
@@ -587,6 +587,7 @@ function onDestroy(cb) {
   destroyingProcess = true;
 
   Matrix.device.drivers.led.clear();
+  Matrix.device.network.stop();
   if (!forceExit) {
     disconnectFirebase(function() {
       async.series([

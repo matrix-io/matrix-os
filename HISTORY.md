@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Emit app-config to mxss on app start
+- Save device wifi info to firebase
+  
 ### Changed
 - Reenabled service.then
 
