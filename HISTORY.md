@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Emit app-config to mxss on app start
-
+- Save device wifi info to firebase
+  
 ## [0.11.0]
 ### Changed
 - Removed .init in App API for services. Replaced with services
