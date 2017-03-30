@@ -4,7 +4,6 @@
 
 
 // Globals
-require('colors');
 _ = require('lodash');
 
 //needs sudo for audio commands disable until we figure this out
@@ -286,7 +285,6 @@ var Matrix = {
         // for testing
         Matrix.config = config;
       }
-      Matrix.settings = Matrix.config.settings;
     } catch (e) {
       return error(appName, 'invalid config.json', e);
     }
@@ -295,6 +293,8 @@ var Matrix = {
       return console.error(appName + '.matrix is not the same as config name:', Matrix.config.name);
     }
 
+
+    Matrix.settings = Matrix.config.settings;
     // make configuration available globally `Matrix.services.vehicle.engine`
     _.each(_.keys(Matrix.config.settings), function(k) {
       Matrix[k] = Matrix.config.settings[k];

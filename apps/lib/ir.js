@@ -12,14 +12,14 @@ var IR = {
    */
   ir: function(options) {
 
-    console.log('ir', options)
+    console.log('ir', options);
 
     IR.cmdPromise = new Promise(function(resolve, reject) {
       IR.cmdResolve = resolve;
-    })
+      IR.cmdReject = reject;
+    });
 
     if (options.hasOwnProperty('brand')) {
-      debugger;
       IR.brand = options.brand.replace(/-./, '_').toLowerCase();
       IR.model = options.model.toUpperCase();
       var ext = '.lircd.conf';
@@ -32,12 +32,12 @@ var IR = {
         require('https').get(url, function(res) {
           var status = res.statusCode;
           if (status !== 200) {
-            console.error('Request Failed:', url, status);
+            IR.cmdReject('Request Failed: ' + url + ' ' + status);
           } else {
             var config = '';
             res.on('data', function(d) {
               config += d;
-            })
+            });
             res.on('end', function() {
 
               // expose
@@ -47,6 +47,9 @@ var IR = {
               var codes = config.slice(startI, endI);
               IR.cmds = [];
               IR.codes = [];
+
+              //kv lookup
+              IR.cmdCodes = {};
 
               codes.split('\n').map(function(c) {
                 //  BTN_VIDEO3               0x210C
@@ -59,13 +62,17 @@ var IR = {
                 var re = /\w*/g;
 
                 //strip empty space from array + first is cmd match
-                IR.cmds.push(_.compact(c.match(re))[0]);
-                IR.codes.push(_.compact(c.match(re))[1]);
+                var cmd = _.compact(c.match(re))[0];
+                var code = _.compact(c.match(re))[1];
+                IR.cmds.push(cmd);
+                IR.codes.push(code);
+                IR.cmdCodes[cmd] = code;
+
               });
               IR.cmdResolve();
             });
           }
-        })
+        });
       } else {
         IR.cmdResolve(IR.cmds);
       }
@@ -83,15 +90,18 @@ var IR = {
           payload: {
             brand: IR.brand,
             model: IR.model,
-            config: IR.config
+            cmdCodes: IR.cmdCodes,
+            command: cmd
           }
         });
 
       } else {
-        console.error(cmd, 'is not a valid command', cmds);
+        console.error(cmd, 'is not a valid command', IR.cmds);
       }
-    })
+    });
+    IR.cmdReject.then(function(err) {
+      console.error(err);
+    });
   }
-}
-console.log(IR);
+};
 module.exports = IR;
