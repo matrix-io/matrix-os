@@ -252,7 +252,8 @@ async.series([
 
       upgradeMOS(function(err, updated) {
         if (err) {
-          console.error('Unable to upgrade dependencies:'.red, err);
+          console.error('Unable to upgrade main code:'.red, err);
+          console.log('Please contact support or share your issue with the community at '.yellow + 'http://community.matrix.one'.green);
           process.exit();
         }
 
@@ -308,7 +309,7 @@ async.series([
     // })
 
 
-    fs.readdir('apps', function(err, appsDir) {
+    fs.readdir(Matrix.config.path.apps, function(err, appsDir) {
       if (err) {
         console.error('Unable to read apps folder: ', err.message);
         return cb(err);
@@ -670,10 +671,10 @@ process.on('uncaughtException', function(err) {
 function getEnvSettings(env) {
   // Change to production after leaving alpha
   var environmentSetting = env || process.env.NODE_ENV || 'rc';
-  var validEnvList = fs.readdirSync('./config/env');
+  var validEnvList = fs.readdirSync(__dirname + '/config/env');
   if (_.intersection(environmentSetting, validEnvList).length > -1) {
     console.log('Environment Selected:'.grey, environmentSetting.blue);
-    return require('./config/env/' + environmentSetting + '.js');
+    return require(__dirname + '/config/env/' + environmentSetting + '.js');
   }
 
 }
@@ -710,7 +711,7 @@ function upgradeDependencies(cb) {
       } else {
         checks.update = true;
         updated = true;
-        console.log('Upgrade Done!'.green, 'Please restart MATRIX OS.');
+        console.log('Dependencies upgrade Done!'.green, 'MATRIX OS restart required.');
       }
       cb(err);
     });
@@ -721,7 +722,7 @@ function upgradeDependencies(cb) {
 }
 
 function upgradeMOS(cb) {
-  fs.readFile('package.json', function(err, info) {
+  fs.readFile(__dirname + '/package.json', function(err, info) {
     if (err) {
       console.error('Unable to read package.json file'.red, err.message);
       return cb(err, false);
@@ -758,21 +759,21 @@ function upgradeMOS(cb) {
             exec('git fetch && git pull', function(error, stdout, stderr) {
               err = error;
               if (!err) {
-                console.log('Main Code updated... '.green)
-                console.log('Upgrade Complete: Restart MATRIX OS... '.green)
+                console.log('Main code updated... '.green)
+                console.log('Upgrade Complete: MATRIX OS restart required'.green)
               } else { //Code update failed
                 debug('Error updating main code:\n', err.message);
-                console.error('Unable to update MOS main code'.yellow);
+                console.error('Unable to update MATRIX OS main code'.yellow);
                 console.error('Please make sure you haven\'t modified any files ('.yellow + 'git status'.gray + '), check your connection and try again'.yellow);
-                console.error('Alternatively, you can run MOS without the upgrade check in the meantime \''.yellow + 'NO_UPGRADE=true node index.js'.gray + '\''.yellow);
+                console.error('Alternatively, you can run MATRIX OS without the upgrade check in the meantime \''.yellow + 'NO_UPGRADE=true node index.js'.gray + '\''.yellow);
               }
               cb(err);
             });
           } else { //Git submodules update failed
             debug('Error updating modules:\n', err.message);
-            console.error('Unable to update MOS submodules'.yellow);
+            console.error('Unable to update MATRIX OS submodules'.yellow);
             console.error('Try \''.yellow + 'git submodule deinit -f ; git submodule update --init'.gray + '\' to fix your modules'.yellow);
-            console.error('Alternatively, you can run MOS without the upgrade check in the meantime \''.yellow + 'NO_UPGRADE=true node index.js'.gray + '\''.yellow);
+            console.error('Alternatively, you can run MATRIX OS without the upgrade check in the meantime \''.yellow + 'NO_UPGRADE=true node index.js'.gray + '\''.yellow);
             cb(err, updated);
           }
 
@@ -791,7 +792,7 @@ function upgradeMOS(cb) {
         try {
           version = JSON.parse(write).version;
         } catch (error) {
-          console.error('Unable to parse MOS version file:', error.message);
+          console.error('Unable to parse MATRIX OS version file:', error.message);
           err = error;
         }
 

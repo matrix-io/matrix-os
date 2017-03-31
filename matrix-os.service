@@ -1,0 +1,10 @@
+[Unit]
+Description=Matrix Open Source
+
+[Service]
+Environment=NO_UPGRADE=true
+Type=simple
+ExecStart=/usr/local/bin/node /usr/share/admobilize/matrix-os/index.js
+
+[Install]
+WantedBy=multi-user.target

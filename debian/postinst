@@ -1,0 +1,11 @@
+#!/bin/bash -e
+
+echo "Enabling MOS loading at startup"
+systemctl enable matrix-os
+
+# This didn't work due to an unresolved shared library.
+# Asking users to reboot after installation.
+# echo "Loading firmware..."
+# service matrix-os start
+
+echo "Please restart your Raspberry Pi after installation"

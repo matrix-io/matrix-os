@@ -1,0 +1,5 @@
+matrix-os (0.1-1) unstable; urgency=low
+
+  * Initial release of MOS as a service
+
+ -- unknown <pi@raspberrypi>  Mon, 18 Jul 2016 15:13:28 -0800

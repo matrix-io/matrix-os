@@ -8,13 +8,13 @@ var p = {
     config: root + 'db/config.db',
     user: root + 'db/user.db',
     service: root + 'db/service.db',
-    pending: root + 'db/pending.db',
-    device: root + 'db/device.db'
+    pending: root + 'db/pending.db'
   },
   pendingFiles: root + 'public/pending_files',
   update: '/tmp/matrix-update/',
   backup: '/tmp/matrix-backup/',
-
+  apps: root + 'apps',
+  protos: root + 'proto',
   splash: 'public/splash',
 
   // logs

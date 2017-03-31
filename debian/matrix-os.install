@@ -1,0 +1,8 @@
+apps usr/share/admobilize/matrix-os
+bin usr/share/admobilize/matrix-os
+config usr/share/admobilize/matrix-os
+lib usr/share/admobilize/matrix-os
+proto usr/share/admobilize/matrix-os
+test usr/share/admobilize/matrix-os
+matrix-os.service lib/systemd/system
+mos /usr/bin
