@@ -106,20 +106,22 @@ var service = function(name, options) {
     },
 
 
-    then: process.on('message', function(data) {
+    then: function(cb) {
+      process.on('message', function(data) {
 
-      // console.log('RECOG SERVICE THEN', data)
-      if (data.eventType === 'service-emit' &&
-        data.type === self.type &&
-        data.engine === self.engine &&
-        data.serviceType === self.activeSubserviceType) {
-        if (_.isFunction(cb)) {
-          cb(_.omit(data.payload, 'serviceType', 'engine', 'type'));
-        } else {
-          console.log('No callback passed to service>%s.then', self.name);
+        // console.log('RECOG SERVICE THEN', data)
+        if (data.eventType === 'service-emit' &&
+          data.type === self.type &&
+          data.engine === self.engine &&
+          data.serviceType === self.activeSubserviceType) {
+          if (_.isFunction(cb)) {
+            cb(_.omit(data.payload, 'serviceType', 'engine', 'type'));
+          } else {
+            console.log('No callback passed to service>%s.then', self.name);
+          }
         }
-      }
-    })
+      })
+    }
   }
 
 

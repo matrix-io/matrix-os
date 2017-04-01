@@ -19,6 +19,12 @@ var IR = {
       IR.cmdReject = reject;
     });
 
+    if (_.isUndefined(options)) {
+      // listen
+      IR.cmdResolve();
+      return IR;
+    }
+
     if (options.hasOwnProperty('brand')) {
       IR.brand = options.brand.replace(/-./, '_').toLowerCase();
       IR.model = options.model.toUpperCase();
@@ -32,7 +38,7 @@ var IR = {
         require('https').get(url, function(res) {
           var status = res.statusCode;
           if (status !== 200) {
-            IR.cmdReject('Request Failed: ' + url + ' ' + status);
+            IR.cmdReject('No Config Found for ' + IR.brand + ':' + IR.model + ' - Request Failed: ' + url + ' ' + status);
           } else {
             var config = '';
             res.on('data', function(d) {
@@ -74,7 +80,7 @@ var IR = {
           }
         });
       } else {
-        IR.cmdResolve(IR.cmds);
+        IR.cmdResolve();
       }
     }
 
@@ -82,7 +88,9 @@ var IR = {
   },
   send: function(cmd) {
     console.log('[m]>cmd', cmd);
-    IR.cmdPromise.then(function() {
+    IR.cmdPromise.then(function(err) {
+      if (err) return console.error(err);
+
       if (IR.cmds.indexOf(cmd) > -1) {
         process.send({
           type: 'ir-cmd',
@@ -91,7 +99,8 @@ var IR = {
             brand: IR.brand,
             model: IR.model,
             cmdCodes: IR.cmdCodes,
-            command: cmd
+            command: cmd,
+            config: IR.config
           }
         });
 
@@ -99,8 +108,28 @@ var IR = {
         console.error(cmd, 'is not a valid command', IR.cmds);
       }
     });
-    IR.cmdReject.then(function(err) {
-      console.error(err);
+  },
+  listen: function(cb) {
+    IR.cmdPromise.then(function(err) {
+      if (err) return console.error(err);
+
+      process.send({
+        type: 'ir-cmd',
+        cmd: 'listen',
+        payload: {
+          brand: IR.brand,
+          model: IR.model,
+          cmdCodes: IR.cmdCodes,
+          config: IR.config
+        }
+      });
+
+      process.on('message', function(d) {
+        console.log('IR DATA>!', d);
+        if (d.type === 'ir-emit') {
+          cb(d);
+        }
+      });
     });
   }
 };
