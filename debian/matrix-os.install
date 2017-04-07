@@ -1,8 +1,4 @@
-apps usr/share/admobilize/matrix-os
-bin usr/share/admobilize/matrix-os
-config usr/share/admobilize/matrix-os
-lib usr/share/admobilize/matrix-os
+matrix-os /usr/share/admobilize
 proto usr/share/admobilize/matrix-os
-test usr/share/admobilize/matrix-os
+appsfortesting/* usr/share/admobilize/matrix-os/test/fixtures/testapps
 matrix-os.service lib/systemd/system
-mos /usr/bin

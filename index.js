@@ -61,9 +61,6 @@ Matrix.localApps = {};
 // Make Matrix[setting] from env settings for easy access
 parseEnvSettings(envSettings);
 
-//Matrix.deviceId = envSettings.deviceId;
-//Matrix.deviceSecret = envSettings.deviceSecret;
-
 // Configuration besides env settings
 Matrix.config = require('./config');
 
@@ -94,21 +91,6 @@ Matrix.events.on('addListener', function(name) {
   debug('+ Event Listener', name);
 })
 
-//Initialize Libraries. Calls module.export.init() if exists.
-Matrix.event.init();
-Matrix.service.init();
-Matrix.device.init();
-
-// start loading LED animation
-Matrix.device.drivers.led.loader3();
-
-// Node-SDK - Use for API Server Communication
-// SDK is used mainly for AUTH
-Matrix.api = require('matrix-node-sdk');
-// This needs to be done after urls are made available via parseEnvSettings
-Matrix.api.makeUrls(Matrix.apiServer);
-
-
 //db - files stored in db/
 var DataStore = require('nedb');
 Matrix.db = {
@@ -129,6 +111,18 @@ Matrix.db = {
   })
 }
 
+//Initialize device Libraries. Calls module.export.init() if exists.
+Matrix.device.init();
+
+// start loading LED animation
+Matrix.device.drivers.led.loader3();
+
+// Node-SDK - Use for API Server Communication
+// SDK is used mainly for AUTH
+Matrix.api = require('matrix-node-sdk');
+// This needs to be done after urls are made available via parseEnvSettings
+Matrix.api.makeUrls(Matrix.apiServer);
+
 var malosInfoOut = '';
 Matrix.device.malos.info(function(data) {
   _.each(data.info, function(i) {
@@ -137,11 +131,7 @@ Matrix.device.malos.info(function(data) {
 })
 
 
-
 var msg = [];
-
-
-
 async.series([
 
   function readLocalDeviceInfo(cb) {
@@ -172,12 +162,17 @@ async.series([
       });
     }
   },
-
+  function (cb) {
+    //Initialize event and service libraries. Calls module.export.init() if exists.
+    Matrix.event.init();
+    Matrix.service.init();
+    cb();
+  },
   function setupForBluetoothIfNeeded(cb) {
 
     //Check if device id and secret are set as env vars
     Matrix.service.token.populate(function(err) { //Authenticate with current data
-
+      
       if (!_.isUndefined(err)) { //Initialized properly but missing valid device id and secret
         //TODO take into account network error
         console.warn('Incorrect or missing registration information. This device is not correctly configured. Please add MATRIX_DEVICE_ID and MATRIX_DEVICE_SECRET variables. If you do not have these available, you can get them by issuing `matrix register device` with matrix CLI or by registering your device using the mobile apps. \n\nIf you continue to have problems, please reach out to our support forums at http://community.matrix.one'.yellow);
@@ -205,7 +200,7 @@ async.series([
             }
           });
 
-        }); //Starts BLE registration advertising
+        }); //Starts BLE registration advertising    
 
         //TODO Might want to remove the listener on successful auth, although it might not really be a big deal 
         //Matrix.device.bluetooth.emitter.removeListener('deviceAuth', refreshHandler);
@@ -218,8 +213,6 @@ async.series([
 
     });
   },
-
-
 
   Matrix.service.token.populate, //Authenticate with current data
 
@@ -696,10 +689,19 @@ Matrix.haltTheMatrix = function(cb) {
 }
 
 
-function upgradeDependencies(cb) {
+function upgradeDependencies(cb) {  
   var err;
   var updated = false;
-  var deps = [Matrix.service.firebase, Matrix.api, require('matrix-app-config-helper'), require('matrix-eventfilter'), require('pi-wifi')];
+  var helper = require('matrix-app-config-helper');
+  var eventFilter = require('matrix-eventfilter');
+  var piwifi = require('pi-wifi');
+  if (_.has(helper, 'checkVersion')) helper.checkVersion(function (err, version) { if (!_.isUndefined(version) && !version.updated); console.log('MATRIX Config App Helper (' + version.local + '). Version available: ' + version.remote) });
+  if (_.has(Matrix.api, 'checkVersion')) Matrix.api.checkVersion(function (err, version) { if (!_.isUndefined(version) && !version.updated); console.log('MATRIX API (' + version.local + '). Version available: ' + version.remote) });
+  if (_.has(Matrix.service.firebase, 'checkVersion')) Matrix.service.firebase.checkVersion(function (err, version) { if (!_.isUndefined(version) && !version.updated); console.log('MATRIX Firebase (' + version.local + '). Version available: ' + version.remote) });
+  if (_.has(eventFilter, 'checkVersion')) eventFilter.checkVersion(function (err, version) { if (!_.isUndefined(version) && !version.updated); console.log('MATRIX Event Filter (' + version.local + '). Version available: ' + version.remote) });
+  //if (_.has(piwifi, 'checkVersion')) piwifi.checkVersion(function (err, version) { if (!_.isUndefined(version) && !version.updated); console.log('PiWifi (' + version.local + '). Version available: ' + version.remote) });
+      
+  var deps = [Matrix.service.firebase, Matrix.api, helper, eventFilter, piwifi];
   var olds = _.filter(deps, { current: false });
 
   if (olds.length > 0) {
