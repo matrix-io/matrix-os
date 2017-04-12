@@ -2,8 +2,8 @@
 
 const mosRepoURL = 'https://raw.githubusercontent.com/matrix-io/matrix-os/master/package.json';
 
-var onlineSetupTimeout;
-const onlineSetupTimeoutSeconds = 30;
+var mainFlowTimeout;
+const mainFlowTimeoutSeconds = 30;
 
 // for crash handling
 var destroyingProcess = false;
@@ -71,15 +71,15 @@ debug('Debug:', process.env.DEBUG);
 debug('====== config ===vvv'.yellow)
 debug(Matrix.config, '\n');
 
-// Check that servers and device Id exists.
-var reqKeys = ['deviceId', 'apiServer', 'streamingServer'];
+// Check that servers exist
+var reqKeys = ['apiServer', 'streamingServer'];
 var foundKeys = _.intersection(_.keysIn(Matrix), reqKeys);
 if (foundKeys.length < reqKeys.length) {
   var missingKeys = _.xor(reqKeys, foundKeys);
   _.each(missingKeys, function(k) {
     console.error('Matrix Registration Requires %s'.red, _.kebabCase(k).yellow);
   })
-  process.exit(1);
+  onDestroy();
 }
 
 debug('', 'ENV:'.grey, Matrix.env.blue, 'API:'.grey, Matrix.apiServer.blue, 'MXSS:'.grey, Matrix.streamingServer.blue)
@@ -134,12 +134,54 @@ Matrix.device.malos.info(function(data) {
 })
 
 
-var msg = [];
+var step1 = false;
+var step2 = false;
 
-
-offlineSetup(function () {
-  
-});
+function mainFlow(cb) {
+  if (mainFlowTimeout) clearTimeout(mainFlowTimeout);
+  async.series([
+    function (next) {
+      if (!step1) 
+        offlineSetup(function (err) { if (!err) step1 = true; next(err); });
+      else next();
+    },
+    function (next) {
+      if (!step2)
+        onlineSetup(function (err) { if (!err) step2 = true; next(err); });
+      else next();
+    },
+    reconnectSetup
+  ], function (err) {
+    if (err) {
+      //If the error was caused by the network
+      if (_.has(err, 'code') && networkErrors.indexOf(err.code) > -1) {
+        if (!step2) console.error('Setup network error (such as timeout, interrupted connection or unreachable host) has occurred. Retrying in '.yellow + mainFlowTimeoutSeconds.toString().green + ' seconds.'.yellow);
+        else console.log('Connectivity lost, reconnecting in '.yellow + mainFlowTimeoutSeconds.toString().green + ' seconds.'.yellow);
+          
+        //Try again after a specific time has passed
+        if (mainFlowTimeout) clearTimeout(mainFlowTimeout);
+        mainFlowTimeout = setTimeout(function () {
+          mainFlow(function (err) { 
+            if (!err) debug('The main flow worked after a retry!');
+            else debug('The main flow keeps failing even after retrying...');
+          });
+        }, mainFlowTimeoutSeconds * 1000);
+        Matrix.device.drivers.led.timedError(1, function () {
+          if (!step2) Matrix.device.drivers.led.loader3();
+          cb();
+        });
+      } else {
+        error('Bad Matrix Initialization', err.message);
+        Matrix.device.drivers.led.criticalError(function ()
+        {
+          onDestroy();
+        });
+      }
+    } else {
+      cb();
+    }
+  }); 
+}
 
 // STEP 1
 function offlineSetup(callback) {
@@ -183,52 +225,45 @@ function offlineSetup(callback) {
 
       //If device data isn't present    
       if (!Matrix.service.auth.isSet()) {
-
+        console.warn('Missing registration information! This device is not correctly configured. \nYou can register and pair via Bluetooth to your device using the '.yellow + 'MATRIX'.green + ' mobile apps.'.yellow);
+        console.warn('Alternatively, you can use '.yellow + 'MATRIX CLI'.green + ' to register the device manually to then add the '.yellow + 'MATRIX_DEVICE_ID'.gray + ' and '.yellow + 'MATRIX_DEVICE_SECRET'.gray + ' variables. \n\nIf you continue to have problems, please reach out to our support forums at'.yellow + ' http://community.matrix.one'.green);
+        
         //Starts BLE registration advertising (Live device registration)
         Matrix.device.bluetooth.start(function () {
-          Matrix.device.bluetooth.emitter.on('deviceAuth', function (err, uuid, options) {
-            if (err) cb(err);
-            if (options) console.log(options);
+          console.log('Waiting for BLE pairing'.yellow);
 
+          function onAuth(err, uuid, options) {
             if (!err) {
               console.log('Received BLE device info:', options);
               Matrix.service.auth.set(options.id, options.secret, function (err) {
                 if (!err) {
                   console.log('Device configured as:'.yellow, Matrix.deviceId.green);
-                  cb(); //Continue setup process
-
-                  //TODO Might want to remove the listener on successful auth, although it might not really be a big deal 
-                  //Matrix.device.bluetooth.emitter.removeListener('deviceAuth', refreshHandler);
-                  //Matrix.device.bluetooth.emitter.removeListener('configurationAuth', refreshHandler);
+                  Matrix.service.cypher.init();
+                  //Removes the listener on successful auth, although it might not really be a big deal 
+                  //Matrix.device.bluetooth.emitter.removeListener('deviceAuth', onAuth);
+                  setTimeout(function () {
+                    //Give it some time to close the connection
+                    cb(); //Continue setup process
+                  }, 1000);
                 } else {
-                  cb('Unable to store device info');
+                  cb(new Error('Unable to store device info! (' + err.message + ')'));
                 }
               }); //Update device id and device secret
 
             } else {
-              cb('Error trying to configure the device', err.message);
+              Matrix.device.drivers.led.timedError(0.5, function () { 
+                Matrix.device.bluetooth.updateLed();
+                //cb(err); //Don't return, just wait for a proper registration
+              });
             }
-          });
+          }
+          Matrix.device.bluetooth.emitter.on('deviceAuth', onAuth);
         });
 
       } else {
-        //Continue process
+        console.log('Starting as device:'.yellow, Matrix.deviceId.green);
         cb();
       }
-
-      Matrix.service.token.populate(function (err) { //Authenticate using current device data
-
-        if (!_.isUndefined(err)) { //Initialized properly but missing valid device id and secret
-          //TODO take into account network error
-          console.warn('Incorrect or missing registration information. This device is not correctly configured. Please add MATRIX_DEVICE_ID and MATRIX_DEVICE_SECRET variables. If you do not have these available, you can get them by issuing `matrix register device` with matrix CLI or by registering your device using the mobile apps. \n\nIf you continue to have problems, please reach out to our support forums at http://community.matrix.one'.yellow);
-          console.log('Waiting for BLE pairing'.yellow);
-
-        } else { //Correct initialization and already authenticated
-          console.log('Starting as device:'.yellow, Matrix.deviceId.green);
-          cb(); //Continue setup process
-        }
-
-      });
     },
     function startConfigurationBLE(cb) {
       //Starts BLE configuration
@@ -244,13 +279,9 @@ function offlineSetup(callback) {
       });
     }],
     function offlineSetupEnds(err) {
-      if (err) {
-        console.error('Unable to start offline MOS, something is really wrong!' + ' (' + err.message + ')');
-        callback(err);
-      } else {
-        console.log('Offline setup successful');
-        callback();
-      }
+      if (err) console.error('Unable to setup offline MOS, something went wrong (' + err.message + ')');
+      else debug('Offline setup successful');
+      callback(err);
     }
   );  
 }
@@ -281,18 +312,20 @@ function onlineSetup(callback) {
       // check dependencies - eventfilter is used for apps
       upgradeDependencies(function (err, updated) {
         if (err) console.error('Unable to upgrade dependencies:'.red, err);
-        if (updated) process.exit();
+        if (updated) onDestroy();
 
         upgradeMOS(function (err, updated) {
           if (err) {
             console.error('Unable to upgrade main code:'.red, err);
             console.log('Please contact support or share your issue with the community at '.yellow + 'http://community.matrix.one'.green);
-            process.exit();
+            onDestroy();
           }
 
           if (updated) {
             debug('Stopping after upgrade');
-            process.exit();
+            Matrix.device.drivers.led.stopLoader();
+            Matrix.device.drivers.led.clear();
+            onDestroy();
           }
           cb(err);
         });
@@ -489,47 +522,27 @@ function onlineSetup(callback) {
         })
       });
     }
-  ], function (err) {
+  ], function onlineSetupEnds(err) {
     if (err) {
-      if (checks.connectivity === false) {
-        console.error('Network error (such as timeout, interrupted connection or unreachable host) has occurred.'.yellow);
-        
-        //Try again after a specific time has passed
-        onlineSetupTimeout = setTimeout(onlineSetup, onlineSetupTimeoutSeconds * 1000);
-        Matrix.device.drivers.led.error();
-        //TODO After error restart loader?
-        
-        // Connectivity error needs to be handled gracefully
-      } else {
-        error('Bad Matrix Initialization', err);
-        process.exit();
-      }
+      console.error('Unable to setup online MOS, something went wrong (' + err.message + ')');
+      callback(err);
     } else {
-      if (onlineSetupTimeout) clearTimeout(onlineSetupTimeout);
 
-      Matrix.service.firebase.device.goCompleted();
       Matrix.device.drivers.led.stopLoader();
       Matrix.device.drivers.led.clear();
 
-      // Checklist
-      // - MXSS
-      if (err) { error(err); }
-      if (Matrix.registerOK) {
-        log('MXSS Connected:'.green, Matrix.streamingServer.grey)
-      }
+      // MXSS
+      if (Matrix.registerOK) log('MXSS Connected:'.green, Matrix.streamingServer.grey);
+      else error('MXSS Unavailable'.red);
 
-      // - MALOS
-      if (malosInfoOut.length > 0) {
-        log('MALOS COMPONENTS', malosInfoOut);
-      } else {
-        error('MALOS Unavailable'.red)
-      }
+      // MALOS
+      if (malosInfoOut.length > 0) log('MALOS COMPONENTS', malosInfoOut);
+      else error('MALOS Unavailable'.red);
+
+      // MOS
       log(Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
       log('['.grey + Matrix.userId.grey + ']'.grey)
       Matrix.banner();
-      if (msg.length > 0) {
-        console.log(msg.join('\n').red);
-      }
 
       //if START_APP is set
       if (Matrix.config.fakeApp) Matrix.service.manager.start(Matrix.config.fakeApp);
@@ -546,6 +559,7 @@ function onlineSetup(callback) {
       }
 
       Matrix.service.lifecycle.updateLastBootTime();
+      debug('Online setup successful!');
       callback();
     }
   });
@@ -553,7 +567,17 @@ function onlineSetup(callback) {
 
 
 // STEP 3 (This should probably be triggered whenever the device reconnects)
+function reconnectSetup(callback) { 
+  //Matrix.service.firebase.device.goCompleted(); //We are no using the FB queue to notify the status
+  //Additional reconnection logic could be handle here
+  callback();
+}
 
+
+mainFlow(function (err) { 
+  if (!err) debug('The main flow worked on the first attempt!');
+  else debug('The main flow is taking some time to get started...');
+}); //Set the wheels in motion
 
 module.exports = {
   Matrix: Matrix
@@ -661,6 +685,13 @@ setInterval(function maintenance() {
   Matrix.service.manager.cleanLogs();
 }, 1000 * 60 * 60 * 4);
 
+const networkErrors = [
+  'EAI_AGAIN',
+  'ENOTFOUND',
+  'EAFNOSUPPORT',
+  'ETIMEDOUT'
+];
+
 //Triggered when an unexpected (programming) error occurs
 //Also called when a DNS error is presented
 process.on('uncaughtException', function(err) {
@@ -714,8 +745,8 @@ function getEnvSettings(env) {
 }
 
 function parseEnvSettings(envSettings) {
-  Matrix.deviceId = envSettings.deviceId;
-  Matrix.deviceSecret = envSettings.deviceSecret;
+  if (!_.isEmpty(envSettings.deviceId)) Matrix.deviceId = envSettings.deviceId;
+  if (!_.isEmpty(envSettings.deviceSecret)) Matrix.deviceSecret = envSettings.deviceSecret;
   if (_.has(envSettings, 'url')) {
     Matrix.streamingServer = envSettings.url.streaming;
     Matrix.apiServer = envSettings.url.api;
@@ -730,38 +761,58 @@ Matrix.haltTheMatrix = function(cb) {
 }
 
 
-function upgradeDependencies(cb) {  
+function upgradeDependencies(cb) {
   var err;
   var updated = false;
   var helper = require('matrix-app-config-helper');
   var eventFilter = require('matrix-eventfilter');
   var piwifi = require('pi-wifi');
-  if (_.has(helper, 'checkVersion')) helper.checkVersion(function (err, version) { if (!_.isUndefined(version) && !version.updated); console.log('MATRIX Config App Helper (' + version.local + '). Version available: ' + version.remote) });
-  if (_.has(Matrix.api, 'checkVersion')) Matrix.api.checkVersion(function (err, version) { if (!_.isUndefined(version) && !version.updated); console.log('MATRIX API (' + version.local + '). Version available: ' + version.remote) });
-  if (_.has(Matrix.service.firebase, 'checkVersion')) Matrix.service.firebase.checkVersion(function (err, version) { if (!_.isUndefined(version) && !version.updated); console.log('MATRIX Firebase (' + version.local + '). Version available: ' + version.remote) });
-  if (_.has(eventFilter, 'checkVersion')) eventFilter.checkVersion(function (err, version) { if (!_.isUndefined(version) && !version.updated); console.log('MATRIX Event Filter (' + version.local + '). Version available: ' + version.remote) });
-  //if (_.has(piwifi, 'checkVersion')) piwifi.checkVersion(function (err, version) { if (!_.isUndefined(version) && !version.updated); console.log('PiWifi (' + version.local + '). Version available: ' + version.remote) });
-      
-  var deps = [Matrix.service.firebase, Matrix.api, helper, eventFilter, piwifi];
-  var olds = _.filter(deps, { current: false });
+  var versions = [];
 
-  if (olds.length > 0) {
-    console.log('Upgrading Dependencies....'.yellow)
-    exec('npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase matrix-eventfilter pi-wifi', function(error, stdout, stderr) {
-      if (error) {
-        console.error('Error upgrading dependencies: '.red + error);
-        err = error;
-      } else {
-        checks.update = true;
-        updated = true;
-        console.log('Dependencies upgrade Done!'.green, 'MATRIX OS restart required.');
-      }
-      cb(err);
-    });
-  } else {
-    console.log('Dependencies up to date.')
-    cb(err, updated);
-  }
+  //Get recent version
+  async.parallel({
+    helperVersion: function (cb) {
+      if (_.has(helper, 'checkVersion')) helper.checkVersion(function (err, version) { cb(version.updated); });
+      else cb(helper.current);
+    },
+    apiVersion: function (cb) {
+      if(_.has(Matrix.api, 'checkVersion')) Matrix.api.checkVersion(function (err, version) { cb(version.updated); });
+      else cb(Matrix.api.current);
+    },
+    firebaseVersion: function (cb) {
+      if (_.has(Matrix.service.firebase, 'checkVersion')) Matrix.service.firebase.checkVersion(function (err, version) { cb(version.updated); });
+      else cb(Matrix.service.firebase.current);
+    },
+    eventVersion: function (cb) {
+      if (_.has(eventFilter, 'checkVersion')) eventFilter.checkVersion(function (err, version) { cb(version.updated); });
+      else cb(eventFilter.current);
+    }
+  },
+  function versionResults(err, results) { 
+    console.log(Matrix.service.firebase.current, Matrix.api.current, helper.current, eventFilter.current, piwifi.current);
+    var olds = _.filter(results, false);
+    console.log('results:', results);
+    console.log('olds:', olds); 
+
+    if (olds.length > 0) {
+      console.log('Upgrading Dependencies....'.yellow)
+      exec('npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase matrix-eventfilter pi-wifi', function (error, stdout, stderr) {
+        if (error) {
+          console.error('Error upgrading dependencies: '.red + error);
+          err = error;
+        } else {
+          checks.update = true;
+          updated = true;
+          console.log('Dependencies upgrade Done!'.green, 'MATRIX OS restart required.');
+        }
+        cb(err);
+      });
+    } else {
+      console.log('Dependencies up to date.')
+      cb(err, updated);
+    }
+  });
+
 }
 
 function upgradeMOS(cb) {
@@ -810,7 +861,7 @@ function upgradeMOS(cb) {
                 console.error('Please make sure you haven\'t modified any files ('.yellow + 'git status'.gray + '), check your connection and try again'.yellow);
                 console.error('Alternatively, you can run MATRIX OS without the upgrade check in the meantime \''.yellow + 'NO_UPGRADE=true node index.js'.gray + '\''.yellow);
               }
-              cb(err);
+              cb(err, updated);
             });
           } else { //Git submodules update failed
             debug('Error updating modules:\n', err.message);
