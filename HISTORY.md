@@ -4,6 +4,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.11.1]
+### Removed
+- Deprecated applicationConfigs on register
+
+### Added
+- Emit app-config to mxss on app start
+- Save device wifi info to firebase
+  
+### Changed
+- Reenabled service.then
+
+## [0.11.0]
+### Changed
+- Removed .init in App API for services. Replaced with services
+- Updated test apps and documentation
+- Depreciated init for sensors, replaced with `sensor`. init still works
+
+## [0.10.0]
+Queue the magic.
+
+### Added
+- Recognition support in apps
+- Bluetooth Support for Pairing Workflow(!!)
+- Save credentials to device database
+- Binary script in `bin/` for local reset
+
+# Changed 
+- Preventing apps from sending data without dataTypes entry
+- Init has been divided into service and sensor
+- Login sequence adapted to start with bluetooth pair if no id/secret
+- New Pretty Loader
+
+### Removed
+- matrix.init is deprecated, but will not fail yet
+
 ## [0.9.4]
 ### Fixed
 - Can use debugger without app conflicts on port
@@ -11,6 +46,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Zigbee Port Number
 - Handling for Dashboard events
+
 ## [0.9.0]
 ### Added
 - Zigbee Support

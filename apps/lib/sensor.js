@@ -1,51 +1,13 @@
-/**
- * Init will be depreciated shortly. It is clumsy.
- */
-
-
 var EventFilter = require('matrix-eventfilter').EventFilter;
 var applyFilter = require('matrix-eventfilter').apply;
-
-module.exports = function(name, options) {
-  var self = this;
-
-  if (_.isUndefined(options)) {
-    options = {};
-  }
-
-  //find if this init is for a detection
-  if (!_.isNull(name.match(/(face|demographics|vehicle|palm|pinch|fist|thumb-up)/))) {
-
-    console.log('Initialize Service:'.blue, name);
-
-    // find the service definition
-    var service = _.mapValues(self.config.services, function(v) {
-      if (v.engine == name || v.type == name) {
-        return { type: v.type, engine: v.engine }
-      }
-    });
-
-    process.send({ type: 'service-init', name: name, engine: service.engine, options: options });
-    return {
-      then: function(cb) {
-        process.on('message', function(data) {
-          if (data.eventType === 'service-emit') {
-            cb(data.payload);
-          }
-        })
-      }
-    }
-  } else {
-
-    // this init is for a sensor name
-    return initSensor(name, options);
-  }
-
-}
 
 // name can be array or string
 function initSensor(name, options) {
   console.log('Initialize Sensor:'.blue, name);
+
+  if (_.isUndefined(options)) {
+    options = {};
+  }
 
   var filter, sensorOptions;
 
@@ -150,3 +112,5 @@ function initSensor(name, options) {
 
   return returnObj;
 }
+
+module.exports = initSensor;

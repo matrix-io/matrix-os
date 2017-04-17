@@ -29,7 +29,7 @@
   "globals": {
     "async": true,
     "angular": true,
-    "app" : true,
+    "app": true,
     "$": true,
     "_": true,
     "debug": true,
@@ -40,6 +40,8 @@
     "log": true,
     "warn": true,
     "ulog": true,
-    "matrix": true
+    "matrix": true,
+    "async": true,
+    "debug": true
   }
 }

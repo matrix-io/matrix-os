@@ -1,4 +1,4 @@
-describe('Encryption', function() {
+describe.skip('Encryption', function() {
   var testMessage = "Hello World";
   var currentDeviceId = Matrix.deviceId;
   var cypher = Matrix.service.cypher;

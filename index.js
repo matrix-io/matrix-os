@@ -546,7 +546,6 @@ function onlineSetup(callback) {
 
       //if START_APP is set
       if (Matrix.config.fakeApp) Matrix.service.manager.start(Matrix.config.fakeApp);
-
       //for tests
       Matrix.events.emit('matrix-ready');
 
@@ -643,6 +642,7 @@ function onDestroy(cb) {
   destroyingProcess = true;
 
   Matrix.device.drivers.led.clear();
+  Matrix.device.network.stop();
   if (!forceExit) {
     disconnectFirebase(function() {
       async.series([
