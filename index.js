@@ -762,38 +762,38 @@ Matrix.haltTheMatrix = function(cb) {
 
 
 function upgradeDependencies(cb) {
-  var err;
+
   var updated = false;
   var helper = require('matrix-app-config-helper');
   var eventFilter = require('matrix-eventfilter');
   var piwifi = require('pi-wifi');
-  var versions = [];
 
   //Get recent version
   async.parallel({
     helperVersion: function (cb) {
-      if (_.has(helper, 'checkVersion')) helper.checkVersion(function (err, version) { cb(version.updated); });
-      else cb(helper.current);
+      if (_.has(helper, 'checkVersion')) helper.checkVersion(function (err, version) { console.log('DEP helper: ', err, version); cb(err, version.updated); });  
+      else cb(undefined, helper.current);
     },
     apiVersion: function (cb) {
-      if(_.has(Matrix.api, 'checkVersion')) Matrix.api.checkVersion(function (err, version) { cb(version.updated); });
-      else cb(Matrix.api.current);
+      if (_.has(Matrix.api, 'checkVersion')) Matrix.api.checkVersion(function (err, version) { console.log('DEP api: ', err, version); cb(err, version.updated); });    
+      else cb(undefined, Matrix.api.current);
     },
     firebaseVersion: function (cb) {
-      if (_.has(Matrix.service.firebase, 'checkVersion')) Matrix.service.firebase.checkVersion(function (err, version) { cb(version.updated); });
-      else cb(Matrix.service.firebase.current);
+      if (_.has(Matrix.service.firebase, 'checkVersion')) Matrix.service.firebase.checkVersion(function (err, version) { console.log('DEP firebase: ', err, version); cb(err, version.updated); });  
+      else cb(undefined, Matrix.service.firebase.current);
     },
     eventVersion: function (cb) {
-      if (_.has(eventFilter, 'checkVersion')) eventFilter.checkVersion(function (err, version) { cb(version.updated); });
-      else cb(eventFilter.current);
+      if (_.has(eventFilter, 'checkVersion')) eventFilter.checkVersion(function (err, version) { console.log('DEP event: ', err, version); cb(err, version.updated); });
+      else cb(undefined, eventFilter.current);
+    },
+    piwifiVersion: function (cb) {
+      if (_.has(piwifi, 'checkVersion')) piwifi.checkVersion(function (err, version) { console.log('DEP pi: ', err, version); cb(err, version.updated); });
+      else cb(undefined, piwifi.current);
     }
-  },
-  function versionResults(err, results) { 
-    console.log(Matrix.service.firebase.current, Matrix.api.current, helper.current, eventFilter.current, piwifi.current);
-    var olds = _.filter(results, false);
-    console.log('results:', results);
-    console.log('olds:', olds); 
 
+  },
+    function versionResults(err, results) {
+      var olds = _.filter(results, function (o) { return o === false; })
     if (olds.length > 0) {
       console.log('Upgrading Dependencies....'.yellow)
       exec('npm upgrade matrix-node-sdk matrix-app-config-helper matrix-firebase matrix-eventfilter pi-wifi', function (error, stdout, stderr) {
