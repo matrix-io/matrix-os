@@ -334,7 +334,22 @@ function onlineSetup(callback) {
     },
 
     // Authenticate using current device data
-    Matrix.service.token.populate,
+    function getToken(cb) { 
+      Matrix.service.token.populate(function (err) {
+        if (err) {
+          if (!_.isEmpty(err.status_code) && err.status_code === 400) { //Device not found
+            //Possibly trigger a device configuration reset?,
+            //Alternatively ignore deviceId and secret and go back to BLE device registration?
+            console.warn('Please make sure your device is properly registered and you are using the proper environment.');
+            return onDestroy();
+          } else {
+            cb(err);
+          }
+        } else {
+          cb(err);
+        }
+      });
+    },
 
     // Lets login to the streaming server
     function mxssInit(cb) {
@@ -524,7 +539,8 @@ function onlineSetup(callback) {
     }
   ], function onlineSetupEnds(err) {
     if (err) {
-      console.error('Unable to setup online MOS, something went wrong (' + err.message + ')');
+      var errorCode = err.code ? err.code : err.status_code;
+      console.error('Unable to setup online MOS, something went wrong (' + errorCode +') (' + err.message + ')');
       callback(err);
     } else {
 
