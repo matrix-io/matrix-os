@@ -131,9 +131,9 @@ function interAppResponse(name, cb) {
     // for globals
     cb = name;
   }
+  console.log('setup event listeners:', name);
 
   process.on('message', function(m) {
-    console.log('[M]->app'.blue, m, 'app-' + appName + '-message')
       // is global or app-specific
     if (m.type === 'trigger' || m.type === 'app-message' || m.type === 'app-' + appName + '-message') {
       console.log('[M]->app(msg)'.blue, m)
@@ -299,6 +299,8 @@ var Matrix = {
       Matrix[k] = Matrix.config.settings[k];
     })
 
+
+    console.log('setup generic listener');
     // generic message handlers
     process.on('message', function(m) {
       if (_.isString(m)) {
@@ -339,14 +341,3 @@ var Matrix = {
 }
 
 module.exports = Matrix;
-
-
-Matrix.ready = function(cb) {
-  // handle ready
-  process.on('message', function(m) {
-    if (m.eventType === 'container-ready') {
-      console.log('Matrix OS Handlers Ready');
-      cb();
-    }
-  })
-}
