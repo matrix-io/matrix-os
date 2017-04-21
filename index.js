@@ -223,7 +223,7 @@ async.series([
   // Make sure we can see the API server for auth
   function checkApiServer(cb) {
     debug('Checking API server...'.green);
-    require('http').get(Matrix.apiServer, function(res) {
+    require('https').get(Matrix.apiServer, function() {
       checks.connectivity = true;
       cb(null);
     }).on('error', function() {
