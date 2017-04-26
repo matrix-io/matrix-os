@@ -243,6 +243,13 @@ async.series([
 
     // check dependencies - eventfilter is used for apps
 
+    try {
+      // make sure there is git before upgrading
+      require('child_process').execSync('which git');
+    } catch (e) {
+      cb(e);
+    }
+
     upgradeDependencies(function(err, updated) {
       if (err) console.error('Unable to upgrade dependencies:'.red, err);
       if (updated) process.exit();
