@@ -16,7 +16,7 @@ module.exports = function(c) {
 
   // fill
   if (_.isString(c)) {
-    colors = _.times(35, i => c);
+    colors = _.times(35, _.constant(c));
   }
 
   // init an empty array
