@@ -27,7 +27,7 @@ To exclude engine-io from the output, do
 
 ## Environment Variables
 ```
-MATRIX_API_SERVER http://dev-demo.admobilize.com -- points to admobilize-api server
+MATRIX_API_SERVER https://dev-api.admobilize.com -- points to admobilize-api server
 MATRIX_STREAMING_SERVER http://dev-mxss.admobilize.com:80 - points to admatrix-streaming-server
 ```
 
