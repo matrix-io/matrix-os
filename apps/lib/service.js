@@ -7,7 +7,7 @@ var service = function(name, options) {
   var service = _.find(matrix.config.services, function(v, k) {
     // console.log(name, k, v)
     if (k === name || v.engine === name || v.type === name) {
-      return true
+      return true;
     }
   });
 
@@ -29,14 +29,14 @@ var service = function(name, options) {
     type: 'service-cmd',
     engine: self.engine,
     serviceType: self.type
-  }
+  };
 
   var recognitionMethods = {
     // no chain methods
     stop: function() {
       _.assign(self.sendObj, {
         cmd: 'stop'
-      })
+      });
       process.send(self.sendObj);
     },
     untrain: function(tags) {
@@ -45,12 +45,12 @@ var service = function(name, options) {
       }
 
       if (_.isArray(tags)) {
-        console.log('Untrain: ', tags)
+        console.log('Untrain: ', tags);
           // delete is a more computational friendly cmd name then untrain
         _.assign(self.sendObj, {
           cmd: 'delete',
           options: tags
-        })
+        });
         process.send(self.sendObj);
       } else {
         console.error('Recognition.untrain requires a string or array ->', tags);
@@ -61,7 +61,7 @@ var service = function(name, options) {
     getTags: function(cb) {
       _.assign(self.sendObj, {
         cmd: 'get-tags'
-      })
+      });
       process.send(self.sendObj);
       self.activeSubserviceType = 'recognition-tags';
       // support multiple declarations, callback or promises
@@ -92,12 +92,12 @@ var service = function(name, options) {
 
     start: function(options, cb) {
       if (!_.isUndefined(options)) {
-        self.options = options
+        self.options = options;
       }
       _.assign(self.sendObj, {
         cmd: 'start',
         payload: self.options
-      })
+      });
       process.send(self.sendObj);
       self.activeSubserviceType = 'recognition-recognize';
       // support multiple declarations, callback or promises
@@ -121,9 +121,9 @@ var service = function(name, options) {
             console.log('No callback passed to service>%s.then', self.name);
           }
         }
-      })
+      });
     }
-  }
+  };
 
 
   /** 
@@ -139,7 +139,7 @@ var service = function(name, options) {
       console.log('setup service listener');
     process.on('message', function(data) {
 
-      console.log('APP>SERVICE>', data)
+      console.log('APP>SERVICE>', data);
       if (data.eventType === 'service-emit' &&
         data.type === self.type &&
         data.engine === self.engine) {
@@ -149,27 +149,27 @@ var service = function(name, options) {
           console.log('No callback passed to service>%s.then', self.name);
         }
       }
-    })
-  }
+    });
+  };
 
 
   self.stopFn = function() {
     _.assign(self.sendObj, {
       cmd: 'stop',
-    })
+    });
     process.send(self.sendObj);
-  }
+  };
 
 
   var detectionMethods = {
     start: function(options, cb) {
       if (!_.isUndefined(options)) {
-        self.options = options
+        self.options = options;
       }
       _.assign(self.sendObj, {
         cmd: 'start',
         payload: self.options
-      })
+      });
       process.send(self.sendObj);
       // support multiple declarations, callback or promises
       if (_.isFunction(cb)) { detectionMethods.then(cb); }
@@ -177,17 +177,17 @@ var service = function(name, options) {
     },
     stop: self.stopFn,
     then: self.thenFn
-  }
+  };
 
   var vehicleMethods = {
     start: function(options, cb) {
       if (!_.isUndefined(options)) {
-        self.options = options
+        self.options = options;
       }
       _.assign(self.sendObj, {
         cmd: 'start',
         payload: self.options
-      })
+      });
       process.send(self.sendObj);
       // support multiple declarations, callback or promises
       if (_.isFunction(cb)) { vehicleMethods.then(cb); }
@@ -195,12 +195,12 @@ var service = function(name, options) {
     },
     stop: self.stopFn,
     then: self.thenFn
-  }
+  };
 
   var gestureMethods = {
     start: function(options, cb) {
       if (!_.isUndefined(options)) {
-        self.options = options
+        self.options = options;
       }
       _.assign(self.sendObj, {
         cmd: 'start',
@@ -213,7 +213,7 @@ var service = function(name, options) {
     },
     stop: self.stopFn,
     then: self.thenFn
-  }
+  };
 
   if (name === 'recognition') {
     return _.omit(recognitionMethods, 'then');
@@ -229,5 +229,5 @@ var service = function(name, options) {
 
 
 
-}
+};
 module.exports = service;

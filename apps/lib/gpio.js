@@ -60,7 +60,7 @@ module.exports = {
   },
 
   write: function (pin, value, cb) {
-    debug("PIN WRITE: ", pin, value);
+    console.log("PIN WRITE: ", pin, value);
     pinWriteHandlers[pin] = cb;
     process.send({
       type: 'gpio-write',

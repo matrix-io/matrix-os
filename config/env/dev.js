@@ -3,7 +3,7 @@ module.exports = {
 
   deviceSecret: process.env['MATRIX_DEVICE_SECRET'],
   url: {
-    api: 'http://dev-demo.admobilize.com',
+    api: 'https://dev-api.admobilize.com',
     streaming: 'http://dev-mxss.admobilize.com'
   },
   debug: true

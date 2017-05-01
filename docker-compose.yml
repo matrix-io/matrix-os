@@ -33,7 +33,7 @@ services:
       # Define a .env file containing the following environment variables
       # and tweak those according to your current development needs:
       #   - MATRIX_API_SERVER=<admobilize API server>
-      #     development server is available @ http://dev-demo.admobilize.com
+      #     development server is available @ https://dev-api.admobilize.com
       #   - MATRIX_STREAMING_SERVER=<your pick here>
       #     * development server is available @ http://dev-mxss.admobilize.com:80
       #     * local running MXSS can be addressed by setting mxss:80
