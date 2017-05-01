@@ -1,6 +1,6 @@
 {
   "name": "matrix-os",
-  "version": "0.11.2",
+  "version": "0.12.0",
   "description": "Portal to device layer for AdMobilize Matrix devices. Includes global component, npm install -g matrix-cli",
   "main": "app.js",
   "repository": "http://github.com/matrix-io/matrix-os",
@@ -8,7 +8,7 @@
   "homepage": "http://creator.matrix.one",
   "bugs": "https://github.com/matrix-io/matrix-os/issues/new",
   "scripts": {
-    "debug": "DEBUG=*,-engine*,-gatt,-bleno,-Component,-bt-characteristic,-hci NODE_ENV=dev node --debug index.js",
+    "debug": "DEBUG=*,-engine*,-needle,-*led,-gatt,-bleno,-Component,-bt-characteristic,-hci NODE_ENV=dev node --debug index.js",
     "debug-test": "DEBUG=*,-engine*,-Component*,-gatt,-bleno,-bt-characteristic,-hci node test/_runner.js",
     "local-debug": "DEBUG=*,-engine*,-Component* NODE_ENV=local node index.js",
     "local": "NODE_ENV=local node index.js",

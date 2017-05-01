@@ -4,9 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## []
-### Added
-- Check for git before upgrading
+## [0.12.0]
+### Changed 
+- Fixed network issues
+- Removed some errant debugs
+
+## [0.11.2]
+### Fixed
+- Applications properly clean up event handlers on exit.
 
 ## [0.11.1]
 ### Removed
