@@ -25,6 +25,7 @@ var service = function(name, options) {
   // to filter returning messages appropriately
   self.activeSubserviceType = '';
 
+  // base object for service commands
   self.sendObj = {
     type: 'service-cmd',
     engine: self.engine,
@@ -46,7 +47,7 @@ var service = function(name, options) {
 
       if (_.isArray(tags)) {
         console.log('Untrain: ', tags);
-          // delete is a more computational friendly cmd name then untrain
+        // delete is a more computational friendly cmd name then untrain
         _.assign(self.sendObj, {
           cmd: 'delete',
           options: tags
@@ -90,6 +91,7 @@ var service = function(name, options) {
       }
     },
 
+    //TODO: Gonna have to switch this up when it comes to supporting more service types
     start: function(options, cb) {
       if (!_.isUndefined(options)) {
         self.options = options;
