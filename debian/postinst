@@ -1,0 +1,47 @@
+#!/bin/bash -e
+
+
+#USER
+#TODO #Check if user already exists
+useradd -M matrix-user #Create user without a home directory
+usermod -L matrix-user #Disable user login
+#TODO #Give permissions
+#TODO #Add user to Bluetooth and Wifi groups
+setcap cap_net_raw+eip $(eval readlink -f 'which node'); #Give node BT permissions
+
+
+#NODE
+npm install -g n; #Install node manager
+n 6.7.0 #Install latest supported node version
+
+
+echo '\n\n'
+echo '---------------------------------'
+echo 'Installing MATRIX API Services...'
+echo '---------------------------------'
+echo '\n'
+
+#TODO Should have already bundled current snapshot of git submodules
+cd /usr/share/admoblize/matrix-os;
+npm install; #|| exit 1
+npm rebuild;
+
+# Reboot!
+echo '\n\n'
+echo '---------------------------------'
+echo 'Rebooting... Please re-connect to'
+echo ' your Raspberry Pi in a minute.  '
+echo '---------------------------------'
+echo '\n'
+#sudo reboot;
+
+
+echo "Enabling MOS loading at startup"
+systemctl enable matrix-os
+
+# This didn't work due to an unresolved shared library.
+# Asking users to reboot after installation.
+# echo "Loading firmware..."
+# service matrix-os start
+
+echo "Please restart your Raspberry Pi after installation"

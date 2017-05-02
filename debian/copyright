@@ -1,0 +1,9 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: matrix-os
+Source: https://www.admobilize.com/
+
+Files: *
+Copyright: 2017 <appdev@admobilize.com>
+License: <special license>
+ The software for MOS is open source and can be found in this
+ repository: https://github.com/matrix-io/matrix-os
