@@ -108,6 +108,9 @@ Matrix.api = require('matrix-node-sdk');
 // This needs to be done after urls are made available via parseEnvSettings
 Matrix.api.makeUrls(Matrix.apiServer);
 
+// Used for LEDS now, maybe more later
+Matrix.state = {};
+
 
 //db - files stored in db/
 var DataStore = require('nedb');
