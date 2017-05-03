@@ -107,6 +107,7 @@ var service = function(name, options) {
 
 
     then: function(cb) {
+      console.log('setup service listener');
       process.on('message', function(data) {
 
         // console.log('RECOG SERVICE THEN', data)
@@ -134,6 +135,8 @@ var service = function(name, options) {
    * @param data.serviceType - what subclass within the type
    */
   self.thenFn = function(cb) {
+
+      console.log('setup service listener');
     process.on('message', function(data) {
 
       console.log('APP>SERVICE>', data);

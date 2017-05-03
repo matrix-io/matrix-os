@@ -28,6 +28,7 @@ module.exports = function(name, options) {
     process.send({ type: 'service-init', name: name, engine: service.engine, options: options });
     return {
       then: function(cb) {
+        console.log('setup service app listener')
         process.on('message', function(data) {
           if (data.eventType === 'service-emit') {
             cb(data.payload);
@@ -92,6 +93,7 @@ function initSensor(name, options) {
   var then = function(cb) {
 
     var result;
+    console.log('setup app sensor listener');
     // recieves from events/sensors
     process.on('message', function(m) {
 
@@ -99,8 +101,8 @@ function initSensor(name, options) {
         return console.log('[M]->[m] Empty Message From matrix.init'.red, name, options);
       }
 
-      console.log('[M]->[m](%s):', name, m);
       if (m.eventType === 'sensor-emit') {
+        console.log('[M]->[m](%s):', name, m);
         // TODO: filter multiple sensors
         if (sensors.indexOf(m.sensor) > -1) {
 
@@ -123,11 +125,6 @@ function initSensor(name, options) {
           }
         }
         // console.log('applying filter:', filter.json());
-      } else if (m.eventType === 'container-ready') {
-        // ignore
-      } else {
-        console.log('[M]->[m] uncaught message', m);
-        cb(m.payload);
       }
 
     });

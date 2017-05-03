@@ -52,7 +52,7 @@ function initSensor(name, options) {
   // FIXME: Issue with app only storing one process at a time
   // console.log('sensor err >> looking into fix');
   var then = function(cb) {
-
+    console.log('setup sensor listener')
     var result;
     // recieves from events/sensors
     process.on('message', function(m) {
@@ -61,8 +61,8 @@ function initSensor(name, options) {
         return console.log('[M]->[m] Empty Message From matrix.init'.red, name, options);
       }
 
-      console.log('[M]->[m](%s):', name, m);
       if (m.eventType === 'sensor-emit') {
+        console.log('[M]->[m](%s):', name, m);
         // TODO: filter multiple sensors
         if (sensors.indexOf(m.sensor) > -1) {
 
@@ -85,11 +85,6 @@ function initSensor(name, options) {
           }
         }
         // console.log('applying filter:', filter.json());
-      } else if (m.eventType === 'container-ready') {
-        // ignore
-      } else {
-        console.log('[M]->[m] uncaught message', m);
-        cb(m.payload);
       }
 
     });
