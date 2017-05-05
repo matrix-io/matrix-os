@@ -360,24 +360,12 @@ function onlineSetup(callback) {
       // Lets login to the streaming server
     function mxssInit(cb) {
 
-      try {
-          // make sure there is git before upgrading
-        require('child_process').execSync('which git');
-      } catch (e) {
-        cb(e);
+      if (!process.env.hasOwnProperty('MATRIX_NOMXSS')) {
+        Matrix.service.stream.initSocket(cb);
+      } else {
+        cb();
       }
-
-      upgradeDependencies(function(err, updated) {
-        if (err) console.error('Unable to upgrade dependencies:'.red, err);
-        if (updated) process.exit();
-        debug('Checking MXSS...'.green);
-          // extremely unlikely event that the mxss is bad and we need to skip
-        if (!process.env.hasOwnProperty('MATRIX_NOMXSS')) {
-          Matrix.service.stream.initSocket(cb);
-        } else {
-          cb();
-        }
-      });
+      
     },
 
       // Initialize Firebase
