@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.13.0]
+### Changed
+- Updated recog code for es6's new attitude towards constructors
+- Upgrade node to 6 in travis tests and package.json
+
+### Remove
+- Remove auto upgrade code. It stunk.
+
+### Added
+- MOS as as service in debian
+
+### Fixed
+- network typo
+
 ## [0.12.0]
 ### Changed 
 - Fixed network issues
