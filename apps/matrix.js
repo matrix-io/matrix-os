@@ -11,17 +11,16 @@ _ = require('lodash');
 var request = require('request');
 var lib = require('./lib');
 
-var request = require('request');
 var fs = require('fs');
 var DataStore = require('nedb');
-var AppStore = new DataStore('application.db')
+var AppStore = new DataStore('application.db');
 
 process.setMaxListeners(50);
 
 error = function() {
   console.error('[(%s)]⁊', appName);
   console.error.apply(null, arguments);
-}
+};
 
 var appName = '';
 
@@ -29,7 +28,7 @@ var storeManager = {
   get: getStore,
   set: setStore,
   delete: deleteStore
-}
+};
 
 function getStore(key, cb) {
   var q = {};
@@ -62,7 +61,7 @@ var fileManager = {
     request.get(url, function(err, resp, body) {
       if (err) error(err);
       try {
-        fs.accessSync(assetPath)
+        fs.accessSync(assetPath);
       } catch (e) {
         fs.mkdirSync(assetPath);
       }
@@ -89,7 +88,7 @@ var fileManager = {
       cb(null, files);
     });
   }
-}
+};
 
 var matrixDebug = false;
 
@@ -102,7 +101,7 @@ function interAppNotification(appName, eventName, p) {
   if (arguments.length === 1) {
     // global form
     type = 'app-message';
-    payload = arguments[0]
+    payload = arguments[0];
   } else if (arguments.length === 2) {
     //app specific
     type = 'app-' + appName + '-message';
@@ -116,7 +115,7 @@ function interAppNotification(appName, eventName, p) {
   var sendObj = {
     type: type,
     payload: payload
-  }
+  };
 
   if (!_.isUndefined(event)) {
     _.extend(sendObj, { event: event });
@@ -136,7 +135,7 @@ function interAppResponse(name, cb) {
   process.on('message', function(m) {
       // is global or app-specific
     if (m.type === 'trigger' || m.type === 'app-message' || m.type === 'app-' + appName + '-message') {
-      console.log('[M]->app(msg)'.blue, m)
+      console.log('[M]->app(msg)'.blue, m);
       if (_.isString(name)) {
         // if an event name was specified in the on()
         if (m.eventName == name) {
@@ -189,7 +188,7 @@ function doTrigger(group, payload) {
     type: 'trigger',
     group: group,
     payload: payload
-  })
+  });
 }
 
 var Matrix = {
@@ -201,10 +200,10 @@ var Matrix = {
   led: require('./lib/led'),
   audio: {
     say: function(msg) {
-      console.log('say() is not implemented yet')
+      console.log('say() is not implemented yet');
     },
     play: function(file, volume) {
-      console.log('play() is not implemented yet')
+      console.log('play() is not implemented yet');
     }
   },
   send: function(message) {
@@ -235,20 +234,20 @@ var Matrix = {
           payload: _.map(arguments, (a) => {
             return (_.isPlainObject(a)) ? JSON.stringify(a) : a;
           }).join(' ')
-        }
-        process.stdout.write(JSON.stringify(o) + '\n')
-      }
+        };
+        process.stdout.write(JSON.stringify(o) + '\n');
+      };
       console.log('Docker Detected');
       process.send = function(obj) {
-          var send;
-          try {
-            send = JSON.stringify(obj);
-          } catch (e) {
-            console.error('App Data Error', e, obj);
-          } finally {
-            process.stdout.write(`${send}\n`);
-          }
+        var send;
+        try {
+          send = JSON.stringify(obj);
+        } catch (e) {
+          console.error('App Data Error', e, obj);
+        } finally {
+          process.stdout.write(`${send}\n`);
         }
+      };
         // if forked, stdin is piped to message events
         // Docker needs override
       process.stdin.on('readable', function() {
@@ -259,9 +258,9 @@ var Matrix = {
           var msgObjs = [];
           try {
             // parse each one independently! - woot working
-            msgObjs = msgs.map((m) => { return JSON.parse(m) });
+            msgObjs = msgs.map((m) => { return JSON.parse(m); });
           } catch (e) {
-            console.error('App Data In Error:', e, msgs)
+            console.error('App Data In Error:', e, msgs);
           } finally {
             // emit one event for each msg found
             if (msgObjs.length > 0) {
@@ -271,9 +270,9 @@ var Matrix = {
             }
           }
         }
-      })
+      });
     }
-    console.log('Matrix OS Application Library Loading...')
+    console.log('Matrix OS Application Library Loading...');
 
 
     appName = name;
@@ -297,14 +296,14 @@ var Matrix = {
     // make configuration available globally `Matrix.services.vehicle.engine`
     _.each(_.keys(Matrix.config.settings), function(k) {
       Matrix[k] = Matrix.config.settings[k];
-    })
+    });
 
 
     console.log('setup generic listener');
     // generic message handlers
     process.on('message', function(m) {
       if (_.isString(m)) {
-        m = JSON.stringify(m.toString())
+        m = JSON.stringify(m.toString());
       }
       if (m.type === 'request-config') {
         sendConfig();
@@ -312,8 +311,10 @@ var Matrix = {
         Matrix.pid = m.pid;
       } else if (m.type === 'container-ready') {
         console.log('Matrix App Host Ready!');
+      } else if (m.type === 'service-error'){
+        console.error('Service Error', m.message, '\nQuitting....');
       }
-    })
+    });
 
     return Matrix;
   },
@@ -324,20 +325,20 @@ var Matrix = {
   trigger: doTrigger,
   color: require('tinycolor2'),
   static: function() {
-    console.log('static not implmented uyet')
+    console.log('static not implmented uyet');
   },
 
   zigbee: function() {
     if (Matrix.config.integrations.indexOf('zigbee') === -1) {
       return console.error('Zigbee is not configured for this application. Please add `zigbee` to config>integrations');
     }
-    return require('./lib/zigbee.js')
+    return require('./lib/zigbee.js');
   },
   static: function() {
-    console.log('static not implmented yet')
+    console.log('static not implmented yet');
   },
   service: require('./lib/service.js'),
   sensor: require('./lib/sensor.js')
-}
+};
 
 module.exports = Matrix;

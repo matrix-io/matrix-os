@@ -25,13 +25,6 @@ require('colors');
 
 var fs = require('fs');
 
-// Logging Utilities
-ulog = function() {
-  _.each(arguments, function(a) {
-    console.log(require('util').inspect(a, { depth: null, colors: true }));
-  });
-};
-
 warn = console.log;
 log = console.log;
 error = console.error;
@@ -82,6 +75,7 @@ if (foundKeys.length < reqKeys.length) {
   onDestroy();
 }
 
+debug('', 'ENV:'.grey, Matrix.env.blue, 'API:'.grey, Matrix.apiServer.blue, 'MXSS:'.grey, Matrix.streamingServer.blue);
 debug('', 'ENV:'.grey, Matrix.env.blue, 'API:'.grey, Matrix.apiServer.blue, 'MXSS:'.grey, Matrix.streamingServer.blue);
 
 var events = require('events');
@@ -134,24 +128,24 @@ Matrix.device.malos.info(function(data) {
 });
 
 
-var step1 = false;
-var step2 = false;
+var offlineCheck = false;
+var onlineCheck = false;
 
 function mainFlow(cb) {
   if (mainFlowTimeout) clearTimeout(mainFlowTimeout);
   async.series([
     function(next) {
-      if (!step1)
+      if (!offlineCheck)
         offlineSetup(function(err) {
-          if (!err) step1 = true;
+          if (!err) offlineCheck = true;
           next(err);
         });
       else next();
     },
     function(next) {
-      if (!step2)
+      if (!onlineCheck)
         onlineSetup(function(err) {
-          if (!err) step2 = true;
+          if (!err) onlineCheck = true;
           next(err);
         });
       else next();
@@ -161,7 +155,7 @@ function mainFlow(cb) {
     if (err) {
       //If the error was caused by the network
       if (_.has(err, 'code') && networkErrors.indexOf(err.code) > -1) {
-        if (!step2) console.error('Setup network error (such as timeout, interrupted connection or unreachable host) has occurred. Retrying in '.yellow + mainFlowTimeoutSeconds.toString().green + ' seconds.'.yellow);
+        if (!onlineCheck) console.error('Setup network error (such as timeout, interrupted connection or unreachable host) has occurred. Retrying in '.yellow + mainFlowTimeoutSeconds.toString().green + ' seconds.'.yellow);
         else console.log('Connectivity lost, reconnecting in '.yellow + mainFlowTimeoutSeconds.toString().green + ' seconds.'.yellow);
 
         //Try again after a specific time has passed
@@ -173,7 +167,7 @@ function mainFlow(cb) {
           });
         }, mainFlowTimeoutSeconds * 1000);
         Matrix.device.drivers.led.timedError(1, function() {
-          if (!step2) Matrix.device.drivers.led.loader3();
+          if (!onlineCheck) Matrix.device.drivers.led.loader3();
           cb();
         });
       } else {
