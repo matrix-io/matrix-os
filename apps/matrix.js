@@ -311,8 +311,9 @@ var Matrix = {
         Matrix.pid = m.pid;
       } else if (m.type === 'container-ready') {
         console.log('Matrix App Host Ready!');
-      } else if (m.type === 'service-error'){
-        console.error('Service Error', m.message, '\nQuitting....');
+      } else if (m.type === 'app-error'){
+        // Made an error on the MOS side which requires quitting application
+        console.error('Application Host Error', m.message, '\nQuitting....');
       }
     });
 
