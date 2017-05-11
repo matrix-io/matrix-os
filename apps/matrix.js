@@ -299,7 +299,7 @@ var Matrix = {
     });
 
 
-    console.log('setup generic listener');
+    // console.log('setup generic listener');
     // generic message handlers
     process.on('message', function(m) {
       if (_.isString(m)) {

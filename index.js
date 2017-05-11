@@ -54,6 +54,13 @@ Matrix.activeServices = [];
 // a collection of apps installed on the device, not expecially in firebase
 Matrix.localApps = {};
 
+// TODO: nest active sensors / services under apps so it's easier to parse and handle situations
+Matrix.state = {
+  apps: Matrix.activeApplications,
+  sensors: Matrix.activeSensors,
+  services: Matrix.activeServices
+};
+
 // Make Matrix[setting] from env settings for easy access
 parseEnvSettings(envSettings);
 
