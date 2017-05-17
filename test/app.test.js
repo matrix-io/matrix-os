@@ -86,7 +86,7 @@ describe('Matrix Applications', function() {
 
       });
 
-      describe.only('able to synchronize application state', function() {
+      describe('able to synchronize application state', function() {
         // this does not have a firebase record
         before(function(done) {
           Matrix.service.manager.start('test', (err, app) => {
