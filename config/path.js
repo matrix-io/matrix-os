@@ -1,5 +1,8 @@
 var path = require('path');
-var root = path.join(__dirname,'../');
+
+// support SERVICE mode for autostart
+var root = ( process.env.hasOwnProperty('MATRIX_MODE') && process.env.MATRIX_MODE === 'service') 
+? '/var/matrix-store/' : path.join(__dirname,'../');
 
 var p = {
   root: root,
@@ -10,17 +13,17 @@ var p = {
     service: root + 'db/service.db',
     pending: root + 'db/pending.db'
   },
-  pendingFiles: root + 'public/pending_files',
-  update: '/tmp/matrix-update/',
-  backup: '/tmp/matrix-backup/',
   apps: root + 'apps',
+
   protos: root + 'proto',
-  splash: 'public/splash',
 
   // logs
 
   appLog: root + 'apps/app.log'
 };
 
+if  ( process.env.hasOwnProperty('MATRIX_MODE') && process.env.MATRIX_MODE === 'service') {
+  p.protos = '/etc/share/matrix-proto/';
+}
 
 module.exports = p;

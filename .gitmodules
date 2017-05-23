@@ -4,3 +4,7 @@
 [submodule "appsfortesting"]
 	path = test/fixtures/testapps
 	url = http://github.com/matrix-io/matrix-srcjs-apps.git
+[submodule "apps"]
+	path = apps
+	url = http://github.com/matrix-io/matrix-os-sdk.git
+
