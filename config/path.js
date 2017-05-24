@@ -1,6 +1,11 @@
 var path = require('path');
 var root = path.join(__dirname,'../');
 
+// for db and apps folders
+if ( process.env.MATRIX_MODE === 'service'){
+  root = '/var/matrix-store/'
+}
+
 var p = {
   root: root,
   db: {
@@ -10,17 +15,14 @@ var p = {
     service: root + 'db/service.db',
     pending: root + 'db/pending.db'
   },
-  pendingFiles: root + 'public/pending_files',
-  update: '/tmp/matrix-update/',
-  backup: '/tmp/matrix-backup/',
   apps: root + 'apps',
   protos: root + 'proto',
-  splash: 'public/splash',
-
-  // logs
-
   appLog: root + 'apps/app.log'
 };
+
+if ( process.env.MATRIX_MODE === 'service'){
+  p.proto = '/usr/share/matrix-proto/'  
+}
 
 
 module.exports = p;
