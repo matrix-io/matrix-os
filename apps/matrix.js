@@ -301,7 +301,7 @@ var Matrix = {
 			fs.accessSync(assetPath);
 		}catch(e){
 			fs.mkdirSync(assetPath);
-		}
+	  }
 
     // console.log('setup generic listener');
     // generic message handlers
