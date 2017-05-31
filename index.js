@@ -244,7 +244,6 @@ function offlineSetup(callback) {
                 Matrix.service.auth.set(options.id, options.secret, function(err) {
                   if (!err) {
                     console.log('Device configured as:'.yellow, Matrix.deviceId.green);
-                    Matrix.service.cypher.init();
                     //Removes the listener on successful auth, although it might not really be a big deal 
                     //Matrix.device.bluetooth.emitter.removeListener('deviceAuth', onAuth);
                     setTimeout(function() {
