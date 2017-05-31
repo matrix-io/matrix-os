@@ -40,8 +40,6 @@
     "log": true,
     "warn": true,
     "ulog": true,
-    "matrix": true,
-    "async": true,
-    "debug": true
+    "matrix": true
   }
 }
