@@ -130,7 +130,7 @@ function interAppResponse(name, cb) {
   console.log('setup event listeners:', name);
 
   process.on('message', function(m) {
-      // is global or app-specific
+    // is global or app-specific
     if (m.type === 'trigger' || m.type === 'app-message' || m.type === 'app-' + appName + '-message') {
       console.log('[M]->app(msg)'.blue, m);
       if (_.isString(name)) {
@@ -245,8 +245,8 @@ var Matrix = {
           process.stdout.write(`${send}\n`);
         }
       };
-        // if forked, stdin is piped to message events
-        // Docker needs override
+      // if forked, stdin is piped to message events
+      // Docker needs override
       process.stdin.on('readable', function() {
         const msg = process.stdin.read();
         // multiple msgs might be sent in one event
@@ -295,13 +295,13 @@ var Matrix = {
       Matrix[k] = Matrix.config.settings[k];
     });
 
-		// check if the app has a storage directory
+    // check if the app has a storage directory
     assetPath = __dirname + '/' + appName + '.matrix/storage/';
-		try{
-			fs.accessSync(assetPath);
-		}catch(e){
-			fs.mkdirSync(assetPath);
-	  }
+    try {
+      fs.accessSync(assetPath);
+    } catch (e) {
+      fs.mkdirSync(assetPath);
+    }
 
     // console.log('setup generic listener');
     // generic message handlers
@@ -315,7 +315,7 @@ var Matrix = {
         Matrix.pid = m.pid;
       } else if (m.type === 'container-ready') {
         console.log('Matrix App Host Ready!');
-      } else if (m.type === 'app-error'){
+      } else if (m.type === 'app-error') {
         // Made an error on the MOS side which requires quitting application
         console.error('Application Host Error', m.message, '\nQuitting....');
       }
