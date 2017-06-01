@@ -23,6 +23,7 @@ error = function() {
 };
 
 var appName = '';
+var assetPath = '';
 
 var storeManager = {
   get: getStore,
@@ -72,7 +73,6 @@ var fileManager = {
    * @returns {Response} body
    */
   save: function(url, filename, cb) {
-    var assetPath = __dirname + '/' + appName + '.matrix/storage/';
     request.get(url, function(err, resp, body) {
       if (err) error(err);
       try {
@@ -94,7 +94,6 @@ var fileManager = {
    * @return {Error} err
    */
   remove: function(filename, cb) {
-    var assetPath = __dirname + '/' + appName + '.matrix/storage/';
     fs.unlink(assetPath + filename, cb);
   },
   /**
@@ -105,7 +104,6 @@ var fileManager = {
    * @return {Buffer} data of file indicated
    */
   load: function(filename, cb) {
-    var assetPath = __dirname + '/' + appName + '.matrix/storage/';
     //todo: handle async and sync based on usage
     fs.readFile(assetPath + filename, cb);
   },
@@ -116,7 +114,6 @@ var fileManager = {
    * @return {['','']} files list of files in storage
    */
   list: function(cb) {
-    var assetPath = __dirname + '/' + appName + '.matrix/storage/';
     fs.readdir(assetPath, function(err, files) {
       if (err) error(err);
       cb(null, files);
@@ -328,6 +325,13 @@ var Matrix = {
       Matrix[k] = Matrix.config.settings[k];
     });
 
+    // check if the app has a storage directory
+    assetPath = __dirname + '/' + appName + '.matrix/storage/';
+    try {
+      fs.accessSync(assetPath);
+    } catch (e) {
+      fs.mkdirSync(assetPath);
+    }
 
     // console.log('setup generic listener');
     // generic message handlers
