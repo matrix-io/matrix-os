@@ -102,10 +102,14 @@ describe('Matrix Applications', function() {
         it('should restart applications which are active in firebase', function() {
           assert.equal(Matrix.activeApplications.length, 1);
         })
+        after(function(done) {
+          Matrix.service.manager.stop('test', done);
+        })
       })
 
       describe('crash management', function() {
         var appRecord;
+        this.timeout(5000);
         before(function(done) {
           Matrix.service.manager.start('test', done);
         });
