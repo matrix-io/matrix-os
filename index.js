@@ -193,7 +193,7 @@ function mainFlow(cb) {
 function offlineSetup(callback) {
   async.series([ //Device offline setup
       // Reads the local device DB to grab device id and secret
-    function readLocalDeviceInfo(cb) {
+      function readLocalDeviceInfo(cb) {
         if (!_.isUndefined(Matrix.deviceId) && !_.isUndefined(Matrix.deviceSecret)) {
           console.log('Not using device data from db, using '.yellow + 'MATRIX_DEVICE_ID'.gray + ' and '.yellow + 'MATRIX_DEVICE_SECRET'.gray + ' instead!'.yellow);
           cb();
@@ -222,12 +222,12 @@ function offlineSetup(callback) {
         }
       },
       // Initialize event and service libraries. Calls module.export.init() if exists.
-    function(cb) {
+      function(cb) {
         Matrix.event.init();
         Matrix.service.init();
         cb();
       },
-    function deviceRegistration(cb) {
+      function deviceRegistration(cb) {
 
         //If device data isn't present    
         if (!Matrix.service.auth.isSet()) {
@@ -270,7 +270,12 @@ function offlineSetup(callback) {
           cb();
         }
       },
-    function startConfigurationBLE(cb) {
+      function startConfigurationBLE(cb) {
+
+        if (process.env.hasOwnProperty('TEST_MODE') && process.env.TEST_MODE === 'true') {
+          debug('TEST MODE!');
+          return cb();
+        }
         //Starts BLE configuration
         Matrix.device.bluetooth.start(function() {
           Matrix.device.bluetooth.emitter.on('configurationAuth', function(err, uuid, auth) {
@@ -283,7 +288,7 @@ function offlineSetup(callback) {
           cb(); //Continue device initialization
         });
       }
-  ],
+    ],
     function offlineSetupEnds(err) {
       if (err) console.error('Unable to setup offline MOS, something went wrong (' + err.message + ')');
       else debug('Offline setup successful');
@@ -296,7 +301,7 @@ function offlineSetup(callback) {
 function onlineSetup(callback) {
   async.series([ //Device online setup
       // Make sure we can see the API server for auth
-    function checkApiServer(cb) {
+      function checkApiServer(cb) {
         debug('Checking API server...'.green);
         require('https').get(Matrix.apiServer, function(res) {
           checks.connectivity = true;
@@ -340,7 +345,7 @@ function onlineSetup(callback) {
       // },
 
       // Authenticate using current device data
-    function getToken(cb) {
+      function getToken(cb) {
         Matrix.service.token.populate(function(err) {
           if (err) {
             if (!_.isEmpty(err.status_code) && err.status_code === 400) { //Device not found
@@ -358,7 +363,7 @@ function onlineSetup(callback) {
       },
 
       // Lets login to the streaming server
-    function mxssInit(cb) {
+      function mxssInit(cb) {
 
         if (!process.env.hasOwnProperty('MATRIX_NOMXSS')) {
           Matrix.service.stream.initSocket(cb);
@@ -369,7 +374,7 @@ function onlineSetup(callback) {
       },
 
       // Initialize Firebase
-    function firebaseInit(cb) {
+      function firebaseInit(cb) {
         debug('Starting Firebase...'.green + ' U:', Matrix.userId, ', D: ', Matrix.deviceId, ', DT: ', Matrix.deviceToken);
         Matrix.service.firebase.init(Matrix.userId, Matrix.deviceId, Matrix.deviceToken, Matrix.env, function(err, deviceId) {
           if (err) {
@@ -385,7 +390,7 @@ function onlineSetup(callback) {
       },
 
       // Update local app folders according to device remote configuration
-    function syncApps(cb) {
+      function syncApps(cb) {
         // Gets all apps
 
         // this is populated from init>getallapps
@@ -455,10 +460,10 @@ function onlineSetup(callback) {
       },
 
       // Reset apps status in Firebase to Inactive
-    Matrix.service.manager.resetAppStatus,
+      Matrix.service.manager.resetAppStatus,
 
       //Listens for apps deploy, install and removal
-    function setupFirebaseListeners(cb) {
+      function setupFirebaseListeners(cb) {
         debug('Setting up Firebase Listeners...'.green);
 
         //If we don't want the device to handle installs
@@ -526,7 +531,7 @@ function onlineSetup(callback) {
       },
 
       //Firebase records integrity check
-    function checkFirebaseInfo(cb) {
+      function checkFirebaseInfo(cb) {
         debug('Checking Firebase Info...'.green);
         Matrix.service.firebase.device.get(function(err, device) {
           if (err || _.isNull(device)) return cb('Bad Device Record');
@@ -545,7 +550,7 @@ function onlineSetup(callback) {
           });
         });
       }
-  ],
+    ],
     function onlineSetupEnds(err) {
       if (err) {
         var errorCode = err.code ? err.code : err.status_code;
@@ -795,35 +800,35 @@ function upgradeDependencies(cb) {
 
   //Get recent version
   async.parallel({
-    helperVersion: function(cb) {
+      helperVersion: function(cb) {
         if (_.has(helper, 'checkVersion')) helper.checkVersion(function(err, version) {
           console.log('DEP helper: ', err, version);
           cb(err, version.updated);
         });
         else cb(undefined, helper.current);
       },
-    apiVersion: function(cb) {
+      apiVersion: function(cb) {
         if (_.has(Matrix.api, 'checkVersion')) Matrix.api.checkVersion(function(err, version) {
           console.log('DEP api: ', err, version);
           cb(err, version.updated);
         });
         else cb(undefined, Matrix.api.current);
       },
-    firebaseVersion: function(cb) {
+      firebaseVersion: function(cb) {
         if (_.has(Matrix.service.firebase, 'checkVersion')) Matrix.service.firebase.checkVersion(function(err, version) {
           console.log('DEP firebase: ', err, version);
           cb(err, version.updated);
         });
         else cb(undefined, Matrix.service.firebase.current);
       },
-    eventVersion: function(cb) {
+      eventVersion: function(cb) {
         if (_.has(eventFilter, 'checkVersion')) eventFilter.checkVersion(function(err, version) {
           console.log('DEP event: ', err, version);
           cb(err, version.updated);
         });
         else cb(undefined, eventFilter.current);
       },
-    piwifiVersion: function(cb) {
+      piwifiVersion: function(cb) {
         if (_.has(piwifi, 'checkVersion')) piwifi.checkVersion(function(err, version) {
           console.log('DEP pi: ', err, version);
           cb(err, version.updated);
@@ -831,7 +836,7 @@ function upgradeDependencies(cb) {
         else cb(undefined, piwifi.current);
       }
 
-  },
+    },
     function versionResults(err, results) {
       var olds = _.filter(results, function(o) { return o === false; });
       if (olds.length > 0) {
