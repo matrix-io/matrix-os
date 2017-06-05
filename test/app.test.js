@@ -86,8 +86,30 @@ describe('Matrix Applications', function() {
 
       });
 
+      describe('able to synchronize application state', function() {
+        // this does not have a firebase record
+        before(function(done) {
+          Matrix.service.manager.start('test', (err, app) => {
+            if (err) return done(err);
+            var pid = app.pid;
+            require('child_process').execSync('kill -9 ' + pid);
+            done();
+          });
+        })
+        before(function(done) {
+          Matrix.service.manager.syncAppActivity(done);
+        })
+        it('should restart applications which are active in firebase', function() {
+          assert.equal(Matrix.activeApplications.length, 1);
+        })
+        after(function(done) {
+          Matrix.service.manager.stop('test', done);
+        })
+      })
+
       describe('crash management', function() {
         var appRecord;
+        this.timeout(5000);
         before(function(done) {
           Matrix.service.manager.start('test', done);
         });

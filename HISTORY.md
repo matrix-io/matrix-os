@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## []
+### Changed
+- Check for app storage directory on startup
 ## [0.14.1]
 ### Fixed
 - Can now stop apps without services

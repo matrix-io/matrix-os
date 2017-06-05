@@ -2,9 +2,12 @@
 # Developer Information
 The below is intended for developers working on this repository.
 
+# Targeted Node Version
+We are locking to running MATRIX OS on Node 6.7 until further notice. This is due to a breaking bug in an external dependency.
+
 # First
 
-Clone repo and update protobufs
+Clone repo and update submodules (protobufs, apps)
 ```
 git clone https://github.com/matrix-io/matrix-os.git
 git submodule update --init
@@ -13,6 +16,8 @@ git submodule update --init
 ### Debugging
 
 Use `DEBUG=* node index.js` to see all debug messages.
+
+`NODE_ENV=dev` will automatically show important debugs.
 
 #### Debug categories
 
@@ -27,11 +32,16 @@ To exclude engine-io from the output, do
 
 ## Environment Variables
 ```
-MATRIX_API_SERVER https://dev-api.admobilize.com -- points to admobilize-api server
-MATRIX_STREAMING_SERVER http://dev-mxss.admobilize.com:80 - points to admatrix-streaming-server
+MATRIX_API_SERVER https://dev-api.admobilize.com
+MATRIX_STREAMING_SERVER http://dev-mxss.admobilize.com:80
 ```
 
 # Command Line Switches
+
+## Service Mode
+systemd service is found in `debian/`. This is the device configuration where MOS starts on boot.
+
+Run with `MATRIX_MODE=service` to have the system look for `apps` and `db` in `var/matrix-store`. `protos` will be found in `usr/share/admobilize`
 
 ## Dockerize Matrix Apps
 ```
@@ -39,23 +49,32 @@ MATRIX_STREAMING_SERVER http://dev-mxss.admobilize.com:80 - points to admatrix-s
 DOCKER_APPS=true START_APP=clock node index.js
 ```
 
-## Start your MATRIX OS with a monitor App
-
+## Start your MATRIX OS with an installed App
+Please note that the application must be registered with the infrastructure to launch. Internet connectivity is only required on boot.
 ```
 START_APP=monitor node index.js
 ```
 
-# Workflow
+# Device Workflow
 ```
 # find local rpi ip via arp -a, look at first 3 pairs of MAC
 >arp -a
 raspberrypi.domain (192.168.0.22) at b8:27:eb:84:7c:49
 
+# you'll probably need to sudo this. 
 > echo "192.168.0.22 m" >> /etc/hosts
 
+# upload public key
+> scp ~/.ssh/id_rsa.pub pi@m:~/
+
+# now we don't have to remember the ip
 > ssh pi@m
 
-should login
+# so pi stops asking for passwords
+> cat id_rsa.pub >> .ssh/known_hosts
+
+# symlink to code as `~/mos`
+> ln -s matrix-os/ mos/
 
 now `npm run sync` and `npm run watch` will auto upload code changes to your pi@m in the `/mos` folder
 
