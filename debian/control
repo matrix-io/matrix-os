@@ -1,15 +1,13 @@
 Source: matrix-os
-Section: unknown
+Section: embedded
 Priority: optional
-Maintainer: unknown <pi@raspberrypi>
+Maintainer: Admobilize <appdev@admobilize.com>
 Build-Depends: debhelper (>= 9)
 Standards-Version: 3.9.5
-Homepage: <insert the upstream URL, if relevant>
-#Vcs-Git: git://anonscm.debian.org/collab-maint/matrix-os.git
-#Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/matrix-os.git;a=summary
+Homepage: https://github.com/matrix-io/matrix-os
 
 Package: matrix-os
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
+Depends: ${shlibs:Depends}, ${misc:Depends}, matrix-creator-malos matrix-creator-malos-zigbee bluetooth bluez blueman libusb-1.0-0-dev libudev-dev
+Description: MATRIX Open Source is a platform for running applications on the MATRIX Creator.
+ MATRIX Open Source is a platform for running applications on the MATRIX Creator.
