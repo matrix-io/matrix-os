@@ -1,12 +1,15 @@
 Source: matrix-os
-Section: embedded
+Section: unknown
 Priority: optional
-Maintainer: Admobilize <appdev@admobilize.com>
+Maintainer: unknown <pi@raspberrypi>
 Build-Depends: debhelper (>= 9)
 Standards-Version: 3.9.5
-Homepage: https://github.com/matrix-io/matrix-os
+Homepage: <insert the upstream URL, if relevant>
+#Vcs-Git: git://anonscm.debian.org/collab-maint/matrix-os.git
+#Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/matrix-os.git;a=summary
 
 Package: matrix-os
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, matrix-creator-malos matrix-creator-malos-zigbee git bluetooth bluez blueman libusb-1.0-0-dev libudev-dev npm
-Description: 
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>
