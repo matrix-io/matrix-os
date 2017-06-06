@@ -8,6 +8,6 @@ Homepage: https://github.com/matrix-io/matrix-os
 
 Package: matrix-os
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, matrix-creator-malos matrix-creator-malos-zigbee bluetooth bluez blueman libusb-1.0-0-dev libudev-dev
+Depends: matrix-creator-malos, matrix-creator-malos-zigbee, bluetooth, bluez, blueman, libusb-1.0-0-dev, libudev-dev
 Description: MATRIX Open Source is a platform for running applications on the MATRIX Creator.
  MATRIX Open Source is a platform for running applications on the MATRIX Creator.
