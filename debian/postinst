@@ -1,0 +1,24 @@
+#!/bin/bash -e
+
+useradd -M matrix-os # Create user without a home directory
+usermod -L matrix-os # Disable user login
+
+MATRIX_OS_LIB_PATH=/usr/lib/matrix-os
+MATRIX_OS_STORE_PATH=/var/matrix-os/store
+
+mkdir -p ${MATRIX_OS_STORE_PATH}/db
+
+touch ${MATRIX_OS_STORE_PATH}/db/service.db
+touch ${MATRIX_OS_STORE_PATH}/db/pending.db
+touch ${MATRIX_OS_STORE_PATH}/db/device.db
+
+chown -R matrix-os. ${MATRIX_OS_STORE_PATH}
+
+# Allow MATRIX OS nodejs to use bluetooth / network 
+setcap cap_net_raw+eip ${MATRIX_OS_LIB_PATH}/bin/node
+
+# Enable MATRIX OS service at startup
+systemct enable matrix-os.service
+
+mkdir -p ${MATRIX_OS_LIB_PATH}/bin
+ln -s ${MATRIX_OS_LIB_PATH}/node-v6.11.0-linux-armv7l/bin/node ${MATRIX_OS_LIB_PATH}/bin/node

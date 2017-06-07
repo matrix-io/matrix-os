@@ -5,3 +5,6 @@ package.json usr/lib/matrix-os/
 config/ usr/lib/matrix-os/
 lib/ usr/lib/matrix-os/
 apps/ var/matrix-os/store/
+
+debian/dist/matrix-os.service /lib/systemd/system/
+debian/dist/node-v6.11.0-linux-armv7l/ usr/lib/matrix-os/
