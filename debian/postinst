@@ -19,6 +19,7 @@ mkdir -p ${MATRIX_OS_LIB_PATH}/bin
 ln -s ${NODE_BINARY} ${MATRIX_OS_LIB_PATH}/bin/node
 
 # Allow MATRIX OS nodejs to use bluetooth / network 
+usermod -G bluetooth -a matrix-os
 setcap cap_net_raw+eip ${NODE_BINARY}
 
 # Enable MATRIX OS service at startup
