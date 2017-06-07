@@ -3,7 +3,7 @@ var root = path.join(__dirname,'../');
 
 // for db and apps folders
 if ( process.env.MATRIX_MODE === 'service'){
-  root = '/var/matrix-store/'
+  root = '/var/matrix-os/store/';
 }
 
 var p = {
@@ -21,7 +21,7 @@ var p = {
 };
 
 if ( process.env.MATRIX_MODE === 'service'){
-  p.proto = '/usr/share/matrix-proto/'  
+  p.proto = '/usr/share/matrix-proto/';  
 }
 
 
