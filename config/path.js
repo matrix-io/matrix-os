@@ -21,7 +21,7 @@ var p = {
 };
 
 if ( process.env.MATRIX_MODE === 'service'){
-  p.proto = '/usr/share/matrix-proto/';  
+  p.proto = '/usr/share/matrix-os/proto/';
 }
 
 

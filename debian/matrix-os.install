@@ -1,6 +1,7 @@
-proto/malos/ usr/share/matrix-os/proto/malos/
-proto/vision/ usr/share/matrix-os/proto/vision/
+proto/malos/ usr/share/matrix-os/proto/
+proto/vision/ usr/share/matrix-os/proto/
 index.js usr/lib/matrix-os/
 package.json usr/lib/matrix-os/
-lib/ usr/lib/matrix-os/lib/
+config/ usr/lib/matrix-os/
+lib/ usr/lib/matrix-os/
 apps/ var/matrix-os/store/
