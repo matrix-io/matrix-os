@@ -685,6 +685,7 @@ function onDestroy(cb) {
         Matrix.service.manager.killAllApps,
         Matrix.service.manager.clearAppList,
         Matrix.service.manager.cleanLogs,
+        Matrix.service.stream.persistCache,
         // Matrix.device.drivers.clear
       ], function (err) {
         if (err) error(err);

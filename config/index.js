@@ -41,16 +41,16 @@ var configs = _.pick(process.env, [
 ]);
 
 configs = _.mapKeys(configs, function(v, k) {
-    var k = k.replace('ADMATRIX', '').replace('MATRIX', '');
-    return _.camelCase(k);
-  })
+  var k = k.replace('ADMATRIX', '').replace('MATRIX', '');
+  return _.camelCase(k);
+});
   // 
   // debug('ENVS >>>>'.blue, configs);
 
 _.extend(Matrix, configs);
 
 
-f.jwt = { secret: process.env.JWT_SECRET }
+f.jwt = { secret: process.env.JWT_SECRET };
 
 f.version = JSON.parse(fs.readFileSync(__dirname + '/../package.json')).version;
 
@@ -63,12 +63,17 @@ f.sensorRefresh = process.env['MATRIX_SENSOR_REFRESH'] || 2500;
 // not in yet
 f.sensorSockets = true;
 f.socketCheckDelay = 1000;
-f.registrationUUID = "b1a6752152eb4d36e13e357d7c225466";
-f.configurationUUID = "b1a6752152eb4d36e13e357d7c225467";
+f.registrationUUID = 'b1a6752152eb4d36e13e357d7c225466';
+f.configurationUUID = 'b1a6752152eb4d36e13e357d7c225467';
 f.envs = configs;
 
 // for device component info
 f.components = {};
+
+// for send throttling
+Matrix.lastWriteTime = Date.now();
+
+Matrix.rateLimit = 250;
 
 
 // TODO: Figure out where file storage happens
