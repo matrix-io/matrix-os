@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## []
 ### Changed
 - Check for app storage directory on startup
+- Remove upgrade check for all but core.
+
+### Fixed
+- constructor problem with recognition
 ## [0.14.1]
 ### Fixed
 - Can now stop apps without services
