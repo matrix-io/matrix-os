@@ -23,6 +23,7 @@ error = function() {
 };
 
 var appName = '';
+var assetPath = '';
 
 var storeManager = {
   get: getStore,
@@ -55,9 +56,23 @@ function deleteStore(key, cb) {
 }
 
 
+/**
+ * fileManager - available as matrix.file
+ * @method save - downloads url to device
+ * @method load - returns file binary
+ * @method remove - deletes file
+ * @method list - lists available files
+ */
 var fileManager = {
+  /**
+   * save - downloads a url to device via GET
+   * @param {String} url what url
+   * @param {String} filename name to save file as
+   * @param {Function} cb  callback
+   * @returns {Error} error
+   * @returns {Response} body
+   */
   save: function(url, filename, cb) {
-    var assetPath = __dirname + '/' + appName + '.matrix/storage/';
     request.get(url, function(err, resp, body) {
       if (err) error(err);
       try {
@@ -72,17 +87,33 @@ var fileManager = {
   stream: function() {
     // are we doing this? yes, for streaming media
   },
+  /**
+   * remove - delete a file from storage
+   * @param {String} filename file to be deleted
+   * @param {Function} cb function to callback
+   * @return {Error} err
+   */
   remove: function(filename, cb) {
-    var assetPath = __dirname + '/' + appName + '.matrix/storage/';
     fs.unlink(assetPath + filename, cb);
   },
+  /**
+   * load - load a file into a Buffer
+   * @param {string} filename file to read
+   * @param {Function} cb callback function
+   * @return {err} Error
+   * @return {Buffer} data of file indicated
+   */
   load: function(filename, cb) {
-    var assetPath = __dirname + '/' + appName + '.matrix/storage/';
     //todo: handle async and sync based on usage
     fs.readFile(assetPath + filename, cb);
   },
+  /** 
+   * Returns list of files in the /storage/ directory
+   * @param {Function} cb
+   * @callback {Error} err 
+   * @return {['','']} files list of files in storage
+   */
   list: function(cb) {
-    var assetPath = __dirname + '/' + appName + '.matrix/storage/';
     fs.readdir(assetPath, function(err, files) {
       if (err) error(err);
       cb(null, files);
@@ -92,7 +123,18 @@ var fileManager = {
 
 var matrixDebug = false;
 
-// For sending events to other apps
+/**
+ * 
+ * Interapp Notifications - For sending events to other apps, uses app-event.
+ * 
+ * Applications respond to `app-message` and `app-{appName}-message`. 
+ * TODO: Support global event scoped messages
+ * TODO: Switch to options based
+ * 
+ * @param {String} appName - application name
+ * @param {String} eventName 
+ * @param {{}Payload} p 
+ */
 function interAppNotification(appName, eventName, p) {
   var payload = p;
   var type;
@@ -124,7 +166,13 @@ function interAppNotification(appName, eventName, p) {
   process.send(sendObj);
 }
 
-// For recieving events from other Apps
+/**
+    interAppResponse - Handle events from apps, events, dashboard buttons and triggers
+ * 
+ * @param {String} name namespace of event `matrix.emit(appName, eventName)`
+ * @param {Function} cb - callback when event is emitted 
+ * @returns {Object} data - contents of the payload, if any
+ */
 function interAppResponse(name, cb) {
   if (_.isUndefined(cb)) {
     // for globals
@@ -133,7 +181,7 @@ function interAppResponse(name, cb) {
   console.log('setup event listeners:', name);
 
   process.on('message', function(m) {
-      // is global or app-specific
+    // is global or app-specific
     if (m.type === 'trigger' || m.type === 'app-message' || m.type === 'app-' + appName + '-message') {
       console.log('[M]->app(msg)'.blue, m);
       if (_.isString(name)) {
@@ -152,26 +200,6 @@ function interAppResponse(name, cb) {
 }
 
 
-function receiveHandler(cb) {
-  console.log('util receive');
-
-  process.on('message', function(m) {
-    cb(null, m);
-  });
-
-  process.on('error', function(err) {
-    if (err) return cb(err);
-  });
-
-  process.on('disconnect', function(w) {
-    console.log(appName, ': disconnect', w);
-  });
-
-  process.on('exit', function() {
-    //handle exit
-    console.log(appName, ': exit', arguments);
-  });
-}
 
 
 function sendConfig(config) {
@@ -214,7 +242,6 @@ var Matrix = {
     this.dataType = type;
     return this;
   },
-  receive: receiveHandler,
   init: require('./lib/init.js'),
   gpio: require('./lib/gpio.js'),
   servo: require('./lib/gpio.js').servo,
@@ -248,8 +275,8 @@ var Matrix = {
           process.stdout.write(`${send}\n`);
         }
       };
-        // if forked, stdin is piped to message events
-        // Docker needs override
+      // if forked, stdin is piped to message events
+      // Docker needs override
       process.stdin.on('readable', function() {
         const msg = process.stdin.read();
         // multiple msgs might be sent in one event
@@ -298,6 +325,13 @@ var Matrix = {
       Matrix[k] = Matrix.config.settings[k];
     });
 
+    // check if the app has a storage directory
+    assetPath = __dirname + '/' + appName + '.matrix/storage/';
+    try {
+      fs.accessSync(assetPath);
+    } catch (e) {
+      fs.mkdirSync(assetPath);
+    }
 
     // console.log('setup generic listener');
     // generic message handlers
@@ -305,13 +339,16 @@ var Matrix = {
       if (_.isString(m)) {
         m = JSON.stringify(m.toString());
       }
+      // if the application requests configuration
       if (m.type === 'request-config') {
         sendConfig();
+        //for some reason, lets keep track of pid
       } else if (m.type === 'container-status') {
         Matrix.pid = m.pid;
+        // lets app know container is setup
       } else if (m.type === 'container-ready') {
         console.log('Matrix App Host Ready!');
-      } else if (m.type === 'app-error'){
+      } else if (m.type === 'app-error') {
         // Made an error on the MOS side which requires quitting application
         console.error('Application Host Error', m.message, '\nQuitting....');
       }
