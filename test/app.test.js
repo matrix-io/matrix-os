@@ -72,6 +72,15 @@ describe('Matrix Applications', function() {
           }
           done();
         });
+
+        it.only('should rate limit app.send() events', function(done){
+          testAppApi('rate-test');
+          this.timeout(6000);
+          setInterval(function(){
+            console.log(Matrix.rateCache);
+          }, 1000);
+          setTimeout(done, 5000);
+        });
       });
 
       describe('stop an app and manage applications', function() {
@@ -95,17 +104,17 @@ describe('Matrix Applications', function() {
             require('child_process').execSync('kill -9 ' + pid);
             done();
           });
-        })
+        });
         before(function(done) {
           Matrix.service.manager.syncAppActivity(done);
-        })
+        });
         it('should restart applications which are active in firebase', function() {
           assert.equal(Matrix.activeApplications.length, 1);
-        })
+        });
         after(function(done) {
           Matrix.service.manager.stop('test', done);
-        })
-      })
+        });
+      });
 
       describe('crash management', function() {
         var appRecord;
