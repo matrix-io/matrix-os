@@ -372,6 +372,12 @@ var Matrix = {
     }
     return require('./lib/zigbee.js');
   },
+  zwave: function () {
+    if (Matrix.config.integrations.indexOf('zwave') === -1) {
+      return console.error('Z-Wave is not configured for this application. Please add `zwave` to config>integrations');
+    }
+    return require('./lib/zwave.js');
+  },
   static: function() {
     console.log('static not implmented yet');
   },
