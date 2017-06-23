@@ -273,7 +273,7 @@ function offlineSetup(callback) {
       }
     },
     function startConfigurationBLE(cb) {
-
+      return cb();
       if (process.env.hasOwnProperty('TEST_MODE') && process.env.TEST_MODE === 'true') {
         debug('TEST MODE!');
         return cb();
