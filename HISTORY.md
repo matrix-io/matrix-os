@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.14.3]
+### Added
+- Install Instructions
+- Bluetooth Auth bypass for local configuration
+
 ## [0.14.2]
 ### Added
 - Documentation and error messages
