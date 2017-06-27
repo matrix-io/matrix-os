@@ -1,6 +1,5 @@
 language: node_js
 node_js:
-  - "6"
   - "6.7"
 sudo: required
 env:
@@ -13,12 +12,14 @@ addons:
       - g++-4.8
       - gcc-4.8
       - libzmq3-dev
+      - libudev-dev
 
 before_install:
   - npm install -g node-gyp
 
 before_script:
   - git submodule update --init
+  - cp -r test/fixtures/test.matrix ../apps/
 
 script:
   npm run debug-test
