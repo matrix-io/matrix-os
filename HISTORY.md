@@ -4,13 +4,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## []
 ### Changed
-- Check for app storage directory on startup
 - Remove upgrade check for all but core.
 
 ### Fixed
-- constructor problem with recognition
+- Constructor problem with recognition
+
+## [0.14.3]
+### Added
+- Install Instructions
+- Bluetooth Auth bypass for local configuration
+
+## [0.14.2]
+### Added
+- Documentation and error messages
+- Upgrade message after ASCII
+### Fixed
+- Restart apps after install. Defer to firebase status for application activity
+- Services bug
+### Changed
+- Check for app storage directory on startup
+- Travis Fix. Remove node 6, copy tests into apps
+
 ## [0.14.1]
 ### Fixed
 - Can now stop apps without services
