@@ -4,6 +4,54 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+### Changed
+- Remove upgrade check for all but core.
+
+### Fixed
+- Constructor problem with recognition
+
+## [0.14.3]
+### Added
+- Install Instructions
+- Bluetooth Auth bypass for local configuration
+
+## [0.14.2]
+### Added
+- Documentation and error messages
+- Upgrade message after ASCII
+### Fixed
+- Restart apps after install. Defer to firebase status for application activity
+- Services bug
+### Changed
+- Check for app storage directory on startup
+- Travis Fix. Remove node 6, copy tests into apps
+
+## [0.14.1]
+### Fixed
+- Can now stop apps without services
+
+## [0.14.0]
+### Changed
+- Force a single service to be utilized at a time
+  
+### Fixed
+- Deploy and restart apps now work
+- Stop apps from launching if config fails validation
+
+## [0.13.0]
+### Changed
+- Updated recog code for es6's new attitude towards constructors
+- Upgrade node to 6 in travis tests and package.json
+
+### Remove
+- Remove auto upgrade code. It stunk.
+
+### Added
+- MOS as as service in debian
+
+### Fixed
+- network typo
+
 ## [0.12.0]
 ### Changed 
 - Fixed network issues
