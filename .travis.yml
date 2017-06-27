@@ -12,6 +12,7 @@ addons:
       - g++-4.8
       - gcc-4.8
       - libzmq3-dev
+      - libudev-dev
 
 before_install:
   - npm install -g node-gyp
