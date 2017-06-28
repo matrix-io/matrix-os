@@ -1,5 +1,5 @@
 var service = function(name, options) {
-  // don't use context for self
+  // don't use context for self, will inherit from matrix
   var self = {};
   self.name = name;
 
@@ -7,9 +7,12 @@ var service = function(name, options) {
   var service = _.find(matrix.config.services, function(v, k) {
     // console.log(name, k, v)
     if (k === name || v.engine === name || v.type === name) {
+      self.serviceName = k;
       return true;
     }
   });
+
+  self.service = service;
 
   console.log('service>', service);
 
@@ -29,6 +32,64 @@ var service = function(name, options) {
     type: 'service-cmd',
     engine: self.engine,
     serviceType: self.type
+  };
+
+  var voiceMethods = {
+    /**
+     * service().listen - has two forms
+     * listen('string', function()) 
+     * listen(function())
+     * @param {(String|Function)} wake can be a service name, as defined in config.yaml or can be the callback
+     * @param {Function} cb what to do after a wakeword is used
+     */
+
+    listen: function(wake, cb){
+      
+      if ( self.name === 'voice' && ( _.isUndefined(wake) || _.isFunction(wake) ) ){
+        return console.error('No Service Name or Wakeword Defined for Voice Service');
+      }
+
+      // single param execution
+      if ( !_.isString(wake)){
+        cb = wake;
+        // should be 'voice' or serviceName
+        wake = self.name;
+      }
+
+      self.wakeword = wake;
+      
+      // no type here
+      self.sendObj = _.omit(self.sendObj, 'serviceType');
+
+      // customize command for voice
+      _.extend(self.sendObj, {
+        cmd: 'listen',
+        payload: wake
+      });
+
+      // send to MOS
+      process.send(self.sendObj);
+
+      if (_.isFunction(cb)){
+        voiceMethods.then(cb);
+      }
+    },
+
+    then: function(cb){
+      process.on('message', function(data) {
+
+        // console.log('RECOG SERVICE THEN', data)
+        if (data.eventType === 'service-emit' &&
+          data.engine === self.engine &&
+          data.phrase === self.wakeword ) {
+          if (_.isFunction(cb)) {
+            cb(_.omit(data.payload, 'engine'));
+          } else {
+            console.log('No callback passed to service>%s.then', self.name);
+          }
+        }
+      });
+    }
   };
 
   var recognitionMethods = {
@@ -216,12 +277,18 @@ var service = function(name, options) {
     then: self.thenFn
   };
 
+
+  // this is what routes the next part of the chain
+  // matrix.service.x
+  // todo: service name lookup here
   if (name === 'recognition') {
     return _.omit(recognitionMethods, 'then');
   } else if (name === 'face' || name === 'demographics') {
     return _.omit(detectionMethods, 'then');
   } else if (name === 'vehicle') {
     return _.omit(vehicleMethods, 'then');
+  } else if (name === 'voice') {
+    return _.omit(voiceMethods, 'then');
   } else if (!_.isNull(name.match(/fist|thumb-up|palm|pinch/))) {
     return _.omit(gestureMethods, 'then');
   } else {
