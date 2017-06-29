@@ -64,7 +64,7 @@ var service = function(name, options) {
       // customize command for voice
       _.extend(self.sendObj, {
         cmd: 'listen',
-        payload: wake
+        payload: { phrase: wake }
       });
 
       // send to MOS
