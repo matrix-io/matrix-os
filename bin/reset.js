@@ -40,6 +40,7 @@ deviceDB.find(query, function (err, result) {
             console.log('Device data resetted successfuly for environement', env + '!');
           }
         }
+        process.exit(0);
       });
     });
   }
