@@ -87,19 +87,16 @@ var service = function(name, options) {
     },
 
     then: function(cb){
-      var phraseRegex = new RegExp(self.phrases.join('|'));
+      var phraseRegex = new RegExp(self.phrases.join('|'),'i');
       process.on('message', function(data) {
-        // console.log('RECOG SERVICE THEN', data)
+        console.log('VOICE SERVICE >> ', data, phraseRegex)
         if (data.eventType === 'service-emit' &&
           data.engine === self.engine &&
-          // does the wakeword match
-          data.wakeword === self.wakeword &&
           // does the phrases for this service exist in detected speech
-          _.isNull( data.speech.match(phraseRegex) ) &&
-          self.phrases.indexOf(data.phrase) > -1 
+          !_.isNull( data.payload.speech.match(phraseRegex) )
         ) {
           if (_.isFunction(cb)) {
-            cb(_.omit(data.phrase));
+            cb(data.payload.speech.toLowerCase().replace( self.wakeword.toLowerCase(), '').trim());
           } else {
             console.log('No callback passed to service>%s.then', self.name);
           }
