@@ -3,7 +3,7 @@ var service = function(name, options) {
   var self = {};
   self.name = name;
 
-  // find the service definition
+  // find the service definition, by service name, engine or type
   var service = _.find(matrix.config.services, function(v, k) {
     // console.log(name, k, v)
     if (k === name || v.engine === name || v.type === name) {
@@ -57,6 +57,17 @@ var service = function(name, options) {
       }
 
       self.wakeword = wake;
+
+      // if no wakeword or if it does not match defined wakeword
+      if ( _.isUndefined(self.wakeword) || self.service.wakeword !== self.wakeword ){
+        return console.error('Invalid or Undefined Wake Word', self.wakeword, 'looking for', self.service.wakeword)
+      }
+
+      self.phrases = self.service.phrases;
+
+      if ( _.isUndefined(self.phrases) || self.phrases.length === 0 ){
+        return console.error('No Phrases defined in service configuration', service)
+      }
       
       // no type here
       self.sendObj = _.omit(self.sendObj, 'serviceType');
@@ -64,7 +75,7 @@ var service = function(name, options) {
       // customize command for voice
       _.extend(self.sendObj, {
         cmd: 'listen',
-        payload: { phrase: wake }
+        payload: { wakeword: wake, phrases: self.phrases }
       });
 
       // send to MOS
@@ -76,14 +87,19 @@ var service = function(name, options) {
     },
 
     then: function(cb){
+      var phraseRegex = new RegExp(self.phrases.join('|'));
       process.on('message', function(data) {
-
         // console.log('RECOG SERVICE THEN', data)
         if (data.eventType === 'service-emit' &&
           data.engine === self.engine &&
-          data.phrase === self.wakeword ) {
+          // does the wakeword match
+          data.wakeword === self.wakeword &&
+          // does the phrases for this service exist in detected speech
+          _.isNull( data.speech.match(phraseRegex) ) &&
+          self.phrases.indexOf(data.phrase) > -1 
+        ) {
           if (_.isFunction(cb)) {
-            cb(_.omit(data.payload, 'engine'));
+            cb(_.omit(data.phrase));
           } else {
             console.log('No callback passed to service>%s.then', self.name);
           }
