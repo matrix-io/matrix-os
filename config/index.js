@@ -63,6 +63,7 @@ f.sensorRefresh = process.env['MATRIX_SENSOR_REFRESH'] || 2500;
 // not in yet
 f.sensorSockets = true;
 f.socketCheckDelay = 1000;
+f.socketRefreshTimeout = 10; //seconds
 f.registrationUUID = "b1a6752152eb4d36e13e357d7c225466";
 f.configurationUUID = "b1a6752152eb4d36e13e357d7c225467";
 f.envs = configs;
