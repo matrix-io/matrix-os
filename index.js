@@ -280,10 +280,9 @@ function offlineSetup(callback) {
         return cb();
       }
 
-      if (process.env.hasOwnProperty('TEST_MODE') && process.env.TEST_MODE === 'true') {
-        debug('TEST MODE!');
-        return cb();
-      }
+      //If BLE isn't specified in an env var then skip it
+      if (!process.env.hasOwnProperty('BLUETOOTH') || process.env.BLUETOOTH !== 'true') return cb();
+
       //Starts BLE configuration
       Matrix.device.bluetooth.start(function () {
         Matrix.device.bluetooth.emitter.on('configurationAuth', function (err, uuid, auth) {
