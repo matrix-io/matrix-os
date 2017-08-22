@@ -24,6 +24,7 @@ var checks = {
 _ = require('lodash');
 async = require('async');
 exec = require('child_process').exec;
+os = require('os');
 
 require('colors');
 
