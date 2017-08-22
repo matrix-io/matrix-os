@@ -1,4 +1,6 @@
 // Welcome to MatrixOS - A JavaScript environment for IoT Applications
+var optional = require('optional');
+var bleno = optional('bleno');
 
 const mosRepoURL = 'https://raw.githubusercontent.com/matrix-io/matrix-os/master/package.json';
 // check gh
@@ -234,9 +236,22 @@ function offlineSetup(callback) {
 
       //If device data isn't present    
       if (!Matrix.service.auth.isSet()) {
+
+        if (!process.env.hasOwnProperty('BLUETOOTH') || process.env.BLUETOOTH !== 'true') { //If no Bluetooth, alert and stop
+          console.warn('Missing registration information! This device is not correctly configured.'.yellow);
+          console.warn('You can use '.yellow + 'MATRIX CLI'.green + ' to create a device in the platform and then add the '.yellow + 'MATRIX_DEVICE_ID'.gray + ' and '.yellow + 'MATRIX_DEVICE_SECRET'.gray + ' variables. \n\nIf you continue to have problems, please reach out to our support forums at'.yellow + ' http://community.matrix.one'.green);
+          process.exit(1);
+        } else if (!bleno) { //If using Bluetooth but missing bleno, alert and stop
+          console.log('Missing bleno library, please install it and try again');
+          console.log('You can install by going to the project folder and then running:');
+          console.log('  > npm install bleno');
+          process.exit(1);
+        }
+
+        //Using Bluetooth correctly
         console.warn('Missing registration information! This device is not correctly configured. \nYou can register and pair via Bluetooth to your device using the '.yellow + 'MATRIX'.green + ' mobile apps.'.yellow);
         console.warn('Alternatively, you can use '.yellow + 'MATRIX CLI'.green + ' to register the device manually to then add the '.yellow + 'MATRIX_DEVICE_ID'.gray + ' and '.yellow + 'MATRIX_DEVICE_SECRET'.gray + ' variables. \n\nIf you continue to have problems, please reach out to our support forums at'.yellow + ' http://community.matrix.one'.green);
-
+        
         //Starts BLE registration advertising (Live device registration)
         Matrix.device.bluetooth.start(function () {
           console.log('Waiting for BLE pairing'.yellow);
@@ -282,6 +297,12 @@ function offlineSetup(callback) {
 
       //If BLE isn't specified in an env var then skip it
       if (!process.env.hasOwnProperty('BLUETOOTH') || process.env.BLUETOOTH !== 'true') return cb();
+      if (!bleno) { 
+        console.log('Missing bleno library, please install it and try again');
+        console.log('You can install by going to the project folder and then running:');
+        console.log('  > npm install bleno');
+        process.exit(1);
+      }
 
       //Starts BLE configuration
       Matrix.device.bluetooth.start(function () {
