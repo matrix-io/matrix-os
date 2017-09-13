@@ -57,6 +57,7 @@
     "matrix-eventfilter": "https://github.com/matrix-io/matrix-eventfilter/tarball/master",
     "matrix-firebase": "https://github.com/matrix-io/matrix-firebase/tarball/master",
     "matrix-node-sdk": "https://github.com/matrix-io/matrix-node-sdk/tarball/master",
+    "matrix-protos": "0.0.14",
     "mic": "^2.1.1",
     "mocha": "^2.4.5",
     "mv": "^2.1.1",
