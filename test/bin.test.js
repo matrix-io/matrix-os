@@ -1,6 +1,6 @@
 var fs = require('fs-extra');
 var binPath = './bin/';
-describe.skip('Bin', function () {
+describe('Bin', function () {
   describe('Device config', function () {
     var deviceFilePath = './db/device.db';
     var deviceBackupFilePath = './test/test.matrix';
@@ -59,7 +59,16 @@ describe.skip('Bin', function () {
 
       describe('Correct command', function () {
         it('should be able to set the device configuration for a specific environment', function (done) {
-          done();
+          fn.run(
+            'node ' + binPath + '/set.js ' + env + ' ' + id + ' ' + secret, { checks: ['Successful device data reset for environement', env + '!'] }
+            , function (err) {
+              if (!err) {
+                //TODO Use NeDB find to check if there's data for that environment
+                
+              }
+              done(err);
+            }
+          );
         });
         
       });
@@ -74,7 +83,7 @@ describe.skip('Bin', function () {
             'node ' + binPath + '/set.js ' + 'aMadeUpEnv' + ' ' + id + ' ' + secret, { checks: ['Parameters required'] }
             , function (err) {
               if (!err) {
-                //TODO Confirm no data was set for env
+                //TODO Confirm data remains the same
               }
               done(err);
             }
@@ -86,7 +95,7 @@ describe.skip('Bin', function () {
             'node ' + binPath + '/set.js ' + id + ' ' + secret, { checks: ['Parameters required'] }
             , function (err) {
               if (!err) {
-                //TODO Confirm no data was set for env
+                //TODO Confirm data remains the same
               }
               done(err);
             }
@@ -98,7 +107,7 @@ describe.skip('Bin', function () {
             'node ' + binPath + '/set.js ' + env + ' ' + secret, { checks: ['Parameters required'] }
             , function (err) {
               if (!err) {
-                //TODO Confirm no data was set for env
+                //TODO Confirm data remains the same
               }
               done(err);
             }
@@ -110,7 +119,7 @@ describe.skip('Bin', function () {
             'node ' + binPath + '/set.js ' + env + ' ' + id, { checks: ['Parameters required'] }
             , function (err) {
               if (!err) {
-                //TODO Confirm no data was set for env
+                //TODO Confirm data remains the same
               }
               done(err);
             }
@@ -122,7 +131,7 @@ describe.skip('Bin', function () {
             'node ' + binPath + '/set.js', { checks: ['Parameters required'] }
             , function (err) {
               if (!err) {
-                //TODO Confirm no data was set for env
+                //TODO Confirm data remains the same
               }
               done(err);
             }
