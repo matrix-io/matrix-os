@@ -1,5 +1,15 @@
 var fs = require('fs-extra');
 var binPath = './bin/';
+var exec = require('child_process').exec;
+var DataStore = require('nedb');
+var _ = require('lodash');
+var config = require(__dirname + '/../config/path');
+var deviceDB = new DataStore({
+  filename: config.db.device,
+  autoload: true
+});
+
+
 describe('Bin', function () {
   describe('Device config', function () {
     var deviceFilePath = './db/device.db';
@@ -7,45 +17,75 @@ describe('Bin', function () {
 
     before(function () {
       //Check Backup Files
-      /*var currentFileStat, bkFileStat, err;
+      var currentFileStat, err;
 
       try {
-        currentFileStat = fs.statSync();
+        currentFileStat = fs.statSync(deviceFilePath);
       } catch (error) {
         err = error;
       }
-
       if (!err && currentFileStat) {
         fs.copySync(deviceFilePath, deviceBackupFilePath);
       }
-
-      */
     });
-      //exec('git fetch && git pull', function (error, stdout, stderr) {
+
+    // after(function () {
+    //   var bkFileStat, err;
+    //   //Restore Backup and remove File      
+    //   try {
+    //     bkFileStat = fs.statSync(deviceBackupFilePath);
+    //   } catch (error) {
+    //     err = error;
+    //   }
+    //   if (!err && bkFileStat) {
+    //     fs.copySync(deviceBackupFilePath, deviceFilePath);
+    //     fs.unlinkSync(deviceBackupFilePath);
+    //   }
+    // });
+    
     describe('Reset device', function () {
       it('should reset the configuration for all environments', function (done) {
-        fn.run(
-          'node ' + binPath + '/reset.js', { checks: ['Successful device data reset!'] }
-          , function (err) { 
-            if (!err) {
-              //TODO check if there is any data left for any envs
-            }
-            done(err);
+        exec('node ' + binPath + 'reset.js', function (error, stdout, stderr) {
+          if (!error) {
+            var query = {};
+            deviceDB.find(query, function (err, result) {
+              if (err) {
+                done(err);
+              }
+              //check if there is any data left for any envs
+              if (_.isUndefined(result)) {
+                done();
+              } else {
+                done(new Error('Reset failed'));
+              }
+            });
+          }else{
+            done(error);
           }
-        );
+        }); 
       });
 
       var env = 'dev';
+
       it('should reset the configuration for a specific environment', function (done) {
-        fn.run(
-          'node ' + binPath + '/reset.js ' + env, { checks: ['Successful device data reset for environement', env + '!'] }
-          , function (err) { 
-            if (!err) {
-              //TODO check if there is any data left for env
-            }
-            done(err);
+        exec( 'node ' + binPath + 'reset.js ' + env, function (error, stdout, stderr) {
+          if (!error) {
+            var query = {};
+            deviceDB.find(query, function (err, result) {
+              if (err) {
+                done(err);
+              }
+              //check if there is any data left for env
+              if (_.isUndefined(result)) {
+                done();
+              } else {
+                done(error);
+              }
+            });
+          }else{
+            done(error);
           }
-        );
+        }); 
       });
     });
       
@@ -57,20 +97,28 @@ describe('Bin', function () {
       var id = 'ThisIsMyTestId';
       var secret = 'DeviceSecretAtItsBest';
 
-      describe('Correct command', function () {
+      describe.skip('Correct command', function () {
         it('should be able to set the device configuration for a specific environment', function (done) {
-          fn.run(
-            'node ' + binPath + '/set.js ' + env + ' ' + id + ' ' + secret, { checks: ['Successful device data reset for environement', env + '!'] }
-            , function (err) {
-              if (!err) {
-                //TODO Use NeDB find to check if there's data for that environment
-                
-              }
-              done(err);
+          exec( 'node ' + binPath + 'set.js ' + env + ' ' + id + ' ' + secret, function (error, stdout, stderr) {
+            if (!error) {
+              var query = {};
+              deviceDB.find(query, function (err, result) {
+                if (err) {
+                  done(err);
+                }
+
+                //Use NeDB find to check if there's data for that environment
+                if (_.isUndefined(result)) {
+                  done();
+                } else {
+                  done(error);
+                }
+              });
+            }else{
+              done(error);
             }
-          );
+          }); 
         });
-        
       });
       
       describe('Wrong parameters', function () {
@@ -79,64 +127,55 @@ describe('Bin', function () {
         });
 
         it('should not set device configuration if env isn\'t dev|rc|prod', function (done) {
-          fn.run(
-            'node ' + binPath + '/set.js ' + 'aMadeUpEnv' + ' ' + id + ' ' + secret, { checks: ['Parameters required'] }
-            , function (err) {
-              if (!err) {
-                //TODO Confirm data remains the same
-              }
-              done(err);
+          exec('node ' + binPath + 'set.js ' + 'aMadeUpEnv' + ' ' + id + ' ' + secret, function (error, stdout, stderr) {
+            if (!error) {
+              done(error);
+            }else{
+              done();
             }
-          );
+          }); 
         });
 
         it('should not set device configuration if missing env parameter', function (done) {
-          fn.run(
-            'node ' + binPath + '/set.js ' + id + ' ' + secret, { checks: ['Parameters required'] }
-            , function (err) {
-              if (!err) {
-                //TODO Confirm data remains the same
-              }
-              done(err);
+          exec('node ' + binPath + 'set.js ' + id + ' ' + secret, function (error, stdout, stderr) {
+            if (!error) {
+              done(error);
+            }else{
+              done();
             }
-          );
+          }); 
         });
 
         it('should not set device configuration if missing device id', function (done) {
-          fn.run(
-            'node ' + binPath + '/set.js ' + env + ' ' + secret, { checks: ['Parameters required'] }
-            , function (err) {
-              if (!err) {
-                //TODO Confirm data remains the same
-              }
-              done(err);
+          exec('node ' + binPath + 'set.js ' + env + ' ' + secret, function (error, stdout, stderr) {
+            if (!error) {
+              done(error);
+            }else{
+              done();
             }
-          );
+          }); 
         });
 
         it('should not set device configuration if missing device secret', function (done) {
-          fn.run(
-            'node ' + binPath + '/set.js ' + env + ' ' + id, { checks: ['Parameters required'] }
-            , function (err) {
-              if (!err) {
-                //TODO Confirm data remains the same
-              }
-              done(err);
+          exec( 'node ' + binPath + 'set.js ' + env + ' ' + id, function (error, stdout, stderr) {
+            if (!error) {
+              done(error);
+            }else{
+              done();
             }
-          );
+          }); 
         });
 
         it('should not set device configuration if missing multiple parameters', function (done) {
-          fn.run(
-            'node ' + binPath + '/set.js', { checks: ['Parameters required'] }
-            , function (err) {
-              if (!err) {
-                //TODO Confirm data remains the same
-              }
-              done(err);
+          exec('node ' + binPath + 'set.js', function (error, stdout, stderr) {
+            if (!error) {
+              done(error);
+            }else{
+              done();
             }
-          );
+          }); 
         });
+
       });
     });
   });
