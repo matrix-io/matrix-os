@@ -2,7 +2,6 @@ var fs = require('fs-extra');
 var binPath = './bin/';
 var exec = require('child_process').exec;
 var DataStore = require('nedb');
-var _ = require('lodash');
 var path = require('path');
 var root = path.join(__dirname,'../');
 var deviceDbPath = root + 'db/device.db'

@@ -1,3 +1,4 @@
+os = os ? os : require('os'); //Added for bin folder commands as those don't have globals
 var path = require('path');
 var root = path.join(__dirname,'../');
 var tmpFolder = os.tmpdir();
