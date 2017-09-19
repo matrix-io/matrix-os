@@ -238,7 +238,7 @@ function offlineSetup(callback) {
       //If device data isn't present    
       if (!Matrix.service.auth.isSet()) {
 
-        if (!process.env.hasOwnProperty('BLUETOOTH') || process.env.BLUETOOTH !== 'true') { //If no Bluetooth, alert and stop
+        if (!process.env.hasOwnProperty('MATRIX_BLUETOOTH') || process.env.MATRIX_BLUETOOTH !== 'true') { //If no Bluetooth, alert and stop
           console.warn('Missing registration information! This device is not correctly configured.'.yellow);
           console.warn('You can use '.yellow + 'MATRIX CLI'.green + ' to create a device in the platform and then add the '.yellow + 'MATRIX_DEVICE_ID'.gray + ' and '.yellow + 'MATRIX_DEVICE_SECRET'.gray + ' variables. \n\nIf you continue to have problems, please reach out to our support forums at'.yellow + ' http://community.matrix.one'.green);
           process.exit(1);
@@ -297,7 +297,7 @@ function offlineSetup(callback) {
       }
 
       //If BLE isn't specified in an env var then skip it
-      if (!process.env.hasOwnProperty('BLUETOOTH') || process.env.BLUETOOTH !== 'true') return cb();
+      if (!process.env.hasOwnProperty('MATRIX_BLUETOOTH') || process.env.MATRIX_BLUETOOTH !== 'true') return cb();
       if (!bleno) { 
         console.log('Missing bleno library, please install it and try again');
         console.log('You can install by going to the project folder and then running:');
