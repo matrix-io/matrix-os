@@ -131,8 +131,9 @@ Matrix.api.makeUrls(Matrix.apiServer);
 
 var malosInfoOut = '';
 Matrix.device.malos.info(function (data) {
+  console.log(data);
   _.each(data.info, function (i) {
-    malosInfoOut += ' ⚙ '.yellow + i.driver_name.blue + ':' + i.base_port + ' | ' + i.notes_for_human.grey + '\n';
+    malosInfoOut += ' ⚙ '.yellow + i.driverName.blue + ':' + i.basePort + ' | ' + i.notesForHuman.grey + '\n';
   });
 });
 
@@ -276,7 +277,7 @@ function offlineSetup(callback) {
     function startConfigurationBLE(cb) {
 
       // env vars have creds, skip BT
-      if ( Matrix.preAuth === true ){
+      if (Matrix.preAuth === true) {
         return cb();
       }
 
