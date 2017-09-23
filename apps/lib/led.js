@@ -28,7 +28,7 @@ module.exports = function(c) {
     var tcColors = _.times('#000000', 35);
 
     if (_.isPlainObject(color)) {
-      // console.log('o>', color)
+      // console.log('o>', color);
       if ( color.color.indexOf('rgba') !== -1 ){
         console.log('rgba is not supported. results may vary.');
       }
