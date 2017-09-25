@@ -1,6 +1,5 @@
-var set = function (key, data) {
-	var config = { key: data }
-	console.log('Setting: '.blue, config);
+var set = function (config) {
+	console.log('Setting: ', config);
 
 	process.send({
 		type: 'update-setting',
