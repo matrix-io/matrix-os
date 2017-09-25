@@ -1,11 +1,10 @@
 var set = function (key, data) {
-	
-	console.log('Setting: '.blue + key + ': ' + data);
+	var config = { key: data }
+	console.log('Setting: '.blue, config);
 
 	process.send({
 		type: 'update-setting',
-		key: key,
-		data: data
+		config: config
 	});
 };
 
