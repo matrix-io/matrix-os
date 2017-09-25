@@ -1,6 +1,6 @@
 var set = function (key, data) {
 	
-	console.log('Setting: '.blue, key, ': ' data);
+	console.log('Setting: '.blue + key + ': ' + data);
 
 	process.send({
 		type: 'update-setting',

@@ -376,7 +376,8 @@ var Matrix = {
     console.log('static not implmented yet');
   },
   service: require('./lib/service.js'),
-  sensor: require('./lib/sensor.js')
+  sensor: require('./lib/sensor.js'),
+  set: require('./lib/setting.js')
 };
 
 module.exports = Matrix;
