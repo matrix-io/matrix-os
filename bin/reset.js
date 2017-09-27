@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-var envs = ['dev', 'prod', 'rc'];
+var envs = ['dev', 'production', 'rc'];
 
 Matrix = {}; //Need to fake the global
 _ = require('lodash');

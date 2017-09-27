@@ -123,7 +123,7 @@ describe('Bin', function () {
       });
       
       describe('Wrong parameters', function () {
-        it('should not set device configuration if env isn\'t dev|rc|prod', function (done) {
+        it('should not set device configuration if env isn\'t dev|rc|production', function (done) {
           exec('node ' + binPath + 'set.js ' + 'aMadeUpEnv' + ' ' + id + ' ' + secret, function (error, stdout, stderr) {
             if (!error) {
               done(new Error('Wrong parameters validation failed'));

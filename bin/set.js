@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-var envs = ['dev', 'prod', 'rc'];
+var envs = ['dev', 'production', 'rc'];
 
 Matrix = {}; //Need to fake the global
 _ = require('lodash');
@@ -69,6 +69,6 @@ if (process.argv.length > 4 && _.includes(envs, process.argv[2])) {
   });
 } else {
   console.log('Parameters required: node set.js <env> <id> <secret>');
-  console.log('  Allowed envs: dev, rc, prod');
+  console.log('  Allowed envs: dev, rc, production');
   process.exit(1);
 }
