@@ -147,7 +147,7 @@ var service = function(name, options) {
         if (_.isFunction(cb)) {
           cb(_.omit(data.payload, 'serviceType', 'engine', 'type'));
         } else {
-          console.log('No callback passed to service>%s.then', self.name);
+          cb(console.warn('No callback passed to service>%s.then', self.name));
         }
       }
     });
