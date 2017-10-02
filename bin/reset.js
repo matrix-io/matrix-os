@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-var envs = ['dev', 'prod', 'rc'];
+var envs = ['dev', 'production', 'rc'];
 
 Matrix = {}; //Need to fake the global
 _ = require('lodash');
@@ -35,9 +35,9 @@ deviceDB.find(query, function (err, result) {
       deviceDB.remove({ _id: device._id }, function (err, result) {
         if (!err) {
           if (_.isUndefined(env)) {
-            console.log('Device data resetted successfuly!');
+            console.log('Successful device data reset!');
           } else {
-            console.log('Device data resetted successfuly for environement', env + '!');
+            console.log('Successful device data reset for environement', env + '!');
           }
         }
       });

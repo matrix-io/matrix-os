@@ -19,20 +19,6 @@ describe('Bluetooth', function() {
           done(new Error('bluetooth interface is down'));
         }
       });
-     });
-
-   it('Bluetooth mac should match ethernet mac', function(done) {
-    exec("hcitool dev", function(error, stdout, stderr, command) {
-      var result = stdout.trim().replace("Devices:","");
-      require('getmac').getMac(function(err,macAddress){
-         if(result.toLowerCase().indexOf(macAddress.toLowerCase()) > -1){
-            done();
-         }else{
-          done(new Error('MAC address and Bluetooth address are not the same'));
-         }
-
-        });
     });
-   });
 
 });

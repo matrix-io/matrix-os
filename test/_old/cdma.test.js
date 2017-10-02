@@ -1,6 +1,5 @@
 var exec = require('child_process').exec;
 var expect = require('chai').expect;
-// var Bancroft = require('bancroft');
 
 describe('CDMA', function() {
 
@@ -13,12 +12,6 @@ describe('CDMA', function() {
 
 
     it('Should have acquired signal', function(done){
-      // var bancroft = new Bancroft();
-      // bancroft.on('location', function (location) {
-      //
-      // if(!isNaN(location.latitute) && !isNaN(location.longitude)){
-        done();
-      //  }
-      // });
+      done();
     });
 });
