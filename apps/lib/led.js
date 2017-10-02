@@ -29,6 +29,9 @@ module.exports = function(c) {
 
     if (_.isPlainObject(color)) {
       // console.log('o>', color)
+      if ( color.color.indexOf('rgba') !== -1 ){
+        console.log('rgba is not supported. results may vary.');
+      }
       // shape
       if (_.has(color, 'spin')) {
         color.color = tc(color.color).spin(color.spin);
@@ -55,9 +58,9 @@ module.exports = function(c) {
         // draw arc degrees to lights 360 / 10 = 36
         // => [ 'black', 'black', 'black', ]
         // TODO: project degrees properly onto 35 lights
-        var arcArray = _.times(Math.abs(Math.round(35 * (color.arc / 360))), function() { return color.color });
+        var arcArray = _.times(Math.abs(Math.round(35 * (color.arc / 360))), function() { return color.color; });
         _.each(arcArray, function(ac, i2) {
-          var bump = (color.arc > 0) ? i2 : -i2
+          var bump = (color.arc > 0) ? i2 : -i2;
           var targetIndex = Math.round(35 * (color.start / 360)) + bump;
           if (targetIndex < 0) {
             targetIndex = 35 + targetIndex;
@@ -65,7 +68,7 @@ module.exports = function(c) {
           // splice values into tcColor array
           tcColors[targetIndex] = ac;
           color.endIndex = targetIndex;
-        })
+        });
 
 
 
@@ -90,7 +93,7 @@ module.exports = function(c) {
         color.angle = (color.angle < 360) ? color.angle : color.angle % 360;
 
         // 24.75
-        var point = 35 * (color.angle / 360)
+        var point = 35 * (color.angle / 360);
 
         if (color.blend === true) {
           //which light?
@@ -130,7 +133,7 @@ module.exports = function(c) {
     });
 
     //wrap end to beginning
-    var tcLayers = _.chunk(tcColors, 35)
+    var tcLayers = _.chunk(tcColors, 35);
 
     // console.log(printLights(tcColors));
 
@@ -140,7 +143,7 @@ module.exports = function(c) {
     });
 
     // console.log('end', tcColors[0], tcColors.length, colorLayers.length);
-  })
+  });
 
   // composeLayers(colorLayers);
 
@@ -151,7 +154,7 @@ module.exports = function(c) {
     brighten: function(bi) {
       _.each(colorLayers, function(c, i) {
         colorLayers[i] = c.brighten(bi);
-      })
+      });
       return subFn;
     },
 
@@ -159,8 +162,8 @@ module.exports = function(c) {
       _.each(colorLayers, function(c, i) {
         _.each(c, function(co, i2) {
           colorLayers[i][i2] = co.darken(di);
-        })
-      })
+        });
+      });
       return subFn;
     },
 
@@ -178,17 +181,17 @@ module.exports = function(c) {
     render: function() {
       composeLayers(colorLayers);
     }
-  }
+  };
 
   return subFn;
-}
+};
 
 // COLORS will be TC colors
 function setTCColors(colors) {
   var tcColors = [];
   _.each(colors, function(c) {
     tcColors.push(tc(c));
-  })
+  });
 
   emitColorRing(tcColors);
 }
@@ -222,7 +225,7 @@ function composeLayers(layers) {
     });
 
     return r;
-  }, [])
+  }, []);
 
   // console.log('=---= compDone');
   // console.log('C :'.grey, printLights(final));
@@ -252,7 +255,7 @@ function emitColorRing(colors) {
     rgb.b = (rgb.b > 0) ? Math.max(16, rgb.b) : rgb.b;
 
     return rgb;
-  })
+  });
 
   // colors should be { r: g: b: }
   process.send({
@@ -264,16 +267,16 @@ function emitColorRing(colors) {
 
 
 function printColors(tcColors) {
-  console.log(_.repeat(30, '='), 'CLOCK')
+  console.log(_.repeat(30, '='), 'CLOCK');
   _.each(tcColors, function(c) {
     console.log(c.getOriginalInput());
-  })
+  });
 }
 
 function printLights(tcColors) {
   return _.reduce(tcColors, function(r, c) {
     if (_.isUndefined(c) || c.getBrightness() === 0) {
-      return r + ' '
+      return r + ' ';
     } else if (c.isLight()) {
       return r + ':';
     } else {

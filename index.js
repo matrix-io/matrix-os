@@ -197,6 +197,7 @@ function offlineSetup(callback) {
     // Reads the local device DB to grab device id and secret
     function readLocalDeviceInfo(cb) {
       if (!_.isUndefined(Matrix.deviceId) && !_.isUndefined(Matrix.deviceSecret)) {
+        Matrix.preAuth = true;
         console.log('Not using device data from db, using '.yellow + 'MATRIX_DEVICE_ID'.gray + ' and '.yellow + 'MATRIX_DEVICE_SECRET'.gray + ' instead!'.yellow);
         cb();
       } else {
@@ -273,6 +274,11 @@ function offlineSetup(callback) {
       }
     },
     function startConfigurationBLE(cb) {
+
+      // env vars have creds, skip BT
+      if ( Matrix.preAuth === true ){
+        return cb();
+      }
 
       if (process.env.hasOwnProperty('TEST_MODE') && process.env.TEST_MODE === 'true') {
         debug('TEST MODE!');
@@ -685,6 +691,7 @@ function onDestroy(cb) {
         Matrix.service.manager.killAllApps,
         Matrix.service.manager.clearAppList,
         Matrix.service.manager.cleanLogs,
+        Matrix.service.stream.persistCache,
         // Matrix.device.drivers.clear
       ], function (err) {
         if (err) error(err);
