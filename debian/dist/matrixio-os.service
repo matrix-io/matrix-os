@@ -1,9 +1,9 @@
 [Unit]
 Description=MATRIX OS Service
-After=matrix-creator-malos.target
+After=matrixio-malos.target
 
 [Service]
-User=matrix-os
+User=matrixio-os
 Environment=MATRIX_MODE=service
 ExecStart=/usr/lib/matrix-os/bin/node /usr/lib/matrix-os/index.js
 

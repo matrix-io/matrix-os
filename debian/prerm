@@ -1,0 +1,7 @@
+#!/bin/bash -e
+
+# Stop, disable and remove matrix-os service
+systemctl stop matrixio-os.service
+systemctl disable matrixio-os.service
+
+

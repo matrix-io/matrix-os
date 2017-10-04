@@ -1,13 +1,13 @@
-Source: matrix-os
+Source: matrixio-os
 Section: embedded
 Priority: optional
-Maintainer: Admobilize <appdev@admobilize.com>
+Maintainer: MATRIX Labs <info@matrix.one>
 Build-Depends: debhelper (>= 9)
 Standards-Version: 3.9.5
 Homepage: https://github.com/matrix-io/matrix-os
 
-Package: matrix-os
+Package: matrixio-os
 Architecture: any
-Depends: matrix-creator-malos, matrix-creator-malos-zigbee, bluetooth, bluez, libusb-1.0-0-dev, libudev-dev
+Depends: bluetooth, bluez, libusb-1.0-0-dev, libudev-dev
 Description: MATRIX Open Source is a platform for running applications on the MATRIX Creator.
  MATRIX Open Source is a platform for running applications on the MATRIX Creator.
