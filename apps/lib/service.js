@@ -63,7 +63,7 @@ var service = function(name, options) {
         return console.error('Invalid or Undefined Wake Word', self.wakeword, 'looking for', self.service.wakeword)
       }
 
-      if ( !_.isUndefined(self.service.strictPhraseMatch) && self.service.strictPhraseMatch === true) {
+      if ( _.isUndefined(self.service.strictPhraseMatch) || self.service.strictPhraseMatch === true) {
         self.strictPhraseMatch = true;
 
         self.phrases = self.service.phrases;
