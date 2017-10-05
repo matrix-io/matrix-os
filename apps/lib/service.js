@@ -65,6 +65,7 @@ var service = function(name, options) {
 
       if ( !_.isUndefined(self.service.strictPhraseMatch) && self.service.strictPhraseMatch === true) {
         self.strictPhraseMatch = true;
+
         self.phrases = self.service.phrases;
 
         if ( _.isUndefined(self.phrases) || self.phrases.length === 0 ){
@@ -92,7 +93,7 @@ var service = function(name, options) {
     },
 
     then: function(cb){
-      var phraseRegex = self.stricPhraseMatch ? new RegExp(self.phrases.join('|'),'i') : new RegExp('.*?', 'i');
+      var phraseRegex = self.strictPhraseMatch ? new RegExp(self.phrases.join('|'),'i') : new RegExp('.*?', 'i');
       process.on('message', function(data) {
         console.log('VOICE SERVICE >> ', data, phraseRegex)
         if (data.eventType === 'service-emit' &&
