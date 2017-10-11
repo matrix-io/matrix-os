@@ -1,4 +1,4 @@
-var zeromq = require('zmq');
+var zeromq = require('zeromq');
 var protobuf = require('protobufjs');
 describe('component', function () {
   var component, TestProto, malosSend, malosRead, malosPing, malosError, TestProto;

@@ -1,4 +1,6 @@
 // Welcome to MatrixOS - A JavaScript environment for IoT Applications
+var optional = require('optional');
+var bleno = optional('bleno');
 
 const mosRepoURL = 'https://raw.githubusercontent.com/matrix-io/matrix-os/master/package.json';
 // check gh
@@ -22,6 +24,7 @@ var checks = {
 _ = require('lodash');
 async = require('async');
 exec = require('child_process').exec;
+os = require('os');
 
 require('colors');
 
@@ -235,6 +238,19 @@ function offlineSetup(callback) {
 
       //If device data isn't present    
       if (!Matrix.service.auth.isSet()) {
+
+        if (!process.env.hasOwnProperty('MATRIX_BLUETOOTH') || process.env.MATRIX_BLUETOOTH !== 'true') { //If no Bluetooth, alert and stop
+          console.warn('Missing registration information! This device is not correctly configured.'.yellow);
+          console.warn('You can use '.yellow + 'MATRIX CLI'.green + ' to create a device in the platform and then add the '.yellow + 'MATRIX_DEVICE_ID'.gray + ' and '.yellow + 'MATRIX_DEVICE_SECRET'.gray + ' variables. \n\nIf you continue to have problems, please reach out to our support forums at'.yellow + ' http://community.matrix.one'.green);
+          process.exit(1);
+        } else if (!bleno) { //If using Bluetooth but missing bleno, alert and stop
+          console.log('Missing bleno library, please install it and try again');
+          console.log('You can install by going to the project folder and then running:');
+          console.log('  > npm install bleno');
+          process.exit(1);
+        }
+
+        //Using Bluetooth correctly
         console.warn('Missing registration information! This device is not correctly configured. \nYou can register and pair via Bluetooth to your device using the '.yellow + 'MATRIX'.green + ' mobile apps.'.yellow);
         console.warn('Alternatively, you can use '.yellow + 'MATRIX CLI'.green + ' to register the device manually to then add the '.yellow + 'MATRIX_DEVICE_ID'.gray + ' and '.yellow + 'MATRIX_DEVICE_SECRET'.gray + ' variables. \n\nIf you continue to have problems, please reach out to our support forums at'.yellow + ' http://community.matrix.one'.green);
 
@@ -281,10 +297,15 @@ function offlineSetup(callback) {
         return cb();
       }
 
-      if (process.env.hasOwnProperty('TEST_MODE') && process.env.TEST_MODE === 'true') {
-        debug('TEST MODE!');
-        return cb();
+      //If BLE isn't specified in an env var then skip it
+      if (!process.env.hasOwnProperty('MATRIX_BLUETOOTH') || process.env.MATRIX_BLUETOOTH !== 'true') return cb();
+      if (!bleno) {
+        console.log('Missing bleno library, please install it and try again');
+        console.log('You can install by going to the project folder and then running:');
+        console.log('  > npm install bleno');
+        process.exit(1);
       }
+
       //Starts BLE configuration
       Matrix.device.bluetooth.start(function () {
         Matrix.device.bluetooth.emitter.on('configurationAuth', function (err, uuid, auth) {
@@ -322,36 +343,6 @@ function onlineSetup(callback) {
       });
     },
 
-    //   // Check for updates to MOS and dependencies
-    // function checkUpdates(cb) {
-    //     // in case you want to skip the upgrade for whatever reason
-    //   if (process.env.hasOwnProperty('NO_UPGRADE') || checks.update === true) {
-    //     return cb();
-    //   }
-
-    //     // check dependencies - eventfilter is used for apps
-    //   upgradeDependencies(function(err, updated) {
-    //     if (err) console.error('Unable to upgrade dependencies:'.red, err);
-    //     if (updated) onDestroy();
-
-    //     upgradeMOS(function(err, updated) {
-    //       if (err) {
-    //         console.error('Unable to upgrade main code:'.red, err);
-    //         console.log('Please contact support or share your issue with the community at '.yellow + 'http://community.matrix.one'.green);
-    //         onDestroy();
-    //       }
-
-    //       if (updated) {
-    //         debug('Stopping after upgrade');
-    //         Matrix.device.drivers.led.stopLoader();
-    //         Matrix.device.drivers.led.clear();
-    //         onDestroy();
-    //       }
-    //       cb(err);
-    //     });
-
-    //   });
-    // },
 
     // Authenticate using current device data
     function getToken(cb) {
@@ -757,20 +748,6 @@ process.on('uncaughtException', function (err) {
     forceExit = true;
     console.error('UNKNOWN ERROR!'.red, err.stack);
 
-    // TODO: bad update? revert to last
-    //revert old
-    // getOldBranch(function (oldBranch) {
-    //   if (oldBranch && oldBranch !== "") {
-    //     revertUpdate(function (error) {
-    //       if (error) {
-    //         warn("Boot -- Error reverting...");
-    //         onDestroy();
-    //       }
-    //     });
-    //   } else {
-    //     onDestroy();
-    //   }
-    // });
     onDestroy();
   }
 });
@@ -778,8 +755,7 @@ process.on('uncaughtException', function (err) {
 
 // UTILITY
 function getEnvSettings(env) {
-  // Change to production after leaving alpha
-  var environmentSetting = env || process.env.NODE_ENV || 'rc';
+  var environmentSetting = env || process.env.NODE_ENV || 'production';
   var validEnvList = fs.readdirSync(__dirname + '/config/env');
   if (_.intersection(environmentSetting, validEnvList).length > -1) {
     console.log('Environment Selected:'.grey, environmentSetting.blue);
