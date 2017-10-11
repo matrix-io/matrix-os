@@ -38,6 +38,7 @@
   ],
   "license": "ISC",
   "dependencies": {
+    "assert-plus": "^1.0.0",
     "async": "^1.5.2",
     "chai": "^3.5.0",
     "colors": "^1.1.2",
