@@ -261,6 +261,13 @@ vim -nb or :nbs from inside vim
 
 Be sure to deploy `test/fixtures/test.matrix` to the device you are going to use. You can run `matrix deploy` from inside the folder. We have to install the application vs manually copy it so there are firebase records created.
 
+```
+cd test/fixtures/test.matrix/
+matrix deploy
+cd ../../../
+npm test
+```
+
 ## Maintainers
 
 Sean Canton <sean.canton@admobilize.com>
