@@ -34,6 +34,8 @@ To exclude engine-io from the output, do
 ```
 MATRIX_API_SERVER https://dev-api.admobilize.com
 MATRIX_STREAMING_SERVER http://dev-mxss.admobilize.com:80
+MATRIX_NOMXSS - don't use streaming server
+NO_INSTALL - disable auto install from firebase for apps
 ```
 
 # Command Line Switches
@@ -50,7 +52,7 @@ DOCKER_APPS=true START_APP=clock node index.js
 ```
 
 ## Start your MATRIX OS with an installed App
-Please note that the application must be registered with the infrastructure to launch. Internet connectivity is only required on boot.
+Please note that the application must be registered with the infrastructure to launch. Internet connectivity is only required on boot. It can be disconnected, so long as an app doesn't use GRPC services or tries to save data.
 ```
 START_APP=monitor node index.js
 ```
