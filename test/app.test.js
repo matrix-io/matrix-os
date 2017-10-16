@@ -33,6 +33,7 @@ describe('Matrix Applications', function () {
         });
         it('should save a reference to the sensors', function (done) {
           appRecord.should.have.property('sensors');
+          log(appRecord);
           appRecord.sensors[0].should.equal('temperature');
           done();
         });

@@ -596,7 +596,7 @@ function onlineSetup(callback) {
           console.log('MATRIX OS can be upgraded.'.yellow, Matrix.latestVersion, 'available!'.yellow, Matrix.version);
         }
 
-        // CLI uses IPC for tests
+        // CLI uses IPC for tests, will boot MOS with send method
         if (process.hasOwnProperty('send')) process.send({ 'matrix-ready': true });
 
         if (process.env.hasOwnProperty('REPL')) {
