@@ -1,3 +1,7 @@
-#!/bin/bash
-echo "Disable firmware loading at startup"
-systemctl disable matrix-os
+#!/bin/bash -e
+
+# Stop, disable and remove matrix-os service
+systemctl stop matrixio-os.service
+systemctl disable matrixio-os.service
+
+

@@ -1,5 +1,5 @@
-matrix-os (0.1-1) unstable; urgency=low
+matrixio-os (0.14.2-1) unstable; urgency=medium
 
-  * Initial release of MOS as a service
+  * Initial release.
 
- -- unknown <pi@raspberrypi>  Mon, 18 Jul 2016 15:13:28 -0800
+ -- MATRIX Labs <info@matrix.one>  Tue, 6 Jun 2017 22:56:53 +0000

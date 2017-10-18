@@ -1,15 +1,18 @@
 var service = function(name, options) {
-  // don't use context for self
+  // don't use context for self, will inherit from matrix
   var self = {};
   self.name = name;
 
-  // find the service definition
+  // find the service definition, by service name, engine or type
   var service = _.find(matrix.config.services, function(v, k) {
     // console.log(name, k, v)
     if (k === name || v.engine === name || v.type === name) {
+      self.serviceName = k;
       return true;
     }
   });
+
+  self.service = service;
 
   console.log('service>', service);
 
@@ -29,6 +32,83 @@ var service = function(name, options) {
     type: 'service-cmd',
     engine: self.engine,
     serviceType: self.type
+  };
+
+  var voiceMethods = {
+    /**
+     * service().listen - has two forms
+     * listen('string', function()) 
+     * listen(function())
+     * @param {(String|Function)} wake can be a service name, as defined in config.yaml or can be the callback
+     * @param {Function} cb what to do after a wakeword is used
+     */
+
+    listen: function(wake, cb){
+      
+      if ( self.name === 'voice' && ( _.isUndefined(wake) || _.isFunction(wake) ) ){
+        return console.error('No Service Name or Wakeword Defined for Voice Service');
+      }
+
+      // single param execution
+      if ( !_.isString(wake)){
+        cb = wake;
+        // should be 'voice' or serviceName
+        wake = self.name;
+      }
+
+      self.wakeword = wake;
+
+      // if no wakeword or if it does not match defined wakeword
+      if ( _.isUndefined(self.wakeword) || self.service.wakeword !== self.wakeword ){
+        return console.error('Invalid or Undefined Wake Word', self.wakeword, 'looking for', self.service.wakeword)
+      }
+
+      if ( _.isUndefined(self.service.strictPhraseMatch) || self.service.strictPhraseMatch === true) {
+        self.strictPhraseMatch = true;
+
+        self.phrases = self.service.phrases;
+
+        if ( _.isUndefined(self.phrases) || self.phrases.length === 0 ){
+          return console.error('No Phrases defined in service configuration', service)
+        }
+      } else {
+        self.strictPhraseMatch = false;
+      }
+      
+      // no type here
+      self.sendObj = _.omit(self.sendObj, 'serviceType');
+
+      // customize command for voice
+      _.extend(self.sendObj, {
+        cmd: 'listen',
+        payload: { wakeword: wake, phrases: self.phrases }
+      });
+
+      // send to MOS
+      process.send(self.sendObj);
+
+      if (_.isFunction(cb)){
+        voiceMethods.then(cb);
+      }
+    },
+
+    then: function(cb){
+      var phraseRegex = self.strictPhraseMatch ? new RegExp(self.phrases.join('|'),'i') : new RegExp('.*?', 'i');
+      process.on('message', function(data) {
+        console.log('VOICE SERVICE >> ', data, phraseRegex)
+        if (data.eventType === 'service-emit' &&
+          data.engine === self.engine &&
+          // does the phrases for this service exist in detected speech
+          !_.isNull( data.payload.speech.match(phraseRegex) )
+        ) {
+          if (_.isFunction(cb)) {
+            cb(data.payload.speech.toLowerCase().replace( self.wakeword.toLowerCase(), '').trim());
+          } else {
+            console.log('No callback passed to service>%s.then', self.name);
+          }
+        }
+      });
+    }
   };
 
   var recognitionMethods = {
@@ -216,12 +296,18 @@ var service = function(name, options) {
     then: self.thenFn
   };
 
+
+  // this is what routes the next part of the chain
+  // matrix.service.x
+  // todo: service name lookup here
   if (name === 'recognition') {
     return _.omit(recognitionMethods, 'then');
   } else if (name === 'face' || name === 'demographics') {
     return _.omit(detectionMethods, 'then');
   } else if (name === 'vehicle') {
     return _.omit(vehicleMethods, 'then');
+  } else if (name === 'voice') {
+    return _.omit(voiceMethods, 'then');
   } else if (!_.isNull(name.match(/fist|thumb-up|palm|pinch/))) {
     return _.omit(gestureMethods, 'then');
   } else {

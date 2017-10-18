@@ -3,7 +3,27 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+## [0.16.0]
+### Fixed
+- Refresh MXSS issues, added async, adjusted delay mechanism
+- Old / gone packages
+- Bluetooth bugs
 
+### Added
+- Binary function set for managing device config
+- Package lock
+
+### Removed
+- Bleno dep
+- App Send Log message
+
+## [0.15.0]
+### Added
+- Wakeword (requires external model currently)
+### Fixed
+- Refresh tokens now should work so MOS will stay open for hours
+
+## [0.14.4]
 ### Changed
 - Remove upgrade check for all but core.
 
