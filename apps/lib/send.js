@@ -1,5 +1,5 @@
 module.exports = function(message) {
-  console.log('[M](' + this.appName + ') send ->', message);
+  //console.log('[M](' + this.appName + ') send ->', message); //TODO debug this?
   if (_.isNull(message) || _.isUndefined(message)) {
     return error('null message from matrix.send')
   }
@@ -41,9 +41,7 @@ module.exports = function(message) {
     if (_.isPlainObject(dataTypes[type])) {
       // nested datatype structure
       _.each(dataTypes[type], function(f, key) {
-        console.log('Key: ', key,
-          '\nType: ', f,
-          '\nmessage[key]: ', message[key], typeof message[key])
+        console.log(key + ': ' + message[key] + ' (' + f + ' > ' + typeof message[key] + ')'); //key: message[key] (Type > typeof)
         if (message.hasOwnProperty(key) && !_.isUndefined(message[key])) {
           // check that the data is formatted correctly
           if (
