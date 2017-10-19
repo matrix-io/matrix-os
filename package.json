@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "matrix-os",
   "version": "0.16.0",
   "description": "Portal to device layer for AdMobilize Matrix devices. Includes global component, npm install -g matrix-cli",
@@ -73,4 +74,77 @@
   "engines": {
     "node": ">=0.12.7 <=6.5"
   }
+=======
+    "name": "matrix-os",
+    "version": "0.16.0",
+    "description": "Portal to device layer for AdMobilize Matrix devices. Includes global component, npm install -g matrix-cli",
+    "main": "app.js",
+    "repository": "http://github.com/matrix-io/matrix-os",
+    "keywords": "matrix,creator,iot,zmq,protobuf,zigbee,zwave,nfc,gyroscope,accellerometer,thread,bluetooth,ir,microphone,robots,smart homes,smart business,security,sensors,maker,firebase",
+    "homepage": "http://creator.matrix.one",
+    "bugs": "https://github.com/matrix-io/matrix-os/issues/new",
+    "scripts": {
+        "debug": "DEBUG=*,-engine*,-needle,-*led,-gatt,-bleno,-Component,-bt-characteristic,-hci NODE_ENV=dev node index.js",
+        "debugger": "DEBUG=*,-engine*,-needle,-*led,-gatt,-bleno,-Component,-bt-characteristic,-hci NODE_ENV=dev node --debug index.js",
+        "debug-test": "DEBUG=*,-engine*,-Component*,-gatt,-bleno,-bt-characteristic,-hci node test/_runner.js",
+        "local-debug": "DEBUG=*,-engine*,-Component* NODE_ENV=local node index.js",
+        "local": "NODE_ENV=local node index.js",
+        "start": "nodemon --watch lib --watch config",
+        "test": "node test/_runner.js",
+        "pr": "open https://bitbucket.org/admobilize/admatrix/pull-request/new",
+        "deploy-clear": "sudo rm -r db node_modules/matrix-firebase node_modules/matrix-app-config-helper node_modules/matrix-node-sdk node_modules/matrix-eventfilter",
+        "deploy-copy": "cd node_modules; cp -r ../../matrix-firebase ./matrix-firebase; cp -r ../../matrix-app-config-helper ./matrix-app-config-helper; cp -r ../../matrix-node-sdk ./matrix-node-sdk; cp -r ../../matrix-eventfilter ./matrix-eventfilter; cd ..;",
+        "deploy-image": "find apps -name '*.matrix' ! -name 'monitor.matrix' -type d -exec rm -r {} +; docker build --no-cache -t matrix/matrix-os .;docker push admobilize/matrix-os",
+        "local-setup": "cd node_modules; ln -s ../../pi-wifi ./pi-wifi; ln -s ../../matrix-firebase ./matrix-firebase; ln -s ../../matrix-app-config-helper ./matrix-app-config-helper; ln -s ../../matrix-node-sdk ./matrix-node-sdk; ln -s ../../matrix-eventfilter ./matrix-eventfilter; cd ..",
+        "sync": "rsync -e ssh --progress -u package.json index.js pi@m:mos/;rsync -ru -e ssh --progress lib proto config apps test pi@m:mos",
+        "sync-local": "rsync -e ssh --progress -u package.json index.js pi@l:matrix-os/;rsync -ru -e ssh --progress lib proto config apps test pi@l:matrix-os",
+        "sync-m1": "rsync -e ssh --progress -u package.json index.js pi@m1:matrix-os/;rsync -ru -e ssh --progress lib proto config apps test pi@m1:matrix-os",
+        "device-diagnostics": "DEBUG=*,-engine*,-gatt,-bleno,-bt-characteristic,-hci START_APP=monitor NODE_ENV=dev node index.js",
+        "screensaver": "START_APP=life NODE_ENV=dev node index.js",
+        "clock": "START_APP=clock NODE_ENV=dev node index.js",
+        "apphost-debug": "docker run -v `pwd`/apps:/apps -it matrix-apphost bash",
+        "apphost-build": "docker build -t matrix-apphost -f Dockerfile-apphost-arm .",
+        "upgrade": "npm update matrix-node-sdk matrix-app-config-helper matrix-firebase matrix-eventfilter pi-wifi",
+        "watch": "nodemon --exec npm run sync"
+    },
+    "author": "Sean Canton <sean.canton@admobilize.com>",
+    "contributors": [
+        "Sean Canton <sean.canton@admobilize.com>"
+    ],
+    "license": "ISC",
+    "dependencies": {
+        "async": "^1.5.2",
+        "chai": "^3.5.0",
+        "colors": "^1.1.2",
+        "debug": "^2.2.0",
+        "engine.io-client": "^1.6.8",
+        "fs-extra": "^0.30.0",
+        "grpc": "^1.0.0",
+        "js-yaml": "^3.6.1",
+        "jsonwebtoken": "^5.7.0",
+        "lodash": "^4.13.1",
+        "matrix-app-config-helper": "https://github.com/matrix-io/matrix-app-config-helper/tarball/master",
+        "matrix-eventfilter": "https://github.com/matrix-io/matrix-eventfilter/tarball/master",
+        "matrix-firebase": "https://github.com/matrix-io/matrix-firebase/tarball/master",
+        "matrix-node-sdk": "https://github.com/matrix-io/matrix-node-sdk/tarball/master",
+        "matrix-protos": "0.0.11",
+        "mic": "^2.1.1",
+        "mocha": "^2.4.5",
+        "nedb": "https://github.com/matrix-io/nedb/tarball/master",
+        "network": "^0.3.2",
+        "optional": "^0.1.4",
+        "pi-wifi": "^1.1.2",
+        "protobufjs": "^5.0.1",
+        "request": "^2.72.0",
+        "rimraf": "^2.5.2",
+        "should": "^7.0.2",
+        "tinycolor2": "^1.3.0",
+        "tree-kill": "^1.1.0",
+        "unzip2": "^0.2.5",
+        "zeromq": "^4.6.0"
+    },
+    "engines": {
+        "node": ">=0.12.7 <=6.5"
+    }
+>>>>>>> dev
 }
