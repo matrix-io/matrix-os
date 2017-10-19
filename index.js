@@ -34,6 +34,9 @@ warn = console.log;
 log = console.log;
 error = console.error;
 
+// temp for hackathon
+process.env.NODE_ENV = 'dev';
+
 // based on NODE_ENV, set sensible defaults
 var envSettings = getEnvSettings();
 // if NODE_ENV=dev then set sane debug
