@@ -30,7 +30,7 @@
     "apphost-debug": "docker run -v `pwd`/apps:/apps -it matrix-apphost bash",
     "apphost-build": "docker build -t matrix-apphost -f Dockerfile-apphost-arm .",
     "upgrade": "npm update matrix-node-sdk matrix-app-config-helper matrix-firebase matrix-eventfilter pi-wifi",
-    "watch": "nodemon --watch lib index.js package.json config --exec npm run sync",
+    "watch": "nodemon --watch lib --watch config --exec npm run sync",
     "watch-apps": "nodemon --watch apps config --exec npm run sync",
     "watch-test": "nodemon --watch lib test --exec npm test"
   },
