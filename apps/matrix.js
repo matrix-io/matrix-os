@@ -130,6 +130,7 @@ var matrixDebug = false;
  * Applications respond to `app-message` and `app-{appName}-message`. 
  * TODO: Support global event scoped messages
  * TODO: Switch to options based
+ * TODO: This is confusing, fix me.
  * 
  * @param {String} appName - application name
  * @param {String} eventName 
