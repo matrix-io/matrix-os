@@ -187,7 +187,7 @@ function interAppResponse(name, cb) {
       console.log('[M]->app(msg)'.blue, m);
       if (_.isString(name)) {
         // if an event name was specified in the on()
-        if (m.eventName == name) {
+        if (m.eventName === name || m.value === name ) {
           cb(m);
         }
         // no event name match, no fire listener
