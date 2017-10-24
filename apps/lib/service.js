@@ -94,7 +94,7 @@ var service = function(name, options) {
 
     then: function(cb){
       var phraseRegex = self.strictPhraseMatch ? new RegExp(self.phrases.join('|'),'i') : new RegExp('.*?', 'i');
-      process.on('message', function(data) {
+      process.on('message', function(data) {  
         console.log('VOICE SERVICE >> ', data, phraseRegex)
         if (data.eventType === 'service-emit' &&
           data.engine === self.engine &&
