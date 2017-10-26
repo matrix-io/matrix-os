@@ -146,7 +146,7 @@ Matrix.api.makeUrls(Matrix.apiServer);
 
 var malosInfoOut = '';
 Matrix.device.malos.info(function (data) {
-  console.log(data);
+  // console.log(data);
   _.each(data.info, function (i) {
     malosInfoOut += ' ⚙ '.yellow + i.driverName.blue + ':' + i.basePort + ' | ' + i.notesForHuman.grey + '\n';
   });

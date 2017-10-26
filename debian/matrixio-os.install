@@ -1,0 +1,9 @@
+index.js usr/lib/matrix-os/
+#package.json usr/lib/matrix-os/
+config/ usr/lib/matrix-os/
+lib/ usr/lib/matrix-os/
+apps/ var/matrix-os/store/
+
+debian/dist/matrixio-os.service /lib/systemd/system/
+debian/dist/node usr/lib/matrix-os/
+debian/dist/node_modules/ usr/lib/matrix-os/

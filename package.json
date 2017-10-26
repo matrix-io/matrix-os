@@ -1,6 +1,6 @@
 {
   "name": "matrix-os",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "description": "Portal to device layer for AdMobilize Matrix devices. Includes global component, npm install -g matrix-cli",
   "main": "app.js",
   "repository": "http://github.com/matrix-io/matrix-os",
@@ -8,7 +8,7 @@
   "homepage": "http://creator.matrix.one",
   "bugs": "https://github.com/matrix-io/matrix-os/issues/new",
   "scripts": {
-    "debug": "DEBUG=*,-engine*,-needle,-*led,-gatt,-bleno,-Component,-bt-characteristic,-hci NODE_ENV=dev node index.js",
+    "debug": "DEBUG=*,-engine*,-needle*,-*led,-gatt*,-bleno*,-Component*,-bt-characteristic*,-hci* NODE_ENV=dev node index.js",
     "debugger": "DEBUG=*,-engine*,-needle,-*led,-gatt,-bleno,-Component,-bt-characteristic,-hci NODE_ENV=dev node --debug index.js",
     "debug-test": "DEBUG=*,-engine*,-Component*,-gatt,-bleno,-bt-characteristic,-hci node test/_runner.js",
     "debug-watch": "NODE_ENV=dev nodemon index.js -i apps",
@@ -30,7 +30,9 @@
     "apphost-debug": "docker run -v `pwd`/apps:/apps -it matrix-apphost bash",
     "apphost-build": "docker build -t matrix-apphost -f Dockerfile-apphost-arm .",
     "upgrade": "npm update matrix-node-sdk matrix-app-config-helper matrix-firebase matrix-eventfilter pi-wifi",
-    "watch": "nodemon --exec npm run sync"
+    "watch": "nodemon --watch lib --watch config --exec npm run sync",
+    "watch-apps": "nodemon --watch apps config --exec npm run sync",
+    "watch-test": "nodemon --watch lib test --exec npm test"
   },
   "author": "Sean Canton <sean.canton@admobilize.com>",
   "contributors": [

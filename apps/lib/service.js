@@ -63,10 +63,16 @@ var service = function(name, options) {
         return console.error('Invalid or Undefined Wake Word', self.wakeword, 'looking for', self.service.wakeword)
       }
 
-      self.phrases = self.service.phrases;
+      if ( _.isUndefined(self.service.strictPhraseMatch) || self.service.strictPhraseMatch === true) {
+        self.strictPhraseMatch = true;
 
-      if ( _.isUndefined(self.phrases) || self.phrases.length === 0 ){
-        return console.error('No Phrases defined in service configuration', service)
+        self.phrases = self.service.phrases;
+
+        if ( _.isUndefined(self.phrases) || self.phrases.length === 0 ){
+          return console.error('No Phrases defined in service configuration', service)
+        }
+      } else {
+        self.strictPhraseMatch = false;
       }
       
       // no type here
@@ -87,8 +93,8 @@ var service = function(name, options) {
     },
 
     then: function(cb){
-      var phraseRegex = new RegExp(self.phrases.join('|'),'i');
-      process.on('message', function(data) {
+      var phraseRegex = self.strictPhraseMatch ? new RegExp(self.phrases.join('|'),'i') : new RegExp('.*?', 'i');
+      process.on('message', function(data) {  
         console.log('VOICE SERVICE >> ', data, phraseRegex)
         if (data.eventType === 'service-emit' &&
           data.engine === self.engine &&

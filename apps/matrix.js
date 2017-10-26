@@ -392,7 +392,8 @@ var Matrix = {
   },
   service: require('./lib/service.js'),
   sensor: require('./lib/sensor.js'),
-  util: require('./lib/util')
+  util: require('./lib/util'),
+  set: require('./lib/setting.js')
 };
 
 module.exports = Matrix;

@@ -1,0 +1,11 @@
+[Unit]
+Description=MATRIX OS Service
+After=matrixio-malos.target
+
+[Service]
+User=matrixio-os
+Environment=MATRIX_MODE=service
+ExecStart=/usr/lib/matrix-os/bin/node /usr/lib/matrix-os/index.js
+
+[Install]
+WantedBy=multi-user.target
