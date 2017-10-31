@@ -47,10 +47,19 @@ module.exports = function(message) {
           if (
             (f.match(re.string) && _.isString(message[key])) ||
             (f.match(re.integer) && _.isInteger(message[key])) ||
-            (f.match(re.float) && (parseFloat(message[key]) === message[key])) ||
+            ( f.match(re.float) && ( 
+              // accept nulls and zeros
+              _.isNull(message[key]) || message[key] === 0.0 ||
+              // and real floats  
+              parseFloat(message[key]) === message[key]
+            ) ) ||
             (f.match(re.boolean) && _.isBoolean(message[key]))
           ) {} else {
             error(key, 'not formatted correctly\n', type, message)
+          }
+          if ( f.match(re.float) && ( _.isNull(message[key]) || message[key] === 0 ) ){
+            // force zero floats to null, bc they will cast as int on db write
+            message[key] = null;
           }
         } else {
           // stops apps from sending keys not present in schema
