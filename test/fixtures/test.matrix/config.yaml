@@ -2,6 +2,7 @@ name: test
 dataTypes:
   test:
     foo: integer
+    bar: float
 description: none
 configVersion: 2
 keywords: test

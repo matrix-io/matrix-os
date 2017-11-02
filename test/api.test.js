@@ -255,4 +255,13 @@ describe('services', function() {
       done();
     })
   })
+  it('send nulls zero float values', function(done){
+    testAppAPI('sendzerofloat', function(r) {
+      assert.equal(r.type, 'app-emit');
+      assert.equal(r.payload.bar, null);
+      assert.equal(r.payload.type, 'test');
+      assert(r.payload.hasOwnProperty('time'));
+      done();
+    })
+  })
 })

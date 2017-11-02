@@ -88,7 +88,10 @@ process.on('message', function(msg) {
     matrix.sensor('ir');
     break;
   case 'send':
-    matrix.type('test').send({ foo: 1 });
+    matrix.type('test').send({ foo: 1, bar: 1.12 });
+    break;
+  case 'sendzerofloat':
+    matrix.type('test').send({ foo:1, bar: 0.0 });
     break;
   case 'talk':
       // //send global message

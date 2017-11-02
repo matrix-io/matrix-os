@@ -2,7 +2,8 @@
   "name": "test",
   "dataTypes": {
     "test": {
-      "foo": "integer"
+      "foo": "integer",
+      "bar": "float"
     }
   },
   "description": "none",
