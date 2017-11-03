@@ -13,7 +13,6 @@ var lib = require('./lib');
 
 var fs = require('fs');
 var DataStore = require('nedb');
-var AppStore = new DataStore('application.db');
 
 process.setMaxListeners(50);
 
@@ -24,37 +23,7 @@ error = function() {
 
 var appName = '';
 var assetPath = '';
-
-var storeManager = {
-  get: getStore,
-  set: setStore,
-  delete: deleteStore
-};
-
-function getStore(key, cb) {
-  var q = {};
-  q[key] = { $exists: true };
-  AppStore.findOne(q, function(err, resp) {
-    if (err) cb(err);
-    cb(null, resp);
-  });
-}
-
-function setStore(key, value, cb) {
-  var obj = {};
-  obj[key] = value;
-  AppStore.insert(obj, cb);
-}
-
-function deleteStore(key, cb) {
-  var q = {};
-  q[key] = { $exists: true };
-  AppStore.remove(q, function(err, resp) {
-    if (err) cb(err);
-    cb(null, resp);
-  });
-}
-
+var storeManager;
 
 /**
  * fileManager - available as matrix.file
@@ -333,6 +302,12 @@ var Matrix = {
     } catch (e) {
       fs.mkdirSync(assetPath);
     }
+
+    // Init databse
+    databasePath = __dirname + '/' + appName + '.matrix/application.db';
+    var AppStore = new DataStore({ filename: databasePath, autoload: true });
+    this.store = new lib.store(AppStore);
+
 
     // console.log('setup generic listener');
     // generic message handlers
