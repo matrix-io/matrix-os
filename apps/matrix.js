@@ -23,7 +23,11 @@ error = function() {
 
 var appName = '';
 var assetPath = '';
-var storeManager;
+
+// Initialize database
+databasePath = __dirname + '/storage.db';
+var appDatastore = new Datastore({ filename: databasePath, autoload: true }); // Open or create a new database file.
+var storeManager = new lib.store(appDatastore); // Store manager
 
 /**
  * fileManager - available as matrix.file
@@ -302,12 +306,6 @@ var Matrix = {
     } catch (e) {
       fs.mkdirSync(assetPath);
     }
-
-    // Initialize database
-    databasePath = __dirname + '/' + appName + '.matrix/application.db';
-    var appDatastore = new Datastore({ filename: databasePath, autoload: true }); // Open or create a new database file.
-    this.store = new lib.store(appDatastore); // Store manager
-
 
     // console.log('setup generic listener');
     // generic message handlers
