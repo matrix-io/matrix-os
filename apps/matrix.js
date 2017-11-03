@@ -12,7 +12,7 @@ var request = require('request');
 var lib = require('./lib');
 
 var fs = require('fs');
-var DataStore = require('nedb');
+var Datastore = require('nedb');
 
 process.setMaxListeners(50);
 
@@ -305,7 +305,7 @@ var Matrix = {
 
     // Init databse
     databasePath = __dirname + '/' + appName + '.matrix/application.db';
-    var AppStore = new DataStore({ filename: databasePath, autoload: true });
+    var AppStore = new Datastore({ filename: databasePath, autoload: true });
     this.store = new lib.store(AppStore);
 
 
