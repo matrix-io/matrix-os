@@ -54,7 +54,7 @@
         "matrix-protos": "0.0.11",
         "mic": "^2.1.1",
         "mocha": "^2.4.5",
-        "nedb": "https://github.com/matrix-io/nedb/tarball/master",
+        "nedb": "^1.8.0",
         "network": "^0.3.2",
         "optional": "^0.1.4",
         "pi-wifi": "^1.1.2",

@@ -12,8 +12,7 @@ var request = require('request');
 var lib = require('./lib');
 
 var fs = require('fs');
-var DataStore = require('nedb');
-var AppStore = new DataStore('application.db');
+var Datastore = require('nedb');
 
 process.setMaxListeners(50);
 
@@ -25,36 +24,10 @@ error = function() {
 var appName = '';
 var assetPath = '';
 
-var storeManager = {
-  get: getStore,
-  set: setStore,
-  delete: deleteStore
-};
-
-function getStore(key, cb) {
-  var q = {};
-  q[key] = { $exists: true };
-  AppStore.findOne(q, function(err, resp) {
-    if (err) cb(err);
-    cb(null, resp);
-  });
-}
-
-function setStore(key, value, cb) {
-  var obj = {};
-  obj[key] = value;
-  AppStore.insert(obj, cb);
-}
-
-function deleteStore(key, cb) {
-  var q = {};
-  q[key] = { $exists: true };
-  AppStore.remove(q, function(err, resp) {
-    if (err) cb(err);
-    cb(null, resp);
-  });
-}
-
+// Initialize database
+databasePath = __dirname + '/storage.db';
+var appDatastore = new Datastore({ filename: databasePath, autoload: true }); // Open or create a new database file.
+var storeManager = new lib.store(appDatastore); // Store manager
 
 /**
  * fileManager - available as matrix.file
