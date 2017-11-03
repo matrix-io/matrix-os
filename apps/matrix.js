@@ -303,10 +303,10 @@ var Matrix = {
       fs.mkdirSync(assetPath);
     }
 
-    // Init databse
+    // Initialize database
     databasePath = __dirname + '/' + appName + '.matrix/application.db';
-    var AppStore = new Datastore({ filename: databasePath, autoload: true });
-    this.store = new lib.store(AppStore);
+    var appDatastore = new Datastore({ filename: databasePath, autoload: true }); // Open or create a new database file.
+    this.store = new lib.store(appDatastore); // Store manager
 
 
     // console.log('setup generic listener');
