@@ -23,6 +23,8 @@ error = function() {
 
 var appName = '';
 var assetPath = '';
+var eventCheck = false;
+var eventCbs = {};
 
 // Initialize database
 databasePath = __dirname + '/storage.db';
@@ -152,25 +154,35 @@ function interAppResponse(name, cb) {
     // for globals
     cb = name;
   }
-  console.log('setup event listeners:', name);
+  
+  if (_.isString(name)) {
+    console.log('setup event listeners:', name);
+    eventCbs[name] = cb; //Store callback for event
+  } else {
+    console.log('setup nameless event listener');
+  }
 
-  process.on('message', function(m) {
-    // is global or app-specific
-    if (m.type === 'trigger' || m.type === 'app-message' || m.type === 'app-' + appName + '-message') {
-      console.log('[M]->app(msg)'.blue, m);
-      if (_.isString(name)) {
+  if (!eventCheck) { //This makes sure to only add one message listener that handles all messages
+    eventCheck = true;
+    process.on('message', function (m) {
+      // is global or app-specific
+      if (m.type === 'trigger' || m.type === 'app-message' || m.type === 'app-' + appName + '-message') {
+        console.log('[M]->app(msg)'.blue, m);
+
         // if an event name was specified in the on()
-        if (m.eventName === name || m.value === name ) {
-          cb(m);
+        if (eventCbs[m.eventName]) {
+          eventCbs[m.eventName](m);
+        } else if (eventCbs[m.value]) {
+          eventCbs[m.value](m);
+        } else { 
+          console.log('No action found for', m);
         }
         // no event name match, no fire listener
-      } else {
-        cb(m);
+
       }
 
-    }
-
-  });
+    });
+  }
 }
 
 

@@ -424,6 +424,7 @@ function onlineSetup(callback) {
 
           // sync new installs to device
           // find apps which aren't on the device yet
+          //TODO also consider updating those with newer version available
           var newApps = _.pickBy(Matrix.localApps, function (a) {
             return (appFolders.indexOf(a.name + '.matrix') === -1);
           });
@@ -435,21 +436,25 @@ function onlineSetup(callback) {
               var vStr = _.snakeCase(a.version || '1.0.0');
               var vId = id + '-' + vStr;
 
-              var url = appRecord.versions[vId].file;
+              if (appRecord.versions[vId]) {
+                var url = appRecord.versions[vId].file;
 
-              // filter out test appstore records
-              if (url.indexOf('...') === -1) {
-                console.log('=== Offline Installation === ['.yellow, a.name.toUpperCase(), a.version, ']'.yellow);
+                // filter out test appstore records
+                if (url.indexOf('...') === -1) {
+                  console.log('=== Offline Installation === ['.yellow, a.name.toUpperCase(), a.version, ']'.yellow);
 
-                Matrix.service.manager.install({
-                  name: a.name,
-                  version: a.version || '1.0.0',
-                  url: url,
-                  id: id
-                }, function (err) {
-                  //cb(err);
-                  if (err) console.log('Local app update failed ', err);
-                });
+                  Matrix.service.manager.install({
+                    name: a.name,
+                    version: a.version || '1.0.0',
+                    url: url,
+                    id: id
+                  }, function (err) {
+                    //cb(err);
+                    if (err) console.log('Local app update failed ', err);
+                  });
+                }
+              } else { 
+                console.log('Application'.red, a.name.yellow, '('.red + id.yellow + ')'.red, a.version.yellow, 'is missing version'.red, vId.yellow, 'details'.red);
               }
             });
           });
