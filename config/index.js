@@ -69,9 +69,9 @@ f.configurationUUID = 'b1a6752152eb4d36e13e357d7c225467';
 f.envs = configs;
 
 // sends with registration, determines how long the server will send pings
-f.serverHeartbeat = process.env['MATRIX_CHECK_TIME'] || 60000;
+f.serverHeartbeat = parseInt(process.env['MATRIX_CHECK_TIME']) || 60000;
 // after missing this many checks, reconnect to mxss
-f.maxSkipBeats = process.env['MATRIX_CHECK_COUNT'] || 3;
+f.maxSkipBeats = parseInt(process.env['MATRIX_CHECK_COUNT']) || 3;
 
 // for device component info
 f.components = {};
