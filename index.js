@@ -87,12 +87,19 @@ if (foundKeys.length < reqKeys.length) {
   onDestroy();
 }
 
+// datapoints
+Matrix.dailyDPCount = [];
+for (let i = 0; i < 24; i++) {
+  Matrix.dailyDPCount[i] = 0;
+}
+
 debug('', 'ENV:'.grey, Matrix.env.blue, 'API:'.grey, Matrix.apiServer.blue, 'MXSS:'.grey, Matrix.streamingServer.blue);
 debug('', 'ENV:'.grey, Matrix.env.blue, 'API:'.grey, Matrix.apiServer.blue, 'MXSS:'.grey, Matrix.streamingServer.blue);
 
 var events = require('events');
 
-//Event Loop - Handles all events. Not to be confused with Matrix.event
+//Event Loop - Handles all events. Not to be confused with Matrix.event, which is the namespace for event handlers
+
 Matrix.events = new events.EventEmitter();
 // seems like a fair number for now, should cap at 10 apps running
 Matrix.events.setMaxListeners(50);

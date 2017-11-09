@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+## Unreleased
+### Added
+- Reconnect if heartbeat isn't recieved by MXSS
+- MATRIX_BEAT_TIME, MATRIX_BEAT_COUNT env vars for above
+
 ## [0.16.0]
 ### Fixed
 - Refresh MXSS issues, added async, adjusted delay mechanism
