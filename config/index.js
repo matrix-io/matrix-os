@@ -73,6 +73,11 @@ f.serverHeartbeat = parseInt(process.env['MATRIX_CHECK_TIME']) || 60000;
 // after missing this many checks, reconnect to mxss
 f.maxSkipBeats = parseInt(process.env['MATRIX_CHECK_COUNT']) || 3;
 
+// how long to auto write cache
+f.writeInterval = 10000;
+// how long to output write logs - hourly
+f.writeLogInterval = 1000 * 60 * 60;
+
 // for device component info
 f.components = {};
 
