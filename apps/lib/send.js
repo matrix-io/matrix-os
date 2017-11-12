@@ -8,8 +8,8 @@ module.exports = function (message) {
   if (_.isArray(message)) {
     // add routing information
     _.each(message, (m) => {
-      m.type = this.dataType || this.appName;
-      m.appName = this.appName;
+      m.type = this.dataType || Matrix.config.name;
+      m.appName = Matrix.config.name;
       m.appVersion = 0;
     })
     return process.send({

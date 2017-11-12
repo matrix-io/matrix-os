@@ -24,6 +24,7 @@ var checks = {
 _ = require('lodash');
 async = require('async');
 exec = require('child_process').exec;
+execSync = require('child_process').execSync;
 os = require('os');
 
 require('colors');
@@ -933,6 +934,7 @@ function upgradeMOS(cb) {
 
 
 function checkLatestVersion() {
+
 
   //Send the actual request
   require('request').get(mosRepoURL, function (err, resp, body) {
