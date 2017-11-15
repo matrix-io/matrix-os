@@ -23,8 +23,9 @@ error = function() {
 
 var appName = '';
 var assetPath = '';
-var eventCheck = false;
-var eventCbs = {};
+var eventCheck = false; //used so only one listener is created to handle all app events
+var eventCbs = {}; //Json object where keys will be event names and values will be the event callback to call
+//[sendSample] = function(){matrix.send(dataType);}
 
 // Initialize database
 databasePath = __dirname + '/storage.db';
@@ -157,7 +158,7 @@ function interAppResponse(name, cb) {
   
   if (_.isString(name)) {
     console.log('setup event listeners:', name);
-    eventCbs[name] = cb; //Store callback for event
+    eventCbs[name] = cb; //Store callback for event 'name'
   } else {
     console.log('setup nameless event listener');
   }
@@ -168,18 +169,19 @@ function interAppResponse(name, cb) {
       // is global or app-specific
       if (m.type === 'trigger' || m.type === 'app-message' || m.type === 'app-' + appName + '-message') {
         console.log('[M]->app(msg)'.blue, m);
-
+        
         // if an event name was specified in the on()
         if (eventCbs[m.eventName]) {
-          eventCbs[m.eventName](m);
+          eventCbs[m.eventName](m); //If event name is found, execute callback passing message content (m)
         } else if (eventCbs[m.value]) {
-          eventCbs[m.value](m);
+          eventCbs[m.value](m); //If no event name matched but a value does, execute callback passing message content (m)
         } else { 
+          // no event name or value found, no fire listener
           console.log('No action found for', m);
         }
-        // no event name match, no fire listener
+        
 
-      }
+      } //No action if event is not a global trigger or app-specific
 
     });
   }
