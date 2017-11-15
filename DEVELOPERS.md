@@ -36,17 +36,21 @@ MATRIX_API_SERVER https://dev-api.admobilize.com
 MATRIX_STREAMING_SERVER http://dev-mxss.admobilize.com:80
 ```
 
+## Device Specific Server Configurations
+We've implemented a reverse heartbeat, from the server to the device, to detect and prevent "ghost sockets" where the socket engine does not detect a disconnection, but keeps operating and sending data as usual. Default is 1 minute for beats, and missing 3 beats means to do a reconnect.
+
+```
+MATRIX_CHECK_TIME 60000 # time to request between beats
+MATRIX_CHECK_COUNT 3 # number of missed beats before doing a reconnect
+```
+
+
 # Command Line Switches
 
 ## Service Mode
 systemd service is found in `debian/`. This is the device configuration where MOS starts on boot.
 
 Run with `MATRIX_MODE=service` to have the system look for `apps` and `db` in `var/matrix-store`. `protos` will be found in `usr/share/admobilize`
-
-## Dockerize Matrix Apps
-```
-# Make sure to build image on device with `npm run apphost-build`
-DOCKER_APPS=true START_APP=clock node index.js
 ```
 
 ## Start your MATRIX OS with an installed App

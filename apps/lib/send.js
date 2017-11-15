@@ -3,6 +3,20 @@ module.exports = function (message) {
   if (_.isNull(message) || _.isUndefined(message)) {
     return error('null message from matrix.send')
   }
+
+  //fast track this outside
+  if (_.isArray(message)) {
+    // add routing information
+    _.each(message, (m) => {
+      m.type = this.dataType || Matrix.config.name;
+      m.appName = Matrix.config.name;
+      m.appVersion = 0;
+    })
+    return process.send({
+      type: 'app-emit',
+      payload: message
+    })
+  }
   // if (!message.hasOwnProperty('data')){
   //   message = { data: message };
   // }

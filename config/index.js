@@ -10,15 +10,12 @@ files.splice(files.indexOf(require('path').basename(__filename)), 1);
 // files.splice(files.indexOf('store.db'), 1);
 // files.splice(files.indexOf('api-store.db'), 1);
 
-files.forEach(function(file) {
+files.forEach(function (file) {
   // require localized to this file
   if (fs.statSync(__dirname + '/' + file).isFile()) {
     f[file.slice(0, -3)] = require('./' + file);
   }
 });
-
-
-
 
 
 var configs = _.pick(process.env, [
@@ -40,12 +37,12 @@ var configs = _.pick(process.env, [
   'NODE_ENV'
 ]);
 
-configs = _.mapKeys(configs, function(v, k) {
+configs = _.mapKeys(configs, function (v, k) {
   var k = k.replace('ADMATRIX', '').replace('MATRIX', '');
   return _.camelCase(k);
 });
-  // 
-  // debug('ENVS >>>>'.blue, configs);
+// 
+// debug('ENVS >>>>'.blue, configs);
 
 _.extend(Matrix, configs);
 
@@ -68,6 +65,15 @@ f.registrationUUID = 'b1a6752152eb4d36e13e357d7c225466';
 f.configurationUUID = 'b1a6752152eb4d36e13e357d7c225467';
 f.envs = configs;
 
+// sends with registration, determines how long the server will send pings
+f.serverHeartbeat = parseInt(process.env['MATRIX_CHECK_TIME']) || 60000;
+// after missing this many checks, reconnect to mxss
+f.maxSkipBeats = parseInt(process.env['MATRIX_CHECK_COUNT']) || 3;
+
+// how long to auto write cache
+f.writeInterval = 10000;
+// how long to output write logs - hourly
+f.writeLogInterval = 1000 * 60 * 60;
 
 // for device component info
 f.components = {};
