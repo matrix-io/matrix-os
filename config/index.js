@@ -18,9 +18,6 @@ files.forEach(function (file) {
 });
 
 
-
-
-
 var configs = _.pick(process.env, [
   // 'ADMATRIX_API_SERVER',
   // 'ADMATRIX_STREAMING_SERVER',

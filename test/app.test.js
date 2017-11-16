@@ -31,12 +31,12 @@ describe('Matrix Applications', function () {
           appRecord.config.name.should.equal('test');
           done();
         });
-        it('should save a reference to the sensors', function (done) {
+        it.skip('should save a reference to the sensors', function (done) {
           appRecord.should.have.property('sensors');
           appRecord.sensors[0].should.equal('temperature');
           done();
         });
-        it('should save a reference to the services', function (done) {
+        it.skip('should save a reference to the services', function (done) {
           appRecord.should.have.property('services');
           appRecord.services.should.have.property('faceSvc');
           appRecord.services.faceSvc.should.have.keys('engine', 'type');
