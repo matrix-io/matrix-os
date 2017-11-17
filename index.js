@@ -408,21 +408,24 @@ function onlineSetup(callback) {
       async.parallel({
         //Check what local apps are currently installed. Results returned: { AyudaF: '0.2.6' }
         local: function (next) {
+          let yaml = require('js-yaml');
           fs.readdir(Matrix.config.path.apps, function (err, appsDir) {
-            var appFolders = _.filter(appsDir, function (a) {
+            let appFolders = _.filter(appsDir, function (a) {
               return (a.indexOf('.matrix') > -1);
             });
-            
-            var localVersions = {};
+
+            let localVersions = {};
             appFolders.forEach(function (appFolder) {
-              var packageFile, config;
+              let packageFile, config;
               try {
                 packageFile = require(Matrix.config.path.apps + '/' + appFolder + '/package.json');
-                config = require(Matrix.config.path.apps + '/' + appFolder + '/config.json');
+                config = yaml.safeLoad(fs.readFileSync(Matrix.config.path.apps + '/' + appFolder + '/config.yaml'));
               } catch (err) {
                 console.log('Unable to process app in', appFolder.yellow, '.', err.message);
               }
-              if (packageFile && config) localVersions[config.name] = packageFile.version;
+
+              localVersions[config.name] = packageFile.version;
+
             });
 
             next(undefined, localVersions);
@@ -444,14 +447,14 @@ function onlineSetup(callback) {
         }
         */
         remote: function (next) {
-          
+
           //Add key (id) as a field
           var apps = Matrix.localApps;
           var remoteVersions = _.mapValues(apps, function (app, id) {
             app.id = id;
             return app;
           });
-          
+
           //Change key to app name
           remoteVersions = _.mapKeys(remoteVersions, function (app) { return app.name; });
 
@@ -465,7 +468,7 @@ function onlineSetup(callback) {
         var variance = [];
 
         //Is there a missing app or with a version mismatch?
-        if (results && results.remote) { 
+        if (results && results.remote) {
           _.forIn(results.remote, function (remoteApp, name) {
             if ((!results.local || !results.local[name]) || results.local[name] !== remoteApp.version) {
               console.log('App mismatch found:', name ? name : '', '', results.local[name] ? results.local[name] : '', '!=', remoteApp.version);
@@ -484,12 +487,12 @@ function onlineSetup(callback) {
           async.each(variance, function (app, next) {
 
             Matrix.service.firebase.deviceapps.get(app.id, function (appRecord) {
-            
+
               var url = appRecord && appRecord.meta && appRecord.meta.file ? appRecord.meta.file : undefined;
 
               if (url && url.indexOf('...') === -1) { // filter out test appstore records (we can probably remove the ... check now?)
                 console.log('['.yellow, app.id, '] === Offline Installation === ['.yellow, app.name.toUpperCase(), app.version, ']'.yellow);
-                
+
                 Matrix.service.manager.install({
                   name: app.name,
                   version: app.version || '1.0.0',
@@ -499,16 +502,16 @@ function onlineSetup(callback) {
                   if (err) console.log('Local app update failed ', err);
                   next(err);
                 });
-                                
+
               } else {
-                console.log('Skipping '.yellow + app.id +' ['.yellow, app.name.toUpperCase(), app.version, ']'.yellow);
+                console.log('Skipping '.yellow + app.id + ' ['.yellow, app.name.toUpperCase(), app.version, ']'.yellow);
                 next();
               }
             });
           }, cb);
         }
       });
-      
+
     },
 
     // Reset apps status in Firebase to Inactive
