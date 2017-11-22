@@ -26,6 +26,7 @@
         "device-diagnostics": "DEBUG=*,-engine*,-gatt,-bleno,-bt-characteristic,-hci START_APP=monitor NODE_ENV=dev node index.js",
         "screensaver": "START_APP=life NODE_ENV=dev node index.js",
         "clock": "START_APP=clock NODE_ENV=dev node index.js",
+        "docker-build": "docker build -t matrix-io/matrix-os .",
         "apphost-debug": "docker run -v `pwd`/apps:/apps -it matrix-apphost bash",
         "apphost-build": "docker build -t matrix-apphost -f Dockerfile-apphost-arm .",
         "upgrade": "npm update matrix-node-sdk matrix-app-config-helper matrix-firebase matrix-eventfilter pi-wifi",
