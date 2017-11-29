@@ -1,0 +1,23 @@
+# MatrixOS development compose file
+# It does not define MXSS dependency intentionally so it can use either a locally running
+# instance or a remotely running instance, see env.MATRIX_STREAMING_SERVER
+version: '2'
+services:
+
+  siege-cred-service: 
+    build: 
+      dockerfile: Dockerfile-siege
+      context: ./
+      
+
+  siege-mos: 
+    build: 
+      context: ./
+      dockerfile: Dockerfile
+    links:
+      - siege-cred-service
+    environment:
+      - NODE_ENV=dev
+      - MATRIX_SIEGE_TEST=fuckyes
+
+
