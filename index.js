@@ -483,6 +483,11 @@ function onlineSetup(callback) {
         } else {
           debug('Variance detected between registered applications and applications on device.');
 
+          //TODO also consider updating those with newer version available
+          var newApps = _.pickBy(Matrix.localApps, function (a) {
+            return (appFolders.indexOf(a.name + '.matrix') === -1);
+          });
+
           // find apps which aren't on the device yet
           async.each(variance, function (app, next) {
 

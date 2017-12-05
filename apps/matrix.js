@@ -23,6 +23,9 @@ error = function() {
 
 var appName = '';
 var assetPath = '';
+var eventCheck = false; //used so only one listener is created to handle all app events
+var eventCbs = {}; //Json object where keys will be event names and values will be the event callback to call
+//[sendSample] = function(){matrix.send(dataType);}
 
 // Initialize database
 databasePath = __dirname + '/storage.db';
@@ -152,25 +155,36 @@ function interAppResponse(name, cb) {
     // for globals
     cb = name;
   }
-  console.log('setup event listeners:', name);
+  
+  if (_.isString(name)) {
+    console.log('setup event listeners:', name);
+    eventCbs[name] = cb; //Store callback for event 'name'
+  } else {
+    console.log('setup nameless event listener');
+  }
 
-  process.on('message', function(m) {
-    // is global or app-specific
-    if (m.type === 'trigger' || m.type === 'app-message' || m.type === 'app-' + appName + '-message') {
-      console.log('[M]->app(msg)'.blue, m);
-      if (_.isString(name)) {
+  if (!eventCheck) { //This makes sure to only add one message listener that handles all messages
+    eventCheck = true;
+    process.on('message', function (m) {
+      // is global or app-specific
+      if (m.type === 'trigger' || m.type === 'app-message' || m.type === 'app-' + appName + '-message') {
+        console.log('[M]->app(msg)'.blue, m);
+        
         // if an event name was specified in the on()
-        if (m.eventName === name || m.value === name ) {
-          cb(m);
+        if (eventCbs[m.eventName]) {
+          eventCbs[m.eventName](m); //If event name is found, execute callback passing message content (m)
+        } else if (eventCbs[m.value]) {
+          eventCbs[m.value](m); //If no event name matched but a value does, execute callback passing message content (m)
+        } else { 
+          // no event name or value found, no fire listener
+          console.log('No action found for', m);
         }
-        // no event name match, no fire listener
-      } else {
-        cb(m);
-      }
+        
 
-    }
+      } //No action if event is not a global trigger or app-specific
 
-  });
+    });
+  }
 }
 
 
