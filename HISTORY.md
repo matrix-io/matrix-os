@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Reconnect if heartbeat isn't recieved by MXSS
 - MATRIX_BEAT_TIME, MATRIX_BEAT_COUNT env vars for above
 
+### Fixed
+- Missing application installations
+
+
 ## [0.16.0]
 ### Fixed
 - Refresh MXSS issues, added async, adjusted delay mechanism
