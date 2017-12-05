@@ -1,8 +1,8 @@
 var set = function (settings) {
-	console.log(settings, '=>', Matrix.config.settings);
+	console.log(settings, '=>', matrix.config.settings);
 
 	Object.keys(settings).forEach(k => {
-		if (!Matrix.config.settings.hasOwnProperty(k)) {
+		if (!matrix.config.settings.hasOwnProperty(k)) {
 			return console.error('Cannot add settings which are not registered in the config.yaml');
 		}
 		if (_.isFunction(settings[k]) || _.isPlainObject(settings[k])) {
@@ -11,7 +11,7 @@ var set = function (settings) {
 	});
 
 	// converge
-	_.merge(Matrix.config.settings, settings);
+	_.merge(matrix.config.settings, settings);
 
 	process.send({
 		type: 'update-setting',
