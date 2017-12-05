@@ -8,6 +8,8 @@ services:
     build: 
       dockerfile: Dockerfile-siege
       context: ./
+    expose:
+      - "8000"
       
 
   siege-mos: 
