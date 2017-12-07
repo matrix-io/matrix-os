@@ -41,7 +41,7 @@
         "chai": "^3.5.0",
         "colors": "^1.1.2",
         "debug": "^2.2.0",
-        "engine.io-client": "^1.6.8",
+        "engine.io-client": "^3.1.4",
         "fs-extra": "^0.30.0",
         "grpc": "^1.0.0",
         "js-yaml": "^3.6.1",
