@@ -5,7 +5,7 @@ MAINTAINER Sean Canton <sean.canton@admobilize.com>
 RUN apt-get update && apt-get install -yq libzmq3-dev \
   && apt-get clean && rm -rf /var/tmp/*
 
-ENV REINSTALL_NODE_MODULES 1
+ENV REINSTALL_NODE_MODULES 0
 
 COPY . /matrix
 RUN chmod +x /matrix/docker-entrypoint.sh

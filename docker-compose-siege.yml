@@ -8,18 +8,14 @@ services:
     build: 
       dockerfile: Dockerfile-siege
       context: ./
-    expose:
-      - "8000"
       
 
   siege-mos: 
     build: 
       context: ./
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile-mos-siege
     links:
       - siege-cred-service
     environment:
       - NODE_ENV=dev
       - MATRIX_SIEGE_TEST=fuckyes
-
-

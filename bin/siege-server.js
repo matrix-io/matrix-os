@@ -9,11 +9,13 @@ var secrets = fs.readFileSync('creds');
 // cast into array
 secrets = secrets.toString().split('\n');
 
+secrets = secrets.map((s) => { if (s.length > 2) return s });
+
 console.log(secrets.length, 'secrets read');
 
 
 const server = http.createServer((req, res) => {
-  let send = secrets.pop();
+  let send = secrets.shift();
   console.log('Sending>>', send);
   res.write(send);
   res.end();
