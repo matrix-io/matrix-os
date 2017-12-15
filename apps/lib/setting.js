@@ -3,10 +3,10 @@ var set = function (settings) {
 
 	Object.keys(settings).forEach(k => {
 		if (!Matrix.config.settings.hasOwnProperty(k)) {
-			return console.error('Cannot add settings which are not registered in the config.yaml');
+			return console.error('Cannot add settings which are not registered in the config.yaml : ' + k);
 		}
 		if (_.isFunction(settings[k]) || _.isPlainObject(settings[k])) {
-			return console.error('Settings can only be strings or integers.');
+			return console.error('Settings can only be strings or integers.', k);
 		}
 	});
 
