@@ -131,6 +131,7 @@ var matrixDebug = false;
  * Applications respond to `app-message` and `app-{appName}-message`. 
  * TODO: Support global event scoped messages
  * TODO: Switch to options based
+ * TODO: This is confusing, fix me.
  * 
  * @param {String} appName - application name
  * @param {String} eventName 
@@ -201,7 +202,7 @@ function interAppResponse(name, cb) {
       console.log('[M]->app(msg)'.blue, m);
       if (_.isString(name)) {
         // if an event name was specified in the on()
-        if (m.eventName == name) {
+        if (m.eventName === name || m.value === name ) {
           cb(m);
         }
         // no event name match, no fire listener
