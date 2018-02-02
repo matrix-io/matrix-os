@@ -94,7 +94,7 @@ var service = function(name, options) {
 
     then: function(cb){
       var phraseRegex = self.strictPhraseMatch ? new RegExp(self.phrases.join('|'),'i') : new RegExp('.*?', 'i');
-      process.on('message', function(data) {
+      process.on('message', function(data) {  
         console.log('VOICE SERVICE >> ', data, phraseRegex)
         if (data.eventType === 'service-emit' &&
           data.engine === self.engine &&
@@ -227,7 +227,7 @@ var service = function(name, options) {
         if (_.isFunction(cb)) {
           cb(_.omit(data.payload, 'serviceType', 'engine', 'type'));
         } else {
-          console.log('No callback passed to service>%s.then', self.name);
+          cb(console.warn('No callback passed to service>%s.then', self.name));
         }
       }
     });

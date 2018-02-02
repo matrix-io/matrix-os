@@ -33,13 +33,10 @@ describe('Matrix Applications', function () {
         });
         it.skip('should save a reference to the sensors', function (done) {
           appRecord.should.have.property('sensors');
-          appRecord.sensors[0].should.equal('temperature');
           done();
         });
         it.skip('should save a reference to the services', function (done) {
           appRecord.should.have.property('services');
-          appRecord.services.should.have.property('faceSvc');
-          appRecord.services.faceSvc.should.have.keys('engine', 'type');
           done();
         });
         it('should save a reference to the pid', function (done) {

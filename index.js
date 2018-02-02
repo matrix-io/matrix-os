@@ -1,6 +1,15 @@
-// Welcome to MatrixOS - A JavaScript environment for IoT Applications
+/**
+ * MATRIX OS - is an orchestration system for IoT applications. It uses ZeroMQ and Protocol buffers to communicate with the hardware layer via MALOS/CORE
+ * @see https://github.com/matrix-io/matrix-malos-lib MALOS + HAL is otherwise known as CORE
+ * @see https://github.com/matrix-io/matrix-cli MATRIX CLI enables user configuration via command line
+ * @see https://matrix-io.github.io/matrix-documentation/ System documentation
+ * 
+ * We welcome feedback on github or via email. -> sean.canton@admobilize.com
+ */
+
 var optional = require('optional');
-var bleno = optional('bleno');
+// bluetooth lib, doesn't work on non bt platforms, so optional
+const bleno = optional('bleno');
 
 const mosRepoURL = 'https://raw.githubusercontent.com/matrix-io/matrix-os/master/package.json';
 // check gh
@@ -21,30 +30,34 @@ var checks = {
 };
 
 /* GLOBALS */
+require('colors');
 _ = require('lodash');
 async = require('async');
 exec = require('child_process').exec;
 execSync = require('child_process').execSync;
 os = require('os');
 
-require('colors');
-
-var fs = require('fs');
-
 warn = console.log;
 log = console.log;
 error = console.error;
 
+// local system vars
+var fs = require('fs');
+
 // based on NODE_ENV, set sensible defaults
 var envSettings = getEnvSettings();
-// if NODE_ENV=dev then set sane debug
+
+// if NODE_ENV=dev then set sane debug settings
 if (envSettings.debug === true && !_.has(process.env, 'DEBUG')) {
   process.env.DEBUG = '*,-engine*,-Component*,-*led*,-gatt,-bleno,-bt-characteristic,-hci';
   // process.env.DEBUG = '*,-engine*';
 }
 
+// system wide debug setup function
 debugLog = require('debug');
-debug = debugLog('matrix');
+
+// debug for this file
+const debug = debugLog('matrix');
 
 // Core Library - Creates Matrix.device, Matrix.event, Matrix.service
 Matrix = require('./lib/index.js');
@@ -95,7 +108,6 @@ for (let i = 0; i < 24; i++) {
 }
 
 debug('', 'ENV:'.grey, Matrix.env.blue, 'API:'.grey, Matrix.apiServer.blue, 'MXSS:'.grey, Matrix.streamingServer.blue);
-debug('', 'ENV:'.grey, Matrix.env.blue, 'API:'.grey, Matrix.apiServer.blue, 'MXSS:'.grey, Matrix.streamingServer.blue);
 
 var events = require('events');
 
@@ -142,8 +154,9 @@ Matrix.api.makeUrls(Matrix.apiServer);
 
 var malosInfoOut = '';
 Matrix.device.malos.info(function (data) {
+  // console.log(data);
   _.each(data.info, function (i) {
-    malosInfoOut += ' ⚙ '.yellow + i.driver_name.blue + ':' + i.base_port + ' | ' + i.notes_for_human.grey + '\n';
+    malosInfoOut += ' ⚙ '.yellow + i.driverName.blue + ':' + i.basePort + ' | ' + i.notesForHuman.grey + '\n';
   });
 });
 
@@ -372,6 +385,7 @@ function onlineSetup(callback) {
     // Lets login to the streaming server
     function mxssInit(cb) {
 
+      // for debugging use MATRIX_NOMXSS env var to avoid MXSS . still needs internet tho.
       if (!process.env.hasOwnProperty('MATRIX_NOMXSS')) {
         Matrix.service.stream.initSocket(cb);
       } else {
@@ -548,7 +562,7 @@ function onlineSetup(callback) {
         });
       });
 
-      //App install update
+      //When application status changes on firebase, install on device
       Matrix.service.firebase.user.watchAppInstall(Matrix.deviceId, function (app, appId) {
         if (!_.isUndefined(app) && !_.isUndefined(appId)) {
           Matrix.localApps[appId] = app;
@@ -562,6 +576,7 @@ function onlineSetup(callback) {
               name: appName,
               version: app.meta.version || app.version, //TODO only use meta
               id: appId,
+              // is this application running or not
               running: Matrix.activeApplications.some((a) => {
                 return (a.name === appName);
               })
@@ -570,10 +585,7 @@ function onlineSetup(callback) {
             debug('Trying to install: ' + appName.yellow);
             Matrix.service.manager.stop(appName, function (err, appStopped) {
               Matrix.service.manager.install(installOptions, function (err) {
-                debug('Finished index install');
                 console.log(appName, installOptions.version, 'installed from', installOptions.url);
-                //TODO Start the app if it was running before deployment?
-                //if (appStopped) Matrix.service.manager.start(appName);
               });
             });
           });
@@ -582,6 +594,7 @@ function onlineSetup(callback) {
         }
       });
 
+      // continue setup
       cb();
     },
 
@@ -621,8 +634,8 @@ function onlineSetup(callback) {
         else error('MXSS Unavailable'.red);
 
         // MALOS
-        if (malosInfoOut.length > 0) log('MALOS COMPONENTS', malosInfoOut);
-        else error('MALOS Unavailable'.red);
+        if (malosInfoOut.length > 0) log('CORE COMPONENTS', malosInfoOut);
+        else error('MALOS/CORE Unavailable'.red);
 
         // MOS
         log(Matrix.is.green.bold, '['.grey + Matrix.deviceId.grey + ']'.grey, 'ready'.yellow.bold);
@@ -638,7 +651,7 @@ function onlineSetup(callback) {
           console.log('MATRIX OS can be upgraded.'.yellow, Matrix.latestVersion, 'available!'.yellow, Matrix.version);
         }
 
-        // CLI uses IPC for tests
+        // CLI uses IPC for tests, will boot MOS with send method
         if (process.hasOwnProperty('send')) process.send({ 'matrix-ready': true });
 
         if (process.env.hasOwnProperty('REPL')) {

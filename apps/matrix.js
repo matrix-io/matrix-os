@@ -10,6 +10,7 @@ _ = require('lodash');
 //needs sudo for audio commands disable until we figure this out
 var request = require('request');
 var lib = require('./lib');
+var util = require('./lib/util.js');
 
 var fs = require('fs');
 var Datastore = require('nedb');
@@ -113,20 +114,34 @@ var matrixDebug = false;
  * @param {{}Payload} p 
  */
 function interAppNotification(appName, eventName, p) {
-  var payload = p;
+  var payload = ( _.isUndefined(p) ) ? '' : p;
   var type;
   var event;
 
+  
   if (arguments.length === 1) {
-    // global form
     type = 'app-message';
-    payload = arguments[0];
+    if ( util.hasEvent(appName) ){
+      // event trigger - matrix.emit('eventName')
+      log('>>>>>>>>')
+      event = arguments[0];
+    } else {
+      // global trigger - matrix.emit({ foo: bar })
+      payload = arguments[0];
+    }
   } else if (arguments.length === 2) {
+    if ( util.hasEvent(appName)){
+      // event trigger with payload = matrix.emit('eventName', {foo:bar})
+      type = 'app-message';
+      event = arguments[0]
+    } else {
+      //global message for application = matrix.emit('appName', {foo:bar})
+      type = 'app-' + appName + '-message';
+      payload = arguments[1];
+    }
     //app specific
-    type = 'app-' + appName + '-message';
-    payload = arguments[1];
   } else {
-    // app specific event namespaced
+    // app specific event namespaced = matrix.emit('appName','eventName', { foo:bar })
     type = 'app-' + appName + '-message';
     event = eventName;
   }
@@ -365,6 +380,7 @@ var Matrix = {
   },
   service: require('./lib/service.js'),
   sensor: require('./lib/sensor.js'),
+  util: require('./lib/util'),
   set: require('./lib/setting.js')
 };
 

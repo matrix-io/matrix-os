@@ -34,6 +34,8 @@ To exclude engine-io from the output, do
 ```
 MATRIX_API_SERVER https://dev-api.admobilize.com
 MATRIX_STREAMING_SERVER http://dev-mxss.admobilize.com:80
+MATRIX_NOMXSS - don't use streaming server
+NO_INSTALL - disable auto install from firebase for apps
 ```
 
 ## Device Specific Server Configurations
@@ -54,7 +56,7 @@ Run with `MATRIX_MODE=service` to have the system look for `apps` and `db` in `v
 ```
 
 ## Start your MATRIX OS with an installed App
-Please note that the application must be registered with the infrastructure to launch. Internet connectivity is only required on boot.
+Please note that the application must be registered with the infrastructure to launch. Internet connectivity is only required on boot. It can be disconnected, so long as an app doesn't use GRPC services or tries to save data.
 ```
 START_APP=monitor node index.js
 ```
@@ -262,6 +264,13 @@ vim -nb or :nbs from inside vim
 ## Testing
 
 Be sure to deploy `test/fixtures/test.matrix` to the device you are going to use. You can run `matrix deploy` from inside the folder. We have to install the application vs manually copy it so there are firebase records created.
+
+```
+cd test/fixtures/test.matrix/
+matrix deploy
+cd ../../../
+npm test
+```
 
 ## Maintainers
 
