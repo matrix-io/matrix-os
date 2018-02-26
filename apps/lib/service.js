@@ -189,7 +189,7 @@ var service = function(name, options) {
 
     then: function(cb) {
       console.log('setup service listener');
-      process.on('message', function(data) {
+      process.once('message', function(data) {
 
         // console.log('RECOG SERVICE THEN', data)
         if (data.eventType === 'service-emit' &&
