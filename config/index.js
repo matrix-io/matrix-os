@@ -1,5 +1,5 @@
 var f = {
-  fakeApp: process.env['START_APP']
+  autoStartApps: process.env['START_APP']
 };
 var fs = require('fs');
 
