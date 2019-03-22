@@ -643,7 +643,13 @@ function onlineSetup(callback) {
         Matrix.banner();
 
         //if START_APP is set
-        if (Matrix.config.fakeApp) Matrix.service.manager.start(Matrix.config.fakeApp);
+        if (Matrix.config.autoStartApps) {
+          let appsSplit = Matrix.config.autoStartApps.split(' ');
+          for (let i = 0; i < appsSplit.length; i++) {
+            Matrix.service.manager.start(Matrix.config.appsSplit[i]);
+          }       
+        }
+        
         //for tests
         Matrix.events.emit('matrix-ready');
 
